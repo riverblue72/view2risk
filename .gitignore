@@ -27,3 +27,6 @@
 *.pid
 .env
 .env.*
+
+workspace/
+.parts/

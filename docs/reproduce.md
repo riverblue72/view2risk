@@ -22,4 +22,8 @@ Stages:
 
 `tools/materialize.py` prepares files only. This is a research snapshot with documented paths, dependencies and frozen outputs, not a one-command dataset-independent benchmark. `reproducibility/` records the executed run's checks; generated fresh runs require their own hashes and validation.
 
-Raw data, per-observation Parquet, full per-track exports, source-image illustrations, video, model checkpoints and transient logs remain server-only.
+Raw archives, per-observation Parquet and analysis support are now available in the data Release. Model checkpoints and transient logs are not distributed. Source-image illustrations can be regenerated from the released raw images and code.
+
+## Ready server data
+
+Use [the real data release](data.md) to download the unchanged raw archives or the ready analysis workspace. The analysis TAR supplies the full/sample Parquet and saved predictions at the recorded relative paths. `tools/check_data.py` recomputes recorded Q results without the original absolute server paths. Historical scripts/manifests still record server paths; a fresh model rerun needs a new workspace/provenance, as described above.

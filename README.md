@@ -2,6 +2,21 @@
 
 보행자 위치 관측의 불확실성 **R**과 등속도 움직임 모델의 효과적 과정 잡음 **Q**를 공개 데이터에서 감사하고, 기록 궤적에 대한 예측분포를 검증한 연구 작업이다. 코드, 고정 프로토콜, 집계 CSV, 보고서와 검증 기록을 보관한다.
 
+## 실제 데이터 다운로드
+
+**서버의 원본 압축과 분석 데이터를 [GitHub Releases](https://github.com/riverblue72/view2risk/releases/tag/data-261026)로 제공한다.** 전체22.60GB이며 큰 원본만 바이트 분할했다. 자동으로 합치고 원본 SHA256을 검증한다.
+
+```bash
+# 약699MB 정제 테이블·개별 예측: 내려받은 뒤 바로 재집계 가능
+python tools/get_data.py --preset analysis --output ./workspace
+python tools/check_data.py --workspace ./workspace
+
+# 확보했던 원본까지 모두 받기: 약22.60GB
+python tools/get_data.py --preset all --output ./workspace
+```
+
+[데이터 목록·실행 안내](docs/data.md) · [출처/조건](docs/NOTICE_DATA.md)
+
 ## 결과 바로 보기
 
 | 결과 | 파일 |
@@ -55,4 +70,4 @@ tools/               새로운 작업 경로에 원래 코드 구조 생성
 
 [재현 안내](docs/reproduce.md) · [원본 서버 경로](docs/server_paths.md) · [외부 출처/이용 조건](THIRD_PARTY.md)
 
-원본 대용량 데이터·관측별 예측·모델 가중치·인증 정보는 포함하지 않는다. 새 요약 CSV의 `*_pct`는0~100 %, 거리 `_m`, 영역/공분산 `_m2`다. 세부 원본 집계 CSV에는0~1 비율 컬럼이 있으므로 해당 컬럼 정의를 확인한다.
+Git 커밋에는 대용량 원본·관측별 예측을 넣지 않고 Releases에서 제공한다. 모델 가중치·인증 정보는 포함하지 않는다. 새 요약 CSV의 `*_pct`는0~100 %, 거리 `_m`, 영역/공분산 `_m2`다. 세부 원본 집계 CSV에는0~1 비율 컬럼이 있으므로 해당 컬럼 정의를 확인한다.
