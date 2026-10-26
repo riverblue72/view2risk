@@ -1,0 +1,13 @@
+candidate,threshold,observations,episodes,restarts,tracks,sequences,recording_dates,status2_and_valid_interval_only,not_behavior_ground_truth
+stop,0.2,547155,2688,2314.0,1080,249,15,True,True
+stop,0.3,583512,2118,1671.0,1112,252,15,True,True
+stop,0.5,623333,1825,1275.0,1173,254,15,True,True
+acceleration,0.3,105914,9916,,1845,263,15,True,True
+acceleration,0.5,54608,4807,,1635,259,15,True,True
+acceleration,1.0,11471,1428,,893,244,14,True,True
+deceleration,0.3,96556,10238,,1795,263,15,True,True
+deceleration,0.5,34792,4200,,1451,256,15,True,True
+deceleration,1.0,5067,897,,570,201,14,True,True
+turn,30.0,56789,6052,,1530,261,15,True,True
+turn,45.0,25843,3556,,1206,253,15,True,True
+turn,60.0,13721,2263,,936,239,14,True,True

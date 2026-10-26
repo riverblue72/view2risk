@@ -1,0 +1,4 @@
+﻿signal_group,component,center_x_m,center_y_m,length_m,width_m,axis_x,axis_y,geometry_origin,signal_mapping,independent_GT
+f2,1,4.969709992298066,9.079250334509496,15.776911240745935,3.890389799991635,0.6348415768938107,0.7726423313843086,official_semantic_map,official_diagram_topology_and_origin,False
+f1,2,5.165831769714376,-7.377192238248559,10.907694580346341,3.943714907652958,0.7514061963717408,-0.6598399260837078,official_semantic_map,official_diagram_topology_and_origin,False
+f3,3,21.059799799780627,11.538228836297,9.999451441773502,3.74381242406913,0.7744403638310667,-0.6326469180113066,official_semantic_map,official_diagram_topology_and_origin,False

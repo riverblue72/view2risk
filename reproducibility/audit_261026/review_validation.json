@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "registration_best": [
+    "f2",
+    "f1",
+    "f3"
+  ],
+  "review_cases": 22,
+  "provider_image_comparisons": 4,
+  "all_provider_images_present": true
+}

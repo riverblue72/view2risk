@@ -1,0 +1,9 @@
+﻿annotation,projection,pairs,inside_bbox,track_groups,inside_bbox_pct,not_independent_calibration_accuracy
+camera,K_SO3_diagnostic_only,10109,8121,233,80.3343555247799,True
+camera,K_official,10109,10051,233,99.42625383321793,True
+camera,K_with_D,10109,4946,233,48.92669898110594,True
+camera,P_supplied,10109,1679,233,16.60896231081215,True
+lidar,K_SO3_diagnostic_only,10109,6921,233,68.46374517756455,True
+lidar,K_official,10109,9472,233,93.69868434068651,True
+lidar,K_with_D,10109,5129,233,50.73696705905628,True
+lidar,P_supplied,10109,1786,233,17.667425066772182,True

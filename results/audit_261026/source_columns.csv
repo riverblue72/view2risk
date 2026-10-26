@@ -1,0 +1,115 @@
+﻿dataset,column,dtype,unit,missing_count,meaning
+SPD,sequence_id,object,source ID/code/flag or documented metadata,0,sequence_id
+SPD,frame_id,object,source ID/code/flag or documented metadata,0,frame_id
+SPD,track_id,object,source ID/code/flag or documented metadata,0,track_id
+SPD,track_uid,object,source ID/code/flag or documented metadata,0,track_uid
+SPD,camera_timestamp,int64,UNIX epoch microseconds int64,0,camera_timestamp
+SPD,lidar_timestamp,int64,UNIX epoch microseconds int64,0,lidar_timestamp
+SPD,timestamp_unit,object,source ID/code/flag or documented metadata,0,timestamp_unit
+SPD,timestamp_gap,float64,seconds,0,timestamp_gap
+SPD,timestamp_gap_s,float64,seconds,0,timestamp_gap_s
+SPD,coordinate_frame,object,source ID/code/flag or documented metadata,0,coordinate_frame
+SPD,matched,bool,source ID/code/flag or documented metadata,0,matched
+SPD,match_method,object,source ID/code/flag or documented metadata,0,match_method
+SPD,same_exact_timestamp,bool,source ID/code/flag or documented metadata,0,same_exact_timestamp
+SPD,occluded_state,int64,source ID/code/flag or documented metadata,0,occluded_state
+SPD,truncated_state,int64,source ID/code/flag or documented metadata,0,truncated_state
+SPD,bbox_area_px,float64,pixels2,0,bbox_area_px
+SPD,distance_to_sensor_m,float64,metres; provider frame,0,distance_to_sensor_m
+SPD,paired_annotation_not_detector_error,bool,source ID/code/flag or documented metadata,0,paired_annotation_not_detector_error
+SPD,calibration_camera_nonrigid,bool,source ID/code/flag or documented metadata,0,calibration_camera_nonrigid
+SPD,image_path,object,source ID/code/flag or documented metadata,0,image_path
+SPD,camera_label_path,object,metres; provider frame,0,camera_label_path
+SPD,lidar_label_path,object,metres; provider frame,0,lidar_label_path
+SPD,camera_label_x,float64,metres; provider frame,0,camera_label_x
+SPD,camera_label_y,float64,metres; provider frame,0,camera_label_y
+SPD,camera_label_z,float64,metres; provider frame,0,camera_label_z
+SPD,camera_world_x,float64,metres; provider frame,0,camera_world_x
+SPD,camera_world_y,float64,metres; provider frame,0,camera_world_y
+SPD,camera_world_z,float64,metres; provider frame,0,camera_world_z
+SPD,camera_projected_u,float64,source ID/code/flag or documented metadata,0,camera_projected_u
+SPD,camera_projected_v,float64,source ID/code/flag or documented metadata,0,camera_projected_v
+SPD,camera_P_projected_u,float64,source ID/code/flag or documented metadata,0,camera_P_projected_u
+SPD,camera_P_projected_v,float64,source ID/code/flag or documented metadata,0,camera_P_projected_v
+SPD,lidar_label_x,float64,metres; provider frame,0,lidar_label_x
+SPD,lidar_label_y,float64,metres; provider frame,0,lidar_label_y
+SPD,lidar_label_z,float64,metres; provider frame,0,lidar_label_z
+SPD,lidar_world_x,float64,metres; provider frame,0,lidar_world_x
+SPD,lidar_world_y,float64,metres; provider frame,0,lidar_world_y
+SPD,lidar_world_z,float64,metres; provider frame,0,lidar_world_z
+SPD,lidar_projected_u,float64,source ID/code/flag or documented metadata,0,lidar_projected_u
+SPD,lidar_projected_v,float64,source ID/code/flag or documented metadata,0,lidar_projected_v
+SPD,lidar_P_projected_u,float64,source ID/code/flag or documented metadata,0,lidar_P_projected_u
+SPD,lidar_P_projected_v,float64,source ID/code/flag or documented metadata,0,lidar_P_projected_v
+SPD,bbox,object,source ID/code/flag or documented metadata,0,bbox
+SPD,distance_reference,object,source ID/code/flag or documented metadata,0,distance_reference
+SPD,dx,float64,metres; provider frame,0,not independent physical ground truth
+SPD,dy,float64,metres; provider frame,0,not independent physical ground truth
+SPD,dz,float64,metres; provider frame,0,dz
+SPD,horizontal_discrepancy_m,float64,metres; provider frame,0,horizontal_discrepancy_m
+SPD,spatial_3d_discrepancy_m,float64,metres; provider frame,0,spatial_3d_discrepancy_m
+SPD,same_2d_box,bool,source ID/code/flag or documented metadata,0,same_2d_box
+SPD,camera_K_projection_inside_bbox,bool,source ID/code/flag or documented metadata,0,camera_K_projection_inside_bbox
+SPD,camera_P_projection_inside_bbox,bool,source ID/code/flag or documented metadata,0,camera_P_projection_inside_bbox
+SPD,lidar_K_projection_inside_bbox,bool,source ID/code/flag or documented metadata,0,lidar_K_projection_inside_bbox
+SPD,lidar_P_projection_inside_bbox,bool,source ID/code/flag or documented metadata,0,lidar_P_projection_inside_bbox
+SPD,quality_flag,object,source ID/code/flag or documented metadata,0,quality_flag
+SPD,intersection_loc,object,source ID/code/flag or documented metadata,0,intersection_loc
+SPD,model_eligible,bool,source ID/code/flag or documented metadata,0,model_eligible
+IMPTC,dataset_source,object,source ID/code/flag or documented metadata,0,dataset_source
+IMPTC,sequence_id,object,source ID/code/flag or documented metadata,0,sequence_id
+IMPTC,track_id,object,source ID/code/flag or documented metadata,0,track_id
+IMPTC,track_uid,object,source ID/code/flag or documented metadata,0,track_uid
+IMPTC,source_path,object,source ID/code/flag or documented metadata,0,source_path
+IMPTC,source_row_key,object,source ID/code/flag or documented metadata,0,source_row_key
+IMPTC,source_index,int64,source ID/code/flag or documented metadata,0,source_index
+IMPTC,ts_raw,object,source ID/code/flag or documented metadata,0,ts_raw
+IMPTC,ts_us,int64,UNIX epoch microseconds int64,0,ts_us
+IMPTC,t_seconds,float64,source ID/code/flag or documented metadata,0,t_seconds
+IMPTC,x,float64,metres; provider frame,0,x
+IMPTC,y,float64,metres; provider frame,0,y
+IMPTC,z,float64,metres; provider frame,0,z
+IMPTC,speed_reported_mps,float64,m/s; speed_reported_mps already converted from raw km/h,0,speed_reported_mps
+IMPTC,status,int64,source ID/code/flag or documented metadata,0,status
+IMPTC,source_type,int64,source ID/code/flag or documented metadata,0,source_type
+IMPTC,ground_type,float64,source ID/code/flag or documented metadata,5567,ground_type
+IMPTC,class_prob,float64,source ID/code/flag or documented metadata,0,class_prob
+IMPTC,finite_coordinates,bool,source ID/code/flag or documented metadata,0,finite_coordinates
+IMPTC,strict_documented_valid_status2,bool,source ID/code/flag or documented metadata,0,strict_documented_valid_status2
+IMPTC,timestamp_in_master,bool,source ID/code/flag or documented metadata,0,timestamp_in_master
+IMPTC,signal_available,bool,source ID/code/flag or documented metadata,0,signal_available
+IMPTC,signal_age_s,float64,seconds,3404,signal_age_s
+IMPTC,weather_available,bool,source ID/code/flag or documented metadata,0,weather_available
+IMPTC,weather_age_s,float64,seconds,3146,weather_age_s
+IMPTC,weather_status,float64,source ID/code/flag or documented metadata,3146,weather_status
+IMPTC,weather_name,object,source ID/code/flag or documented metadata,3146,weather_name
+IMPTC,ped_signal,object,source ID/code/flag or documented metadata,1710765,ped_signal
+IMPTC,ped_signal_spatial_assignment,object,source ID/code/flag or documented metadata,0,ped_signal_spatial_assignment
+IMPTC,original_track_out_of_order,bool,source ID/code/flag or documented metadata,0,original_track_out_of_order
+IMPTC,signal_f1,float64,source ID/code/flag or documented metadata,3404,signal_f1
+IMPTC,signal_f2,float64,source ID/code/flag or documented metadata,3404,signal_f2
+IMPTC,signal_f3,float64,source ID/code/flag or documented metadata,3404,signal_f3
+IMPTC,weather_air_temperature,float64,source ID/code/flag or documented metadata,3146,weather_air_temperature
+IMPTC,weather_precipitation_intensity,float64,source ID/code/flag or documented metadata,3146,weather_precipitation_intensity
+IMPTC,weather_precipitation_amount,float64,source ID/code/flag or documented metadata,3146,weather_precipitation_amount
+IMPTC,weather_visibility,float64,source ID/code/flag or documented metadata,3146,weather_visibility
+IMPTC,weather_wind_speed,float64,source ID/code/flag or documented metadata,3146,weather_wind_speed
+IMPTC,dt,float64,seconds,1920,dt
+IMPTC,dx,float64,metres; provider frame,1920,not independent physical ground truth
+IMPTC,dy,float64,metres; provider frame,1920,not independent physical ground truth
+IMPTC,speed_from_position_mps,float64,m/s; speed_reported_mps already converted from raw km/h,1920,not independent physical ground truth
+IMPTC,heading_rad,float64,radians,1920,heading_rad
+IMPTC,heading_change,float64,radians,3840,heading_change
+IMPTC,heading_rate_deg_s,float64,degrees/s,3840,heading_rate_deg_s
+IMPTC,accel_proxy,float64,m/s2 measured-speed derivative proxy,1920,not independent physical ground truth
+IMPTC,track_duration_s,float64,seconds,0,track_duration_s
+IMPTC,gap_count,int64,source ID/code/flag or documented metadata,0,gap_count
+IMPTC,quality_flags,object,source ID/code/flag or documented metadata,0,quality_flags
+IMPTC,raw_status_semantics_verified,bool,source ID/code/flag or documented metadata,0,raw_status_semantics_verified
+IMPTC,concurrent_ped_count,int64,source ID/code/flag or documented metadata,0,concurrent_ped_count
+IMPTC,nearby_ped_count,int64,source ID/code/flag or documented metadata,0,nearby_ped_count
+IMPTC,nearby_count_radius_m,float64,source ID/code/flag or documented metadata,0,nearby_count_radius_m
+IMPTC,nearby_count_status_policy,object,source ID/code/flag or documented metadata,0,nearby_count_status_policy
+IMPTC,timestamp_unit,object,source ID/code/flag or documented metadata,0,timestamp_unit
+IMPTC,coordinate_frame,object,source ID/code/flag or documented metadata,0,coordinate_frame
+IMPTC,recording_date,object,YYYYMMDD from sequence ID,0,recording_date

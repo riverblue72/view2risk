@@ -1,0 +1,7 @@
+#!/bin/bash
+set -euo pipefail
+cd /data/whereami/math/view2risk_261025
+export PYTHONDONTWRITEBYTECODE=1 TMPDIR="$PWD/tmp" MPLCONFIGDIR="$PWD/tmp/matplotlib" OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+/data/whereami/envs/lesionlocator/bin/python scripts/finalize.py
+/data/whereami/envs/lesionlocator/bin/python scripts/verify.py
+/data/whereami/envs/lesionlocator/bin/python scripts/wrapup.py

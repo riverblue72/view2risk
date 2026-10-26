@@ -1,0 +1,230 @@
+{
+  "name": "R_pair_proxy",
+  "frame": "supplied world horizontal XY",
+  "units": "m2",
+  "mean_bias_m": [
+    -0.011432076176978216,
+    0.004670111236507252
+  ],
+  "covariance_m2": [
+    [
+      0.037326953283703244,
+      -0.004300911185581145
+    ],
+    [
+      -0.004300911185581145,
+      0.05173043985488109
+    ]
+  ],
+  "ddof": 0,
+  "summary": {
+    "n": 10109,
+    "bias_m": [
+      -0.011432076176978216,
+      0.004670111236507252
+    ],
+    "covariance_m2": [
+      [
+        0.037326953283703244,
+        -0.004300911185581145
+      ],
+      [
+        -0.004300911185581145,
+        0.05173043985488109
+      ]
+    ],
+    "RMSE_m": 0.2986802561992705,
+    "MAE_m": 0.1904702324993983,
+    "median_m": 0.13903666456748062,
+    "p90_m": 0.35873282310188204,
+    "p95_m": 0.475108640146454,
+    "max_m": 7.102859766727048
+  },
+  "site_cluster_bootstrap95": {
+    "bias_m": [
+      [
+        -0.02301906818310409,
+        -0.02337545425151214
+      ],
+      [
+        0.006027283711698864,
+        0.026340280980886054
+      ]
+    ],
+    "R_pair_proxy_m2": [
+      [
+        [
+          0.02398942731293529,
+          -0.015547680393512665
+        ],
+        [
+          -0.015547680393512665,
+          0.034287493978589864
+        ]
+      ],
+      [
+        [
+          0.11145295166518908,
+          0.00033564584416365546
+        ],
+        [
+          0.00033564584416365546,
+          0.1504558391291102
+        ]
+      ]
+    ],
+    "RMSE_m": [
+      0.24254379893594027,
+      0.5122195756455031
+    ]
+  },
+  "sites": [
+    "yizhuang06",
+    "yizhuang08",
+    "yizhuang09",
+    "yizhuang10",
+    "yizhuang13",
+    "yizhuang16"
+  ],
+  "eligible_pairs": 10109,
+  "raw_ID_rows": 10109,
+  "tracks": 233,
+  "sequences": 34,
+  "excluded_unmatched_or_nonfinite": 0,
+  "pure_camera_R": false,
+  "calibration_resolved": false,
+  "sample_overlap_pairs": 253,
+  "sample_overlap_max_residual_delta_m": 0.0,
+  "folds": [
+    {
+      "test_intersections": [
+        "yizhuang06"
+      ],
+      "development_intersections": [
+        "yizhuang08",
+        "yizhuang09",
+        "yizhuang10",
+        "yizhuang13",
+        "yizhuang16"
+      ],
+      "test_sequences": [
+        "0002",
+        "0004",
+        "0005",
+        "0008"
+      ],
+      "test_tracks": 9,
+      "test_pairs": 16
+    },
+    {
+      "test_intersections": [
+        "yizhuang08"
+      ],
+      "development_intersections": [
+        "yizhuang06",
+        "yizhuang09",
+        "yizhuang10",
+        "yizhuang13",
+        "yizhuang16"
+      ],
+      "test_sequences": [
+        "0077",
+        "0080",
+        "0084",
+        "0088"
+      ],
+      "test_tracks": 12,
+      "test_pairs": 416
+    },
+    {
+      "test_intersections": [
+        "yizhuang09"
+      ],
+      "development_intersections": [
+        "yizhuang06",
+        "yizhuang08",
+        "yizhuang10",
+        "yizhuang13",
+        "yizhuang16"
+      ],
+      "test_sequences": [
+        "0036",
+        "0037",
+        "0041",
+        "0042",
+        "0050",
+        "0054",
+        "0056",
+        "0058",
+        "0059"
+      ],
+      "test_tracks": 44,
+      "test_pairs": 2033
+    },
+    {
+      "test_intersections": [
+        "yizhuang10"
+      ],
+      "development_intersections": [
+        "yizhuang06",
+        "yizhuang08",
+        "yizhuang09",
+        "yizhuang13",
+        "yizhuang16"
+      ],
+      "test_sequences": [
+        "0014",
+        "0020",
+        "0023",
+        "0025",
+        "0029"
+      ],
+      "test_tracks": 29,
+      "test_pairs": 301
+    },
+    {
+      "test_intersections": [
+        "yizhuang13"
+      ],
+      "development_intersections": [
+        "yizhuang06",
+        "yizhuang08",
+        "yizhuang09",
+        "yizhuang10",
+        "yizhuang16"
+      ],
+      "test_sequences": [
+        "0089",
+        "0092",
+        "0093",
+        "0094"
+      ],
+      "test_tracks": 70,
+      "test_pairs": 2684
+    },
+    {
+      "test_intersections": [
+        "yizhuang16"
+      ],
+      "development_intersections": [
+        "yizhuang06",
+        "yizhuang08",
+        "yizhuang09",
+        "yizhuang10",
+        "yizhuang13"
+      ],
+      "test_sequences": [
+        "0060",
+        "0061",
+        "0062",
+        "0063",
+        "0066",
+        "0070",
+        "0071",
+        "0072"
+      ],
+      "test_tracks": 69,
+      "test_pairs": 4659
+    }
+  ]
+}

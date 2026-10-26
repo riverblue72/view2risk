@@ -1,0 +1,44 @@
+﻿plan,line,task,status,evidence,note
+View2Risk_Data_Audit_Plan.md,181.0,"데이터셋 전체/샘플의 **보행자 트랙 수**, 프레임 수, 객체 관측 수 집계",완료,/data/whereami/math/full_rq_261026/reports/full_population_inventory.json,
+View2Risk_Data_Audit_Plan.md,182.0,Camera–LiDAR 동일 객체 매칭 **성공·실패·중복 비율** 집계,완료,/data/whereami/math/full_rq_261026/reports/spd_metrics.json,
+View2Risk_Data_Audit_Plan.md,183.0,"`camera_timestamp - lidar_timestamp` 분포(중앙값, p95, 최댓값) 확인",완료,/data/whereami/math/full_rq_261026/reports/spd_frame_inventory.csv,
+View2Risk_Data_Audit_Plan.md,184.0,좌표계가 실제로 동일한지 라벨과 calibration으로 검증,검사완료_원인제약잔존,/data/whereami/math/view2risk/runs/audit_261026/reports/calibration_validation.json,"공식 K 규약 확인, world roundtrip 확인. 카메라 변환행렬 nonrigidity 원인은 미해결; 원본 교정 안 함."
+View2Risk_Data_Audit_Plan.md,185.0,"오차 벡터 `e=(dx,dy)`의 평균·표준편차·RMSE·p95 분포를 **진단용**으로 계산",완료,/data/whereami/math/full_rq_261026/models/r_pair_proxy_params.json,
+View2Risk_Data_Audit_Plan.md,186.0,관측 오차의 시간적 자기상관과 객체별 군집 효과 확인,완료,/data/whereami/math/full_rq_261026/reports/r_fixed_time_autocorrelation.csv,
+View2Risk_Data_Audit_Plan.md,187.0,거리·가림·bbox 크기별 **독립 트랙 수 및 관측 수**를 각각 기록,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/r_conditions.csv,
+View2Risk_Data_Audit_Plan.md,188.0,오류 사례 5~10건 원본 이미지/라벨을 나란히 시각화해 원인 분류,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/calibration_cases.csv,
+View2Risk_Data_Audit_Plan.md,229.0,"전체 Pedestrian 트랙 및 총 유효 관측 수, 시퀀스 수 집계",완료,/data/whereami/math/full_rq_261026/reports/full_population_inventory.json,
+View2Risk_Data_Audit_Plan.md,230.0,"1/2/5/10초 이상 **연속 관측** 트랙 수, 추적 길이 히스토그램",완료,/data/whereami/math/full_rq_261026/reports/continuity_count_comparison.json,
+View2Risk_Data_Audit_Plan.md,231.0,"타임스탬프 `dt` 분포, 중복 시각, 비정상적 간격, 중간 gap 확인",완료,/data/whereami/math/full_rq_261026/reports/imptc_raw_integrity.json,
+View2Risk_Data_Audit_Plan.md,232.0,`status`·`source_type`별 표본 수 및 유효성 확인,완료,/data/whereami/math/full_rq_261026/reports/imptc_full_condition_support.csv,
+View2Risk_Data_Audit_Plan.md,233.0,원본 제공 속력과 위치 차분 속력의 차이 확인,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/quality_flags.csv,
+View2Risk_Data_Audit_Plan.md,234.0,급격한 위치 점프·비정상적 속력·ID 스위치 의심 사례를 **삭제하지 말고 플래그** 처리,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/quality_flags.csv,급점프·불일치 의심 플래그; 독립 ID-switch 정답 없음. 모든 원시 행 유지.
+View2Risk_Data_Audit_Plan.md,235.0,보행자별 평균 속력 분포(B 후보)와 트랙 내 속력 변동을 **분리**해 요약,완료,/data/whereami/math/view2risk/runs/audit_261026/figures/q_quality.png,
+View2Risk_Data_Audit_Plan.md,236.0,정지·감속·가속·방향 전환 후보 구간의 개수를 집계(판정 임계값은 탐색 후 결정),완료,/data/whereami/math/full_rq_261026/reports/imptc_strict_event_sensitivity.csv,
+View2Risk_Data_Audit_Plan.md,237.0,영상/지도와 몇 개의 궤적을 겹쳐 좌표·방향 검증,완료,/data/whereami/math/view2risk/runs/audit_261026/figures/provider_compare_01.png,
+View2Risk_Data_Audit_Plan.md,238.0,보행자 신호·날씨·동시 보행자 수가 시간적으로 매칭 가능한지 검증,완료,/data/whereami/math/view2risk/runs/audit_261026/data/imptc_signal_join.parquet,
+View2Risk_Data_Audit_Plan.md,239.0,횡단보도 안을 **완전히 통과한 궤적 수**와 일부만 관측된 궤적 수를 구분,완료_규칙기반,/data/whereami/math/view2risk/runs/audit_261026/reports/crossing_counts.csv,지도 양 끝 landing+연속 관측 기준. 독립 manual GT가 아닌 operational labels.
+View2Risk_Data_Audit_Plan.md,291.0,공식 링크에서 SPD Example 및 IMPTC Samples 확보,완료,/data/whereami/math/view2risk_261025/reports/dataset_inventory.csv,
+View2Risk_Data_Audit_Plan.md,292.0,파일 크기/압축 상태/README·라이선스 확인,완료,/data/whereami/math/view2risk_261025/reports/source_provenance.json,출처 및 제공 문서 확인. 코드 라이선스를 데이터 재배포 허가로 간주하지 않음.
+View2Risk_Data_Audit_Plan.md,293.0,폴더 구조·파일 개수·버전·다운로드 날짜 기록,완료,/data/whereami/math/view2risk_261025/reports/dataset_inventory.csv,
+View2Risk_Data_Audit_Plan.md,294.0,조원 HTML의 숫자는 `preliminary`로 별도 표시,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/preliminary_claims.csv,
+View2Risk_Data_Audit_Plan.md,300.0,SPD `data_info`·라벨·calib의 키와 좌표계 파악,완료,/data/whereami/math/view2risk_261025/reports/spd_schema_report.md,
+View2Risk_Data_Audit_Plan.md,301.0,IMPTC `track_data`·context의 키/시간 단위 파악,완료,/data/whereami/math/view2risk_261025/reports/imptc_schema_report.md,
+View2Risk_Data_Audit_Plan.md,302.0,샘플에서 **위치·시간·ID를 잃지 않고** CSV/Parquet으로 변환,완료,/data/whereami/math/full_rq_261026/data/processed/imptc_pedestrian_tracks.parquet,
+View2Risk_Data_Audit_Plan.md,303.0,실제 구조가 문서 예제와 다르면 차이를 기록,완료,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/schema_mismatch.md,
+View2Risk_Data_Audit_Plan.md,309.0,R용 유효 matched pair 개수·오차 관련 품질 문제 정리,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/calibration_validation.json,
+View2Risk_Data_Audit_Plan.md,310.0,Q용 유효 연속 Pedestrian 궤적 개수·끊김/급점프 정리,완료,/data/whereami/math/full_rq_261026/reports/q_validity_funnel.csv,
+View2Risk_Data_Audit_Plan.md,311.0,"가림·거리, 가감속·정지 등 **조건 후보별 표본 수** 집계",완료,/data/whereami/math/view2risk/runs/audit_261026/reports/r_conditions.csv,
+View2Risk_Data_Audit_Plan.md,312.0,횡단보도 영역 및 완전 횡단 추출이 실제 가능한지 확인,완료_규칙기반,/data/whereami/math/view2risk/runs/audit_261026/reports/crossing_counts.csv,지도 양 끝 landing+연속 관측 기준. 독립 manual GT가 아닌 operational labels.
+View2Risk_Data_Audit_Plan.md,313.0,샘플로 충분하지 않으면 전체 데이터 일부/전체로 확대,완료,/data/whereami/math/full_rq_261026/reports/full_population_inventory.json,
+View2Risk_Data_Audit_Plan.md,319.0,R에서 채택할 조건(예: 거리·가림) 결정,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/decisions.csv,현재 진단/통제 변수와 다음 단계 우선 후보를 결정; Test로 조건부 모델을 선정하지 않음.
+View2Risk_Data_Audit_Plan.md,320.0,Q에서 채택할 조건(예: 속도·가감속·정지) 결정,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/decisions.csv,현재 진단/통제 변수와 다음 단계 우선 후보를 결정; Test로 조건부 모델을 선정하지 않음.
+View2Risk_Data_Audit_Plan.md,321.0,B는 개인별 속도 사전분포로 남길지 확인,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/decisions.csv,현재 진단/통제 변수와 다음 단계 우선 후보를 결정; Test로 조건부 모델을 선정하지 않음.
+View2Risk_Data_Audit_Plan.md,322.0,필수 정보가 없으면 대체 데이터/범위 축소 결정,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/decisions.csv,현재 진단/통제 변수와 다음 단계 우선 후보를 결정; Test로 조건부 모델을 선정하지 않음.
+View2Risk_Data_Audit_Plan.md,323.0,**수학팀에 넘길 컬럼 목록과 단위** 최종 확정,완료,/data/whereami/math/view2risk/runs/audit_261026/reports/columns.csv,
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,현재 샘플 범위 및 유효 구간,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/pilot_summary.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,R 추정·꼬리·시간 상관·제약,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/01_r_pilot.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,Q 1초/3초·단위·관측 잡음 민감도,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/02_q_pilot.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,홀드아웃 포함률·영역·실패 사례,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/03_validation.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,가능성 판정 및 통합 주장 보류,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/pilot_summary.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.
+View2Risk_RQ_Pilot_Next_Step_261025.md,N/A,실행·입력·버전·seed·hash,기존완료_보존,/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/pilot_summary.md,원래4시퀀스 샘플 실험 보존. 전체 확장판은 별도 날짜/교차로 묶음 검증.

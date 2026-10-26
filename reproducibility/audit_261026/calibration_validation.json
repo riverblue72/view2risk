@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "frames": 11275,
+  "pairs": 10109,
+  "official_K_helper_exact_checks": 21,
+  "official_uses_cam_K": true,
+  "general_inverse_roundtrip_max_m": 3.139262352526455e-14,
+  "transpose_inverse_error_p95_m": 1.3081964003987987,
+  "nonrigid_frames": 11275,
+  "max_orthogonality_error": 0.331409765135668,
+  "image_intrinsic_size_mismatch": 0,
+  "K_vs_P_convention_resolved_to_official_K": true,
+  "camera_matrix_nonrigidity_cause_resolved": false,
+  "no_raw_matrix_correction": true,
+  "bbox_test_is_annotation_consistency_not_independent_accuracy": true,
+  "elapsed_s": 75.14977431297302
+}

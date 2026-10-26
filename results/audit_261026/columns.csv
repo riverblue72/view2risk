@@ -1,0 +1,15 @@
+﻿field,type_or_unit,definition,limitation
+event_id,string,config:sequence/track:component:first_map_ts_us,unique event key; not unique person
+classification,category,complete_rule / partial_censored / partial_missing_landing / returned_same_side / other uncertain,"operational rule, not independent GT"
+signal_group,category,f1/f2/f3,"official diagram + semantic geometry/origin, manually registered"
+entry_signal_code,provider_code,4 green /10 red /other provider codes /N/A,previous recorded signal within1.5s; 1Hz granularity
+signal_transition_within_1s,bool,true/false,transition near derived entry; red does not establish legal violation
+entry_ts_s / exit_ts_s,UTC_epoch_seconds,s,interpolated gate crossing within contiguous status2 segment
+duration_s,seconds,s,"derived exit-entry, no G95 model fitted"
+retained_polygon_fraction,fraction,0..1,fraction inside buffered crosswalk rectangle between gates
+crosswalk_map_fraction,fraction,0..1,mapped crosswalk points between gates
+primary_class,category,has_complete_rule /touch_without_complete /no_accepted_map_touch,mutually exclusive per sequence-track; counts sum1920
+length_m / width_m,metres,m,"PCA rectangle0.5-99.5% map quantiles, not surveyed lane length"
+inside_bbox_pct,percent,0..100,"annotation center projection consistency, not detector/calibration GT accuracy"
+q_velocity_increment_proxy_native2_per_s3,native_units_squared_per_seconds_cubed,mean dv^2/(2dt),TFD diagnostic; not original q≈.05 estimator or separated process noise
+flag_*,bool,true/false,"retained quality suspicion, not established ID switch"

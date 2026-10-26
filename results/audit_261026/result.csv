@@ -1,0 +1,15 @@
+﻿topic,measure,value,unit,interpretation
+IMPTC_crossing,has_complete_rule,787.0,sequence_track_group,mutually_exclusive_base_rule
+IMPTC_crossing,no_accepted_map_touch,754.0,sequence_track_group,mutually_exclusive_base_rule
+IMPTC_crossing,touch_without_complete,379.0,sequence_track_group,mutually_exclusive_base_rule
+IMPTC_crossing,complete_rule,846.0,episode,one track can have multiple crossing episodes
+IMPTC_crossing,partial_censored,376.0,episode,one track can have multiple crossing episodes
+IMPTC_crossing,partial_missing_landing,187.0,episode,one track can have multiple crossing episodes
+IMPTC_crossing,returned_same_side,6.0,episode,one track can have multiple crossing episodes
+geometry,f2_length,15.776911240745935,m,PCA_of_official_semantic_map_not_survey_GT
+geometry,f1_length,10.90769458034634,m,PCA_of_official_semantic_map_not_survey_GT
+geometry,f3_length,9.999451441773502,m,PCA_of_official_semantic_map_not_survey_GT
+SPD_projection,K_SO3_diagnostic_only,80.3343555247799,percent,annotation_consistency_not_independent_accuracy
+SPD_projection,K_official,99.42625383321791,percent,annotation_consistency_not_independent_accuracy
+SPD_projection,K_with_D,48.92669898110594,percent,annotation_consistency_not_independent_accuracy
+SPD_projection,P_supplied,16.60896231081215,percent,annotation_consistency_not_independent_accuracy

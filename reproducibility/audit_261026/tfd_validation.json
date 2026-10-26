@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "canonical_unique_observations": 16739,
+  "finite_contiguous_increments": 16016,
+  "source_rows_before_dedup": 19978,
+  "physical_units_not_independently_confirmed": true,
+  "original_q_formula_available": false,
+  "process_noise_not_separated_from_measurement_noise": true,
+  "no_cross_dataset_pooling": true
+}

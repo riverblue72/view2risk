@@ -1,0 +1,5 @@
+﻿claim,status,value,unit,reason
+SPD_RMSE_approx_0.19m,reproduced_as_paired_annotation_difference,0.1851830173,m,253 original Example pairs reproduced exactly in full-data overlap; not pure camera detector error
+TFD_q_approx_0.05,original_formula_and_selection_unavailable,N/A,unknown_original,"HTML contains a numeric claim but no estimator, delta-t convention or executable q source; diagnostic native-unit velocity proxy saved separately, not asserted identical"
+TFD_68_segments_4_complete_crossings,original_selection_unavailable,N/A,segment_or_crossing,Local PoC uses another outside-inside-outside definition and reported14 candidates; neither establishes original68/4 selection nor opposite-end completion
+G95_contributions,outside_current_MD_scope_preliminary_only,N/A,seconds,No reconstruction of unsupported original Shapley/Monte Carlo claims

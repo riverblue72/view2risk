@@ -1,0 +1,818 @@
+{
+  "src/audit/scripts/01_inspect_spd.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/01_inspect_spd.py",
+    "source_sha256": "544212d91340152ceff2c02462fd928b9858222195691fbf9a3988837cc285cd",
+    "published_sha256": "544212d91340152ceff2c02462fd928b9858222195691fbf9a3988837cc285cd",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/02_inspect_imptc.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/02_inspect_imptc.py",
+    "source_sha256": "ea5383461595711080a99592500e6811acb3df3027367163639a8e7dee693002",
+    "published_sha256": "ea5383461595711080a99592500e6811acb3df3027367163639a8e7dee693002",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/03_audit_r_candidates.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/03_audit_r_candidates.py",
+    "source_sha256": "8b1ebbc8c5d6cb4aaec86904120a0d0f42a845d72c240207c0ccfbce77602df6",
+    "published_sha256": "8b1ebbc8c5d6cb4aaec86904120a0d0f42a845d72c240207c0ccfbce77602df6",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/04_audit_q_candidates.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/04_audit_q_candidates.py",
+    "source_sha256": "d6c0cac0386163302cdecd3ce0b835eeb4b909f597a7dcfbce74ddba764db221",
+    "published_sha256": "d6c0cac0386163302cdecd3ce0b835eeb4b909f597a7dcfbce74ddba764db221",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/common.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/common.py",
+    "source_sha256": "3fa0e118ecc9426a11750f007e87406b68a4b0723154595d55ba383073b9aaa1",
+    "published_sha256": "3fa0e118ecc9426a11750f007e87406b68a4b0723154595d55ba383073b9aaa1",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/download.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/download.py",
+    "source_sha256": "3995f55e681507fed30de1057391a023b4dfe521a9610b2704bc77d66043adc0",
+    "published_sha256": "3995f55e681507fed30de1057391a023b4dfe521a9610b2704bc77d66043adc0",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/download_imptc_remaining.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/download_imptc_remaining.py",
+    "source_sha256": "ef4ab38c9c2f0f044a702581558240df4900a05c104b2818386d111fbe6b2929",
+    "published_sha256": "ef4ab38c9c2f0f044a702581558240df4900a05c104b2818386d111fbe6b2929",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/download_imptc_set01.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/download_imptc_set01.py",
+    "source_sha256": "2925971ae6895b95281a4ed277da92482ea70e1fceec757e647c9aadde4e0b53",
+    "published_sha256": "2925971ae6895b95281a4ed277da92482ea70e1fceec757e647c9aadde4e0b53",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/finalize.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/finalize.py",
+    "source_sha256": "8a15fda5ede561c48bdb5cc41d41693e30f8af57ee091ab1fec42892d014bdd3",
+    "published_sha256": "8a15fda5ede561c48bdb5cc41d41693e30f8af57ee091ab1fec42892d014bdd3",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/inspect_overlap_exports.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/inspect_overlap_exports.py",
+    "source_sha256": "bc8566eaaf05fd7e13de94d7986a5d728a92080e0df99929424d7e82c0ea8f6e",
+    "published_sha256": "bc8566eaaf05fd7e13de94d7986a5d728a92080e0df99929424d7e82c0ea8f6e",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/list_official_drive.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/list_official_drive.py",
+    "source_sha256": "2cf74c71ab9ec1d1c6fee5b44641bda1ce13cbc7f5d7e0cb7d9569d32457e702",
+    "published_sha256": "2cf74c71ab9ec1d1c6fee5b44641bda1ce13cbc7f5d7e0cb7d9569d32457e702",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/sample_report.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/sample_report.py",
+    "source_sha256": "2c9bf88dca24122ee1413880e6c14ac3b3b1e62b3df89c0bf41317e1054ab1bb",
+    "published_sha256": "2c9bf88dca24122ee1413880e6c14ac3b3b1e62b3df89c0bf41317e1054ab1bb",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/verify.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/verify.py",
+    "source_sha256": "fea9a71ee59f6e8fb9e2ca7053a9e2d95f91505f066f5407c845944523e6854b",
+    "published_sha256": "fea9a71ee59f6e8fb9e2ca7053a9e2d95f91505f066f5407c845944523e6854b",
+    "adapted_copy": false
+  },
+  "src/audit/scripts/wrapup.py": {
+    "source": "/data/whereami/math/view2risk_261025/scripts/wrapup.py",
+    "source_sha256": "9c2cdf4a76c110c4f471d1ce42e46cceade073fea2f5efe347cf5081f7e5f3ce",
+    "published_sha256": "9c2cdf4a76c110c4f471d1ce42e46cceade073fea2f5efe347cf5081f7e5f3ce",
+    "adapted_copy": false
+  },
+  "src/audit/collect_remaining.sh": {
+    "source": "/data/whereami/math/view2risk_261025/collect_remaining.sh",
+    "source_sha256": "8fe8923de028aec34ff5168a53c21c3993613a0c00e19d4606b738cc526c4844",
+    "published_sha256": "8fe8923de028aec34ff5168a53c21c3993613a0c00e19d4606b738cc526c4844",
+    "adapted_copy": false
+  },
+  "src/audit/download.sh": {
+    "source": "/data/whereami/math/view2risk_261025/download.sh",
+    "source_sha256": "37abe84e76770ec39fdc37f67bf9d3d37f63a18e433a647709e5837ee51912d2",
+    "published_sha256": "37abe84e76770ec39fdc37f67bf9d3d37f63a18e433a647709e5837ee51912d2",
+    "adapted_copy": false
+  },
+  "src/audit/finish.sh": {
+    "source": "/data/whereami/math/view2risk_261025/finish.sh",
+    "source_sha256": "ab296d967cbf504b1254c7dd591d76ef70a1bdb0f1d7f7736654e1a0494d2558",
+    "published_sha256": "ab296d967cbf504b1254c7dd591d76ef70a1bdb0f1d7f7736654e1a0494d2558",
+    "adapted_copy": false
+  },
+  "src/audit/imptc_main.sh": {
+    "source": "/data/whereami/math/view2risk_261025/imptc_main.sh",
+    "source_sha256": "9eb57d10cb6a7cbe3d956bff3e37f25d2d3de5bed23249583fcd35be290c7251",
+    "published_sha256": "9eb57d10cb6a7cbe3d956bff3e37f25d2d3de5bed23249583fcd35be290c7251",
+    "adapted_copy": false
+  },
+  "src/audit/imptc_sample.sh": {
+    "source": "/data/whereami/math/view2risk_261025/imptc_sample.sh",
+    "source_sha256": "6e0fa365d2d88b732aefa1ec6d6a0d7fe7cb132ab51a201b530c9974aa20e691",
+    "published_sha256": "6e0fa365d2d88b732aefa1ec6d6a0d7fe7cb132ab51a201b530c9974aa20e691",
+    "adapted_copy": false
+  },
+  "src/audit/spd_audit.sh": {
+    "source": "/data/whereami/math/view2risk_261025/spd_audit.sh",
+    "source_sha256": "f09e0c1136ed6c94a92f8d9b739f29d9f2179aef3ce78596fc716afdfa862229",
+    "published_sha256": "f09e0c1136ed6c94a92f8d9b739f29d9f2179aef3ce78596fc716afdfa862229",
+    "adapted_copy": false
+  },
+  "src/pilot/scripts/pilot.py": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/scripts/pilot.py",
+    "source_sha256": "5abaed290fcf07b8cdac1c5cfb4e74788af90b8ab2ce3f1b4f3e72f30381abf7",
+    "published_sha256": "5abaed290fcf07b8cdac1c5cfb4e74788af90b8ab2ce3f1b4f3e72f30381abf7",
+    "adapted_copy": false
+  },
+  "src/pilot/scripts/verify_interpret.py": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/scripts/verify_interpret.py",
+    "source_sha256": "5ad0a770adbd5e7d28e5b0fd01fb8d87673349d3afd5ab5563602e4efbb58dd8",
+    "published_sha256": "5ad0a770adbd5e7d28e5b0fd01fb8d87673349d3afd5ab5563602e4efbb58dd8",
+    "adapted_copy": false
+  },
+  "src/pilot/run.sh": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/run.sh",
+    "source_sha256": "5b0f64d0cedd3816433d9a3561bc8a28cff7b4b420f5097df817b69bd11c4388",
+    "published_sha256": "5b0f64d0cedd3816433d9a3561bc8a28cff7b4b420f5097df817b69bd11c4388",
+    "adapted_copy": false
+  },
+  "src/full/scripts/audit.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/audit.py",
+    "source_sha256": "e09ae00bc8c4d43e9c14eb8c31171910cf7386969219462f69f94ec221953c96",
+    "published_sha256": "e09ae00bc8c4d43e9c14eb8c31171910cf7386969219462f69f94ec221953c96",
+    "adapted_copy": false
+  },
+  "src/full/scripts/finalize.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/finalize.py",
+    "source_sha256": "1014803373da2916e60dbfe242061b210fe89af810edada1bcaaf6913db497ee",
+    "published_sha256": "1014803373da2916e60dbfe242061b210fe89af810edada1bcaaf6913db497ee",
+    "adapted_copy": false
+  },
+  "src/full/scripts/full_pilot.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/full_pilot.py",
+    "source_sha256": "9b1a4b38c90615e6b95522aaf6311459fde4e2f1f623acd94a2543e13a115d1e",
+    "published_sha256": "9b1a4b38c90615e6b95522aaf6311459fde4e2f1f623acd94a2543e13a115d1e",
+    "adapted_copy": false
+  },
+  "src/full/scripts/generate_reuse.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/generate_reuse.py",
+    "source_sha256": "02d0c6e340acc90cabf75dfa86e8d87d8141a01aab358af23f1ace98de2f25af",
+    "published_sha256": "02d0c6e340acc90cabf75dfa86e8d87d8141a01aab358af23f1ace98de2f25af",
+    "adapted_copy": false
+  },
+  "src/full/scripts/reused_math.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/reused_math.py",
+    "source_sha256": "5df49093034efa0940b6198957d5f6af26d8c8e160ca7a63b418c0808eee3b74",
+    "published_sha256": "5df49093034efa0940b6198957d5f6af26d8c8e160ca7a63b418c0808eee3b74",
+    "adapted_copy": false
+  },
+  "src/full/scripts/supplement.py": {
+    "source": "/data/whereami/math/full_rq_261026/scripts/supplement.py",
+    "source_sha256": "62d5503b90b70e07a8b61eefba6057c38c1d56d623fdaef0efe5041f44344974",
+    "published_sha256": "62d5503b90b70e07a8b61eefba6057c38c1d56d623fdaef0efe5041f44344974",
+    "adapted_copy": false
+  },
+  "src/full/run.sh": {
+    "source": "/data/whereami/math/full_rq_261026/run.sh",
+    "source_sha256": "6a385f774bd90f320acb313fcd3b621706bc343a9c03f4ef705c70cb8aafd662",
+    "published_sha256": "6a385f774bd90f320acb313fcd3b621706bc343a9c03f4ef705c70cb8aafd662",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/crossings.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/crossings.py",
+    "source_sha256": "067b1531e9da756ccca64b90834e58a3c7047baf8aadb8b77bfa97acc4c55535",
+    "published_sha256": "067b1531e9da756ccca64b90834e58a3c7047baf8aadb8b77bfa97acc4c55535",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/explore.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/explore.py",
+    "source_sha256": "57a9a0a03bb613143f7462bea46a6d32380e61886e2ed8d550208a49727a09dc",
+    "published_sha256": "57a9a0a03bb613143f7462bea46a6d32380e61886e2ed8d550208a49727a09dc",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/finalize.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/finalize.py",
+    "source_sha256": "6503d191aec793003b06fa34339fb2d9de01946ebe5d006c7f77ed80c458fc2b",
+    "published_sha256": "6503d191aec793003b06fa34339fb2d9de01946ebe5d006c7f77ed80c458fc2b",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/geometry.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/geometry.py",
+    "source_sha256": "798ba86818915714fae340bf539d1e5e38c087dd108a252d07b0f779025ed497",
+    "published_sha256": "798ba86818915714fae340bf539d1e5e38c087dd108a252d07b0f779025ed497",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/remaining.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/remaining.py",
+    "source_sha256": "954943f45c012b44311684cb7fd782a3fbed1dfee46637469cd32bce517eb16b",
+    "published_sha256": "954943f45c012b44311684cb7fd782a3fbed1dfee46637469cd32bce517eb16b",
+    "adapted_copy": false
+  },
+  "src/closure/scripts/review.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/scripts/review.py",
+    "source_sha256": "93cd9e76d51f279691154cf234154f15a18f18c7c4c07aef88463c9f2ea12693",
+    "published_sha256": "93cd9e76d51f279691154cf234154f15a18f18c7c4c07aef88463c9f2ea12693",
+    "adapted_copy": false
+  },
+  "src/closure/run.sh": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/run.sh",
+    "source_sha256": "c5711f12ee43e8637343f9e7d28c361ec0b00baf539c192304bc94e97a25599a",
+    "published_sha256": "c5711f12ee43e8637343f9e7d28c361ec0b00baf539c192304bc94e97a25599a",
+    "adapted_copy": false
+  },
+  "src/closure/run_remaining.sh": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/run_remaining.sh",
+    "source_sha256": "aa15864d8f356b11f3c77652e341de2ffe99019322a574b4006b3d2be1d85877",
+    "published_sha256": "aa15864d8f356b11f3c77652e341de2ffe99019322a574b4006b3d2be1d85877",
+    "adapted_copy": false
+  },
+  "src/closure/run_review.sh": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/run_review.sh",
+    "source_sha256": "66cf995f8269a5bb00269b354dbacf4ff86f41094fa1940f0363a0bd477c4692",
+    "published_sha256": "66cf995f8269a5bb00269b354dbacf4ff86f41094fa1940f0363a0bd477c4692",
+    "adapted_copy": false
+  },
+  "src/full/protocol.json": {
+    "source": "/data/whereami/math/full_rq_261026/protocol.json",
+    "source_sha256": "053bd1fecb3f11eb231af42cb4a727002bdde62b4124261ea5cdb9eed04ce0b5",
+    "published_sha256": "053bd1fecb3f11eb231af42cb4a727002bdde62b4124261ea5cdb9eed04ce0b5",
+    "adapted_copy": false
+  },
+  "src/full/protocol_full_261026.md": {
+    "source": "/data/whereami/math/full_rq_261026/protocol_full_261026.md",
+    "source_sha256": "0d2692f4af763e9d92e3e87e813096a5361d13ca623cc0a2a794c581f629c83a",
+    "published_sha256": "0d2692f4af763e9d92e3e87e813096a5361d13ca623cc0a2a794c581f629c83a",
+    "adapted_copy": false
+  },
+  "src/closure/protocol.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/protocol.json",
+    "source_sha256": "141a7f911d6f076d5a7f744bf67f79966c1400fa92a6d2c9a4c8272090c5a15e",
+    "published_sha256": "141a7f911d6f076d5a7f744bf67f79966c1400fa92a6d2c9a4c8272090c5a15e",
+    "adapted_copy": false
+  },
+  "src/download/collect.py": {
+    "source": "/data/whereami/math/Public-V2X-Datasets/collection_261026/collect.py",
+    "source_sha256": "773ccf7b813e8f036dc8dd72964efcfc68d5cfd66d2384d93d79b85d0892c691",
+    "published_sha256": "773ccf7b813e8f036dc8dd72964efcfc68d5cfd66d2384d93d79b85d0892c691",
+    "adapted_copy": false
+  },
+  "src/download/run.sh": {
+    "source": "/data/whereami/math/Public-V2X-Datasets/collection_261026/run.sh",
+    "source_sha256": "06b530c42adfa1bc3d8342720c0c83c00121600f3fddac06941d15159a9308ab",
+    "published_sha256": "06b530c42adfa1bc3d8342720c0c83c00121600f3fddac06941d15159a9308ab",
+    "adapted_copy": false
+  },
+  "results/261026/result.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/result.csv",
+    "source_sha256": "86e3ce074f39b854696153f438d24d2c1d616cfa842b3db122b2c2e03f76006e",
+    "published_sha256": "86e3ce074f39b854696153f438d24d2c1d616cfa842b3db122b2c2e03f76006e",
+    "adapted_copy": false
+  },
+  "results/261026/q.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/q.csv",
+    "source_sha256": "590647e2c52236461b32b1479c8e9215f532d42f0ef0d52dedc78ac8d8bf2462",
+    "published_sha256": "590647e2c52236461b32b1479c8e9215f532d42f0ef0d52dedc78ac8d8bf2462",
+    "adapted_copy": false
+  },
+  "results/261026/r.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/r.csv",
+    "source_sha256": "95617fbfa653b81bf78bc1097995ec70f1e874d77ae5395f992ef8f419198fa6",
+    "published_sha256": "95617fbfa653b81bf78bc1097995ec70f1e874d77ae5395f992ef8f419198fa6",
+    "adapted_copy": false
+  },
+  "results/261026/r_eval.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/r_eval.csv",
+    "source_sha256": "708b03e1d5195c36a6d015408e282c26edaac4149dc10aaba90b957ca747a7b6",
+    "published_sha256": "708b03e1d5195c36a6d015408e282c26edaac4149dc10aaba90b957ca747a7b6",
+    "adapted_copy": false
+  },
+  "results/261026/data.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/data.csv",
+    "source_sha256": "d9ee6dcab3f0ece82b2e19c4253e6dd2a33973b91bc3b3271a41c62c286e1813",
+    "published_sha256": "d9ee6dcab3f0ece82b2e19c4253e6dd2a33973b91bc3b3271a41c62c286e1813",
+    "adapted_copy": false
+  },
+  "results/261026/map.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/map.csv",
+    "source_sha256": "3272973fe7bddcd5d18df6ff3e1517bee8fe572c6ac0115b8ed0e07b7b5d2268",
+    "published_sha256": "3272973fe7bddcd5d18df6ff3e1517bee8fe572c6ac0115b8ed0e07b7b5d2268",
+    "adapted_copy": false
+  },
+  "results/261026/factors.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/factors.csv",
+    "source_sha256": "3c3236d076f3f8cf985381c4809c6c5511a2a1c61a55d30109979c297438830b",
+    "published_sha256": "3c3236d076f3f8cf985381c4809c6c5511a2a1c61a55d30109979c297438830b",
+    "adapted_copy": false
+  },
+  "results/261026/columns.csv": {
+    "source": "/data/whereami/math/view2risk/results/261026/columns.csv",
+    "source_sha256": "d563a5c6ee57fcf7e15393746c3f647f740b2b84579a128087b2b69b36476b04",
+    "published_sha256": "d563a5c6ee57fcf7e15393746c3f647f740b2b84579a128087b2b69b36476b04",
+    "adapted_copy": false
+  },
+  "results/261026/README.md": {
+    "source": "/data/whereami/math/view2risk/results/261026/README.md",
+    "source_sha256": "2ccbb9e267f6fe04dfaec19b26d460bf8e85a3fd2f8d5e41bc87131c22a78d16",
+    "published_sha256": "d3e56fb3dce1f4af41bb7ff9d2b83e4ed5b08f92deef70184de98012482ca63a",
+    "adapted_copy": true
+  },
+  "results/261026/details/q_overall_metrics.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_overall_metrics.csv",
+    "source_sha256": "caf37fb3dfe17ebd9643e25ee26e76fb00cf1e1cf6785478c3aa583d2a7e9d4c",
+    "published_sha256": "caf37fb3dfe17ebd9643e25ee26e76fb00cf1e1cf6785478c3aa583d2a7e9d4c",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_track_macro.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_track_macro.csv",
+    "source_sha256": "17fffb96d8fef2f9ecab12309c1bf5ecf8f6e725841dffbae650d14145f08c6c",
+    "published_sha256": "17fffb96d8fef2f9ecab12309c1bf5ecf8f6e725841dffbae650d14145f08c6c",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_sequence_macro.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_sequence_macro.csv",
+    "source_sha256": "6f31d2685935bc01724d0d44218fac9896c42b4226bbe00bb21b5bd5a7703817",
+    "published_sha256": "6f31d2685935bc01724d0d44218fac9896c42b4226bbe00bb21b5bd5a7703817",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_date_macro.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_date_macro.csv",
+    "source_sha256": "4527adbe1572bca4aa150df553eadddd3daece568ffadc3cb68bd4e04929f57c",
+    "published_sha256": "4527adbe1572bca4aa150df553eadddd3daece568ffadc3cb68bd4e04929f57c",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_date_cluster_bootstrap.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_date_cluster_bootstrap.csv",
+    "source_sha256": "7fc556653dc6a60fb90fb95273e6b96fd6d4004adb53886fe7b6d8c22cfa2d65",
+    "published_sha256": "7fc556653dc6a60fb90fb95273e6b96fd6d4004adb53886fe7b6d8c22cfa2d65",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_condition_diagnostics.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_condition_diagnostics.csv",
+    "source_sha256": "b1350b9d1821868c8a5d30fc6016170596715923b31b94114551d98d5663474b",
+    "published_sha256": "b1350b9d1821868c8a5d30fc6016170596715923b31b94114551d98d5663474b",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_smoothing_sensitivity.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_smoothing_sensitivity.csv",
+    "source_sha256": "8e4a4c23d43a3906e7846f7aace3bffab3e61116ba92b46c20182fd9adced27c",
+    "published_sha256": "8e4a4c23d43a3906e7846f7aace3bffab3e61116ba92b46c20182fd9adced27c",
+    "adapted_copy": false
+  },
+  "results/261026/details/q_tuning_records.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/q_tuning_records.csv",
+    "source_sha256": "4ebd561e006e63214101d4924bc835b6b8ea6640d0a31b37da0ae00ceef0a083",
+    "published_sha256": "4ebd561e006e63214101d4924bc835b6b8ea6640d0a31b37da0ae00ceef0a083",
+    "adapted_copy": false
+  },
+  "results/261026/details/r_pair_micro.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/r_pair_micro.csv",
+    "source_sha256": "18747b6e4c66fe5f8185296f491dc175380d44c149b3dbbeb102d8b662f47d5a",
+    "published_sha256": "18747b6e4c66fe5f8185296f491dc175380d44c149b3dbbeb102d8b662f47d5a",
+    "adapted_copy": false
+  },
+  "results/261026/details/r_site_macro.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/r_site_macro.csv",
+    "source_sha256": "a86f99b1f430a7254090250bb08f76547f1de4af925213adc632b75081bd9644",
+    "published_sha256": "a86f99b1f430a7254090250bb08f76547f1de4af925213adc632b75081bd9644",
+    "adapted_copy": false
+  },
+  "results/261026/details/r_site_holdout_metrics.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/r_site_holdout_metrics.csv",
+    "source_sha256": "42d8f047716128325668c061d37dd369a191bc3518efc7b05f161fce41cbadff",
+    "published_sha256": "42d8f047716128325668c061d37dd369a191bc3518efc7b05f161fce41cbadff",
+    "adapted_copy": false
+  },
+  "results/261026/details/r_covariate_diagnostics.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/r_covariate_diagnostics.csv",
+    "source_sha256": "4619bf8e8c588d9192992e33577e5326faa078ccff463f122a62e41109c1654c",
+    "published_sha256": "4619bf8e8c588d9192992e33577e5326faa078ccff463f122a62e41109c1654c",
+    "adapted_copy": false
+  },
+  "results/261026/details/ground_map_consistency.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/ground_map_consistency.csv",
+    "source_sha256": "77ba6061d2101f5b63ffceb63ac5d9b8be0bc44946b150bd3e8cf1fd4b62599b",
+    "published_sha256": "77ba6061d2101f5b63ffceb63ac5d9b8be0bc44946b150bd3e8cf1fd4b62599b",
+    "adapted_copy": false
+  },
+  "results/261026/details/imptc_full_condition_support.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/imptc_full_condition_support.csv",
+    "source_sha256": "34aaf75e53936b887c5188157fba5fc860a23110db33534560fc627cf553b808",
+    "published_sha256": "34aaf75e53936b887c5188157fba5fc860a23110db33534560fc627cf553b808",
+    "adapted_copy": false
+  },
+  "results/261026/details/imptc_strict_event_sensitivity.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/imptc_strict_event_sensitivity.csv",
+    "source_sha256": "bacfc3bc93d7255544f10b08579f751d0fd47a1e0a5588d7df0fad24bb904ad8",
+    "published_sha256": "bacfc3bc93d7255544f10b08579f751d0fd47a1e0a5588d7df0fad24bb904ad8",
+    "adapted_copy": false
+  },
+  "results/261026/details/factor_decision_table.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/factor_decision_table.csv",
+    "source_sha256": "251d142dcb31d281d56eee57c3c425ba375405b68ff6c2e224d522a2e775529b",
+    "published_sha256": "251d142dcb31d281d56eee57c3c425ba375405b68ff6c2e224d522a2e775529b",
+    "adapted_copy": false
+  },
+  "results/261026/details/data_dictionary.csv": {
+    "source": "/data/whereami/math/full_rq_261026/reports/data_dictionary.csv",
+    "source_sha256": "6d4bd04c384643b3d9514ccac4c6919552e3f4b6f67aeadb1b981c6e2d34eb3b",
+    "published_sha256": "6d4bd04c384643b3d9514ccac4c6919552e3f4b6f67aeadb1b981c6e2d34eb3b",
+    "adapted_copy": false
+  },
+  "results/audit_261026/result.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/result.csv",
+    "source_sha256": "b51c92e71f5fadeab565777591ebde5bd4a2cb373cead10539abfefda0f58ecb",
+    "published_sha256": "b51c92e71f5fadeab565777591ebde5bd4a2cb373cead10539abfefda0f58ecb",
+    "adapted_copy": false
+  },
+  "results/audit_261026/crossing_full.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/crossing_full.csv",
+    "source_sha256": "d969c178f58483d61c1964fc21b42f37b661b65de7ab0e22dce085743aaa8632",
+    "published_sha256": "d969c178f58483d61c1964fc21b42f37b661b65de7ab0e22dce085743aaa8632",
+    "adapted_copy": false
+  },
+  "results/audit_261026/track_counts.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/track_counts.csv",
+    "source_sha256": "544d0739a09e346e921a0cc815c4844f8b607cce7bb2275c7fb89c6bb553d6c3",
+    "published_sha256": "544d0739a09e346e921a0cc815c4844f8b607cce7bb2275c7fb89c6bb553d6c3",
+    "adapted_copy": false
+  },
+  "results/audit_261026/crossing_counts.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/crossing_counts.csv",
+    "source_sha256": "19fc5e8684b674f1af7d33d1dc503c1008ee53fba78933cb5491fbc9491f7547",
+    "published_sha256": "19fc5e8684b674f1af7d33d1dc503c1008ee53fba78933cb5491fbc9491f7547",
+    "adapted_copy": false
+  },
+  "results/audit_261026/sensitivity.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/sensitivity.csv",
+    "source_sha256": "c3d0c9371df1af786e79650f0a1c6eee400f4bba282a59aeb618d210c291bed7",
+    "published_sha256": "c3d0c9371df1af786e79650f0a1c6eee400f4bba282a59aeb618d210c291bed7",
+    "adapted_copy": false
+  },
+  "results/audit_261026/signal.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/signal.csv",
+    "source_sha256": "d81a1544c1f163e98724f24cd2316ef5c9e0239da47b0232622f0cc005ea8371",
+    "published_sha256": "d81a1544c1f163e98724f24cd2316ef5c9e0239da47b0232622f0cc005ea8371",
+    "adapted_copy": false
+  },
+  "results/audit_261026/entry_signal.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/entry_signal.csv",
+    "source_sha256": "b7f9624a7845cdbeb58cd82284954e884bc24bcbb195d978580e8df265a31d38",
+    "published_sha256": "b7f9624a7845cdbeb58cd82284954e884bc24bcbb195d978580e8df265a31d38",
+    "adapted_copy": false
+  },
+  "results/audit_261026/geometry.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/geometry.csv",
+    "source_sha256": "d19ccb6c98b5d265f37bf9e788911d2f25b5a4f1573a04c2370ae6ec3b08cc3e",
+    "published_sha256": "d19ccb6c98b5d265f37bf9e788911d2f25b5a4f1573a04c2370ae6ec3b08cc3e",
+    "adapted_copy": false
+  },
+  "results/audit_261026/projection.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/projection.csv",
+    "source_sha256": "e82cb84fb038b8932b3f0490b10bdd38ef177d8f1280583d3d06e8b04ed6949e",
+    "published_sha256": "e82cb84fb038b8932b3f0490b10bdd38ef177d8f1280583d3d06e8b04ed6949e",
+    "adapted_copy": false
+  },
+  "results/audit_261026/r_conditions.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/r_conditions.csv",
+    "source_sha256": "6f597070ec589db7192ede196d15772804c724af49253899793baddf26e5cfe4",
+    "published_sha256": "6f597070ec589db7192ede196d15772804c724af49253899793baddf26e5cfe4",
+    "adapted_copy": false
+  },
+  "results/audit_261026/quality_flags.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/quality_flags.csv",
+    "source_sha256": "c2553a79b0069a90d57034715757d81e8b1dbc615cd28b96c913a508ff24d21c",
+    "published_sha256": "c2553a79b0069a90d57034715757d81e8b1dbc615cd28b96c913a508ff24d21c",
+    "adapted_copy": false
+  },
+  "results/audit_261026/decisions.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/decisions.csv",
+    "source_sha256": "0f1fb9c9477ee81f44bc493c8af73f9751f972e09ba790cbb85338790c7cd9c3",
+    "published_sha256": "0f1fb9c9477ee81f44bc493c8af73f9751f972e09ba790cbb85338790c7cd9c3",
+    "adapted_copy": false
+  },
+  "results/audit_261026/checklist.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/checklist.csv",
+    "source_sha256": "9ff12c6fb9e7feb4330413256a8c32c9354dda1e931bcce10977a416bf716630",
+    "published_sha256": "9ff12c6fb9e7feb4330413256a8c32c9354dda1e931bcce10977a416bf716630",
+    "adapted_copy": false
+  },
+  "results/audit_261026/columns.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/columns.csv",
+    "source_sha256": "e4572386872881f3596ba09d3aef6e8cb90be9f22c047938a11481ece1787ba8",
+    "published_sha256": "e4572386872881f3596ba09d3aef6e8cb90be9f22c047938a11481ece1787ba8",
+    "adapted_copy": false
+  },
+  "results/audit_261026/source_columns.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/source_columns.csv",
+    "source_sha256": "d563a5c6ee57fcf7e15393746c3f647f740b2b84579a128087b2b69b36476b04",
+    "published_sha256": "d563a5c6ee57fcf7e15393746c3f647f740b2b84579a128087b2b69b36476b04",
+    "adapted_copy": false
+  },
+  "results/audit_261026/tfd_q_diagnostic.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/tfd_q_diagnostic.csv",
+    "source_sha256": "ae40ea025c41de66c46a9a73357d396e246ff23957f16a489ff366418128424c",
+    "published_sha256": "ae40ea025c41de66c46a9a73357d396e246ff23957f16a489ff366418128424c",
+    "adapted_copy": false
+  },
+  "results/audit_261026/preliminary_claims.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/preliminary_claims.csv",
+    "source_sha256": "a6db601a8fb50b04759ac94de31fa286a71143257a65a6839fb8a74d88ba2270",
+    "published_sha256": "a6db601a8fb50b04759ac94de31fa286a71143257a65a6839fb8a74d88ba2270",
+    "adapted_copy": false
+  },
+  "results/audit_261026/registration_alternatives.csv": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/registration_alternatives.csv",
+    "source_sha256": "a868a64ea33116d1e38506b02a193eabc5beafd39aa5d97e1a5539ecbfeeec4e",
+    "published_sha256": "a868a64ea33116d1e38506b02a193eabc5beafd39aa5d97e1a5539ecbfeeec4e",
+    "adapted_copy": false
+  },
+  "reports/261026/full_summary.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/full_summary.md",
+    "source_sha256": "f9ffaf8b0f381cae9100589cdfa654457d339a79f948d52c5d875404313bc43d",
+    "published_sha256": "ac9de7674ba96fca5455bb46e05848f6994d4ea556816f8f281c79c72ef18a0b",
+    "adapted_copy": true
+  },
+  "reports/261026/01_r_full.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/01_r_full.md",
+    "source_sha256": "0ec9ea0225a2db514c914bd7e13e64cc4b8852421099c79e8eb4eca0ecbad601",
+    "published_sha256": "3a86f679f1a87af614bcd3dbe6f7bef45f1f604aaf3218a9b59ce9cb85ae627a",
+    "adapted_copy": true
+  },
+  "reports/261026/02_q_full.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/02_q_full.md",
+    "source_sha256": "0466f48991668625bd32af65548c4ade7b3f34aaeb5175a7d2ea14195554c714",
+    "published_sha256": "a7227e4e9118908f85e7a3c38e329d3e8f92768a06804f43cb94ad9fab13cd3c",
+    "adapted_copy": true
+  },
+  "reports/261026/03_validation.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/03_validation.md",
+    "source_sha256": "8115f7d5dcb33d8f2aef5936c356c2eaca0ae3db2a6974d780bdd6f504cbc7ce",
+    "published_sha256": "8115f7d5dcb33d8f2aef5936c356c2eaca0ae3db2a6974d780bdd6f504cbc7ce",
+    "adapted_copy": false
+  },
+  "reports/261026/04_geometry_context_tfd.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/04_geometry_context_tfd.md",
+    "source_sha256": "8626094fa9b8cfbe060cc8efae755b524a10bde39f6596358b437b8a5d6886fb",
+    "published_sha256": "8626094fa9b8cfbe060cc8efae755b524a10bde39f6596358b437b8a5d6886fb",
+    "adapted_copy": false
+  },
+  "reports/261026/data_audit_full.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/data_audit_full.md",
+    "source_sha256": "be738515f77bd7be803d5cb19a3f8d3452bc4986992301579a4a4093b1e728f0",
+    "published_sha256": "be738515f77bd7be803d5cb19a3f8d3452bc4986992301579a4a4093b1e728f0",
+    "adapted_copy": false
+  },
+  "reports/261026/limitations.md": {
+    "source": "/data/whereami/math/full_rq_261026/reports/limitations.md",
+    "source_sha256": "e03d3bdb902aedb87dbc75bab5c81d7bbb1ee3e0ca37ef136512f2048556eced",
+    "published_sha256": "e03d3bdb902aedb87dbc75bab5c81d7bbb1ee3e0ca37ef136512f2048556eced",
+    "adapted_copy": false
+  },
+  "reports/audit_261026/summary.md": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/summary.md",
+    "source_sha256": "a95a74fce1d9b27e1bde7c0682ac277578a2b330038cdd6594a72f856e831d96",
+    "published_sha256": "a95a74fce1d9b27e1bde7c0682ac277578a2b330038cdd6594a72f856e831d96",
+    "adapted_copy": false
+  },
+  "reports/sample_261025/pilot_summary.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/pilot_summary.md",
+    "source_sha256": "3f7db86b50445b334ca1cab32d77d81e442b290fb36219fb3180cdc97a0d4873",
+    "published_sha256": "4f9b8ccc09d445d426e983b8c74087dd36924295764a05450485e396fc2a551a",
+    "adapted_copy": true
+  },
+  "reports/sample_261025/01_r_pilot.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/01_r_pilot.md",
+    "source_sha256": "8392f3c32576b11158044174e9010a1d884a732dd771e65b38644f3fc410abcf",
+    "published_sha256": "36cb44e31b554ba842ebf1d1fbfc7e42d614bcb0e0a1d95f6ebb388e252270f1",
+    "adapted_copy": true
+  },
+  "reports/sample_261025/02_q_pilot.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/02_q_pilot.md",
+    "source_sha256": "e30f1499b3017b19c2ef3b4f1b26fcd34dd4d9b791d24eaf8837083848463087",
+    "published_sha256": "47254dc6ee9672261a9579df400595b54c5e04b51ae2e426087ee3010d43b08d",
+    "adapted_copy": true
+  },
+  "reports/sample_261025/03_validation.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/03_validation.md",
+    "source_sha256": "15211cf8352e9431a268723f8e701fbd03dba341985f22f3bfae53e7e1ba4907",
+    "published_sha256": "15211cf8352e9431a268723f8e701fbd03dba341985f22f3bfae53e7e1ba4907",
+    "adapted_copy": false
+  },
+  "reports/sample_261025/04_interpretation.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/04_interpretation.md",
+    "source_sha256": "fce4383e81b29d01cd4cb5f1756930ce5cb4bfd02fb3b41ec5f5bf5f169fb6c5",
+    "published_sha256": "fce4383e81b29d01cd4cb5f1756930ce5cb4bfd02fb3b41ec5f5bf5f169fb6c5",
+    "adapted_copy": false
+  },
+  "reports/sample_261025/limitations.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/limitations.md",
+    "source_sha256": "9f4afb95a2c3bc2db94890566d4783a9c199596ced1580417c6771f458fac461",
+    "published_sha256": "9f4afb95a2c3bc2db94890566d4783a9c199596ced1580417c6771f458fac461",
+    "adapted_copy": false
+  },
+  "reports/sample_261025/schema_mismatch.md": {
+    "source": "/data/whereami/math/view2risk_261025/pilot_rq_261025/reports/schema_mismatch.md",
+    "source_sha256": "f44719baeb85244c8f4ba806cea3cf483bbcbaab281c1f26fd424b8e1534fea5",
+    "published_sha256": "f44719baeb85244c8f4ba806cea3cf483bbcbaab281c1f26fd424b8e1534fea5",
+    "adapted_copy": false
+  },
+  "docs/plans/View2Risk_Data_Audit_Plan.md": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/View2Risk_Data_Audit_Plan.md",
+    "source_sha256": "6537773eaf576bd66fcf9b721ca61ca420ed67d04d7eb7882c9f5433edf1926b",
+    "published_sha256": "6537773eaf576bd66fcf9b721ca61ca420ed67d04d7eb7882c9f5433edf1926b",
+    "adapted_copy": false
+  },
+  "docs/plans/View2Risk_RQ_Pilot_Next_Step_261025.md": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/View2Risk_RQ_Pilot_Next_Step_261025.md",
+    "source_sha256": "af29e6624ce9d4885ccbcb57281236c9f9de97023306bb181a97467d7367b948",
+    "published_sha256": "af29e6624ce9d4885ccbcb57281236c9f9de97023306bb181a97467d7367b948",
+    "adapted_copy": false
+  },
+  "reproducibility/261026/environment.json": {
+    "source": "/data/whereami/math/full_rq_261026/environment.json",
+    "source_sha256": "d52d8bbb1fbc891a3abd8cb46bb569f2b5ad0e9044d9f9d8d69d869fdcefd4e5",
+    "published_sha256": "d52d8bbb1fbc891a3abd8cb46bb569f2b5ad0e9044d9f9d8d69d869fdcefd4e5",
+    "adapted_copy": false
+  },
+  "reproducibility/261026/protocol.json": {
+    "source": "/data/whereami/math/full_rq_261026/protocol.json",
+    "source_sha256": "053bd1fecb3f11eb231af42cb4a727002bdde62b4124261ea5cdb9eed04ce0b5",
+    "published_sha256": "053bd1fecb3f11eb231af42cb4a727002bdde62b4124261ea5cdb9eed04ce0b5",
+    "adapted_copy": false
+  },
+  "reproducibility/261026/validation.json": {
+    "source": "/data/whereami/math/full_rq_261026/reports/validation.json",
+    "source_sha256": "ff8f651875dc03c6e8cd06db76a0aa3448b20c76c85ccfcc3093eda026678a21",
+    "published_sha256": "ff8f651875dc03c6e8cd06db76a0aa3448b20c76c85ccfcc3093eda026678a21",
+    "adapted_copy": false
+  },
+  "reproducibility/261026/supplement_validation.json": {
+    "source": "/data/whereami/math/full_rq_261026/reports/supplement_validation.json",
+    "source_sha256": "75b4dfefd484f70d184f1952b81a3b6e7f19aae32ee01b61120d128c2549f581",
+    "published_sha256": "75b4dfefd484f70d184f1952b81a3b6e7f19aae32ee01b61120d128c2549f581",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/environment.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/environment.json",
+    "source_sha256": "3e58b34545250759a57b681982b51cf7e5fba48cc2a34da1f57dfaef812a8c79",
+    "published_sha256": "3e58b34545250759a57b681982b51cf7e5fba48cc2a34da1f57dfaef812a8c79",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/protocol.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/protocol.json",
+    "source_sha256": "141a7f911d6f076d5a7f744bf67f79966c1400fa92a6d2c9a4c8272090c5a15e",
+    "published_sha256": "141a7f911d6f076d5a7f744bf67f79966c1400fa92a6d2c9a4c8272090c5a15e",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/validation.json",
+    "source_sha256": "f2ae08c72cfb242dd66689c9644db44b88571fbc42be3514d8db28471c05831c",
+    "published_sha256": "f2ae08c72cfb242dd66689c9644db44b88571fbc42be3514d8db28471c05831c",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/crossing_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/crossing_validation.json",
+    "source_sha256": "1f7bb464e329f631e001805c008f47f9b52814927bdb5ae30f7a4759a45dc93e",
+    "published_sha256": "1f7bb464e329f631e001805c008f47f9b52814927bdb5ae30f7a4759a45dc93e",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/calibration_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/calibration_validation.json",
+    "source_sha256": "4c71b6071efc811f37267013bbb895ccb63728000e9d2a70ae55f92a4f7c6eb1",
+    "published_sha256": "4c71b6071efc811f37267013bbb895ccb63728000e9d2a70ae55f92a4f7c6eb1",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/quality_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/quality_validation.json",
+    "source_sha256": "821f92385ee81279258fa043f2c7efadc986d2157be1da41fd977121004faad4",
+    "published_sha256": "821f92385ee81279258fa043f2c7efadc986d2157be1da41fd977121004faad4",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/review_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/review_validation.json",
+    "source_sha256": "1dd48243e91cc1b5602b4ae7c774f5c56f2d8d6ae8220a97712f5bbc0246e815",
+    "published_sha256": "1dd48243e91cc1b5602b4ae7c774f5c56f2d8d6ae8220a97712f5bbc0246e815",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/remaining_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/remaining_validation.json",
+    "source_sha256": "4e51ac2d99c97be6d35efc9a7379e73914eb4aaee526ea86fd3eb32a9803f2b9",
+    "published_sha256": "4e51ac2d99c97be6d35efc9a7379e73914eb4aaee526ea86fd3eb32a9803f2b9",
+    "adapted_copy": false
+  },
+  "reproducibility/audit_261026/tfd_validation.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/reports/tfd_validation.json",
+    "source_sha256": "0b5729661a1859d02fea2cccf68ff8ec75c3b02215dc599081dd69dd02b4dca3",
+    "published_sha256": "0b5729661a1859d02fea2cccf68ff8ec75c3b02215dc599081dd69dd02b4dca3",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_effective_params.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_effective_params.json",
+    "source_sha256": "24fd2ba502f2c63f5c6d71fdf4061e253e613ee4af355ede64f95445cb60dd79",
+    "published_sha256": "24fd2ba502f2c63f5c6d71fdf4061e253e613ee4af355ede64f95445cb60dd79",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_fold_1.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_fold_1.json",
+    "source_sha256": "e288167fcfb17514a3803a1bacb4402554e69acd4472f1c90bc1ea56f75d7b0b",
+    "published_sha256": "e288167fcfb17514a3803a1bacb4402554e69acd4472f1c90bc1ea56f75d7b0b",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_fold_4.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_fold_4.json",
+    "source_sha256": "77e7e52fd76e129522cba56490e558687463e53a6e667abde1d397d9b5dd0c26",
+    "published_sha256": "77e7e52fd76e129522cba56490e558687463e53a6e667abde1d397d9b5dd0c26",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_fold_2.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_fold_2.json",
+    "source_sha256": "27c24f829ae1591335dc45008f4c14c4940e98a9dd0df55574c38ee97f9f0584",
+    "published_sha256": "27c24f829ae1591335dc45008f4c14c4940e98a9dd0df55574c38ee97f9f0584",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_fold_0.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_fold_0.json",
+    "source_sha256": "08b044f1b9f8e11da6df0e690083decd876ee7c8d7dd15610edba6593ee049e2",
+    "published_sha256": "08b044f1b9f8e11da6df0e690083decd876ee7c8d7dd15610edba6593ee049e2",
+    "adapted_copy": false
+  },
+  "parameters/261026/r_pair_proxy_params.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/r_pair_proxy_params.json",
+    "source_sha256": "7b823c6318801396494bcea80512183fb2cced08b6788ba25a7c43c5b377b8c9",
+    "published_sha256": "7b823c6318801396494bcea80512183fb2cced08b6788ba25a7c43c5b377b8c9",
+    "adapted_copy": false
+  },
+  "parameters/261026/q_fold_3.json": {
+    "source": "/data/whereami/math/full_rq_261026/models/q_fold_3.json",
+    "source_sha256": "f396ad6f6a598891cdc3e634fdc891e35dcb2666b3c031d9afc4c02cc61263c1",
+    "published_sha256": "f396ad6f6a598891cdc3e634fdc891e35dcb2666b3c031d9afc4c02cc61263c1",
+    "adapted_copy": false
+  },
+  "figures/261026/q_coverage_by_date.png": {
+    "source": "/data/whereami/math/full_rq_261026/figures/q_coverage_by_date.png",
+    "source_sha256": "e442a509d59fd752fe888ecda8d72c16496aab15742dfb8c3b889b4a1ca54fea",
+    "published_sha256": "e442a509d59fd752fe888ecda8d72c16496aab15742dfb8c3b889b4a1ca54fea",
+    "adapted_copy": false
+  },
+  "figures/261026/q_gaussian_tails.png": {
+    "source": "/data/whereami/math/full_rq_261026/figures/q_gaussian_tails.png",
+    "source_sha256": "6e5f93b94fbbcb842935a9ca886cf444165267abbf6a9c30d730b8224820d1a9",
+    "published_sha256": "6e5f93b94fbbcb842935a9ca886cf444165267abbf6a9c30d730b8224820d1a9",
+    "adapted_copy": false
+  },
+  "figures/261026/q_sharpness.png": {
+    "source": "/data/whereami/math/full_rq_261026/figures/q_sharpness.png",
+    "source_sha256": "7c5653dfff815cb0ba69ec7a269d1eff592751a5f5f2bd4f80ca12ff5ec76aa0",
+    "published_sha256": "7c5653dfff815cb0ba69ec7a269d1eff592751a5f5f2bd4f80ca12ff5ec76aa0",
+    "adapted_copy": false
+  },
+  "figures/261026/r_full_diagnostics.png": {
+    "source": "/data/whereami/math/full_rq_261026/figures/r_full_diagnostics.png",
+    "source_sha256": "a101bf6a69e16479def6a628c7bd9aec8ea16d936a5e2b66a23f32c66bee4ef6",
+    "published_sha256": "a101bf6a69e16479def6a628c7bd9aec8ea16d936a5e2b66a23f32c66bee4ef6",
+    "adapted_copy": false
+  },
+  "figures/audit_261026/r_conditions.png": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/figures/r_conditions.png",
+    "source_sha256": "4ef6c444fd2f28f81423c6923e60a276957e5120ffe8862c1c319b8302d2f50a",
+    "published_sha256": "4ef6c444fd2f28f81423c6923e60a276957e5120ffe8862c1c319b8302d2f50a",
+    "adapted_copy": false
+  },
+  "figures/audit_261026/q_quality.png": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/figures/q_quality.png",
+    "source_sha256": "cc24e9664d389bbc6a912439088feeb6cfc2c18241d6205166c8404ebd31fe7f",
+    "published_sha256": "cc24e9664d389bbc6a912439088feeb6cfc2c18241d6205166c8404ebd31fe7f",
+    "adapted_copy": false
+  },
+  "src/closure/docs/official_calib.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/official_calib.py",
+    "source_sha256": "e9e25183414424fa383c948d318b54fb3bdcd85f42277155cca6716b65a588e8",
+    "published_sha256": "e9e25183414424fa383c948d318b54fb3bdcd85f42277155cca6716b65a588e8",
+    "adapted_copy": false
+  },
+  "src/closure/docs/official_vis_utils.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/official_vis_utils.py",
+    "source_sha256": "7b522df5afe30283afa42ba34e9760f09353c7f4a18027d1b601cd89088631c6",
+    "published_sha256": "7b522df5afe30283afa42ba34e9760f09353c7f4a18027d1b601cd89088631c6",
+    "adapted_copy": false
+  },
+  "src/closure/docs/official_spd_labels.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/official_spd_labels.py",
+    "source_sha256": "b78cd8727a536911cd9d662f6f0bb1348a1ba62c706e68ddf70048e78f42ad09",
+    "published_sha256": "b78cd8727a536911cd9d662f6f0bb1348a1ba62c706e68ddf70048e78f42ad09",
+    "adapted_copy": false
+  },
+  "src/closure/docs/official_vis.py": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/official_vis.py",
+    "source_sha256": "d0a4a5099a1c75e1a4c9ea9e1b91a9fd02a43e289da1d8becbe14993463f3c87",
+    "published_sha256": "d0a4a5099a1c75e1a4c9ea9e1b91a9fd02a43e289da1d8becbe14993463f3c87",
+    "adapted_copy": false
+  },
+  "src/closure/docs/official_sources.json": {
+    "source": "/data/whereami/math/view2risk/runs/audit_261026/docs/official_sources.json",
+    "source_sha256": "bc1b3f2ca78426f79e2acf966868433a42a5f0cf0df4d8dadbea0c843d8fe372",
+    "published_sha256": "bc1b3f2ca78426f79e2acf966868433a42a5f0cf0df4d8dadbea0c843d8fe372",
+    "adapted_copy": false
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "original_full_manifest_entries_verified": 119,
+  "prior_sample_input_result_hashes_verified": 25,
+  "raw_calibration_and_signal_files_verified": 34089,
+  "source_freeze_entries_verified": 7,
+  "full_events": 846,
+  "full_track_groups": 787,
+  "total_track_groups": 1920,
+  "total_observations_retained": 1710765,
+  "audit_checkboxes_with_evidence": 37,
+  "pilot_required_report_items_preserved": 6,
+  "source_JSON_case_checks": 22,
+  "provider_topview_comparisons": 4,
+  "verified_figures": 23,
+  "source_data_modified": false,
+  "prior_models_refit": false,
+  "prior_predictions_modified": false,
+  "independent_crossing_GT": false,
+  "camera_nonrigidity_cause_resolved": false,
+  "original_q005_reproduced": false,
+  "G95_computed": false
+}

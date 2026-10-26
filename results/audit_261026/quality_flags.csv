@@ -1,0 +1,5 @@
+﻿flag,observations,track_groups,sequences,dates,removed_from_source,not_verified_ID_switch
+flag_position_speed_gt5,104,5,5,5,False,True
+flag_position_speed_gt20,0,0,0,0,False,True
+flag_reported_speed_disagreement_gt2,0,0,0,0,False,True
+flag_nonpositive_or_gap_dt,11,11,3,3,False,True

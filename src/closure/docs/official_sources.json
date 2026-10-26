@@ -1,0 +1,18 @@
+{
+  "official_vis.py": {
+    "url": "https://raw.githubusercontent.com/AIR-THU/DAIR-V2X/main/tools/visualize/vis_label_in_image.py",
+    "sha256": "d0a4a5099a1c75e1a4c9ea9e1b91a9fd02a43e289da1d8becbe14993463f3c87"
+  },
+  "official_calib.py": {
+    "url": "https://raw.githubusercontent.com/AIR-THU/DAIR-V2X/main/tools/dataset_converter/spd2kitti_tracking/gen_kitti/calib_dair2kitti.py",
+    "sha256": "e9e25183414424fa383c948d318b54fb3bdcd85f42277155cca6716b65a588e8"
+  },
+  "official_vis_utils.py": {
+    "url": "https://raw.githubusercontent.com/AIR-THU/DAIR-V2X/main/tools/visualize/vis_utils.py",
+    "sha256": "7b522df5afe30283afa42ba34e9760f09353c7f4a18027d1b601cd89088631c6"
+  },
+  "official_spd_labels.py": {
+    "url": "https://raw.githubusercontent.com/AIR-THU/DAIR-V2X/main/tools/dataset_converter/spd2kitti_tracking/gen_kitti/label_dair2kitti.py",
+    "sha256": "b78cd8727a536911cd9d662f6f0bb1348a1ba62c706e68ddf70048e78f42ad09"
+  }
+}

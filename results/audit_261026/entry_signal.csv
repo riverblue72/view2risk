@@ -1,0 +1,5 @@
+﻿entry_signal_code,signal_transition_within_1s,events,tracks,interpretation
+4,False,781,730,"recorded signal at derived entry, not verified violation label"
+4,True,11,11,"recorded signal at derived entry, not verified violation label"
+10,False,45,44,"recorded signal at derived entry, not verified violation label"
+10,True,9,9,"recorded signal at derived entry, not verified violation label"

@@ -1,0 +1,328 @@
+{
+  "name": "Q_effective",
+  "state_order": [
+    "x",
+    "y",
+    "vx",
+    "vy"
+  ],
+  "R_unit": "m2",
+  "q_unit": "m2/s3",
+  "Q_dt": "q * [[dt^3/3 I,dt^2/2 I],[dt^2/2 I,dt I]]",
+  "initial_P": "diag(r,r,4,4)",
+  "future_position_cov": "H F P_filtered F.T H.T + q*h^3/3 I + r I",
+  "pure_Q_true": false,
+  "SPD_R_used": false,
+  "folds": {
+    "0": {
+      "Fixed_noise_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.1,
+        "development_NLL": 0.6107741434909878
+      },
+      "Data_fitted_Q_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.037122619186743575,
+        "development_NLL": 0.26405373673445354,
+        "optimizer_success": true
+      },
+      "Joint_innovation_ML_KF": {
+        "objective": -12.963455404253319,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.00294198625215384,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+        "starts": [
+          {
+            "objective": -12.963455404244138,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002941995005634156,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.96345540423809,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002941998687081002,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.963455404253319,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.00294198625215384,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          }
+        ]
+      },
+      "development_recording_dates": [
+        "20230322",
+        "20230323",
+        "20230523",
+        "20230525",
+        "20230720",
+        "20230907",
+        "20230911",
+        "20230912",
+        "20230914",
+        "20231031",
+        "20231116",
+        "20231122"
+      ],
+      "test_recording_dates": [
+        "20230526",
+        "20230824",
+        "20231023"
+      ]
+    },
+    "1": {
+      "Fixed_noise_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.1,
+        "development_NLL": 0.6049438939347035
+      },
+      "Data_fitted_Q_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.036510003111715254,
+        "development_NLL": 0.2481895981095462,
+        "optimizer_success": true
+      },
+      "Joint_innovation_ML_KF": {
+        "objective": -12.980093244218951,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.002883953962841142,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+        "starts": [
+          {
+            "objective": -12.980093244208641,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0028839665940052672,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.980093244218951,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002883953962841142,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.980093244216382,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002883959487084261,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          }
+        ]
+      },
+      "development_recording_dates": [
+        "20230322",
+        "20230323",
+        "20230523",
+        "20230525",
+        "20230526",
+        "20230720",
+        "20230824",
+        "20230911",
+        "20230912",
+        "20230914",
+        "20231023",
+        "20231116"
+      ],
+      "test_recording_dates": [
+        "20230907",
+        "20231031",
+        "20231122"
+      ]
+    },
+    "2": {
+      "Fixed_noise_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.1,
+        "development_NLL": 0.5865251619455275
+      },
+      "Data_fitted_Q_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.034575098976257095,
+        "development_NLL": 0.19612282265715297,
+        "optimizer_success": true
+      },
+      "Joint_innovation_ML_KF": {
+        "objective": -13.020257622414439,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.0027511963321002557,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+        "starts": [
+          {
+            "objective": -13.020257622401672,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0027512102015307465,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -13.020257622414439,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0027511963321002557,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -13.020257622402475,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0027512097124181615,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          }
+        ]
+      },
+      "development_recording_dates": [
+        "20230322",
+        "20230523",
+        "20230525",
+        "20230526",
+        "20230720",
+        "20230824",
+        "20230907",
+        "20230911",
+        "20231023",
+        "20231031",
+        "20231116",
+        "20231122"
+      ],
+      "test_recording_dates": [
+        "20230323",
+        "20230912",
+        "20230914"
+      ]
+    },
+    "3": {
+      "Fixed_noise_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.1,
+        "development_NLL": 0.6244419329773415
+      },
+      "Data_fitted_Q_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.03857462592516956,
+        "development_NLL": 0.3003913258172365,
+        "optimizer_success": true
+      },
+      "Joint_innovation_ML_KF": {
+        "objective": -12.922825187722317,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.003088969979260804,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+        "starts": [
+          {
+            "objective": -12.922825187712613,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0030889835454668653,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.922825187661912,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.0030890057860181734,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.922825187722317,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.003088969979260804,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          }
+        ]
+      },
+      "development_recording_dates": [
+        "20230322",
+        "20230323",
+        "20230523",
+        "20230526",
+        "20230824",
+        "20230907",
+        "20230911",
+        "20230912",
+        "20230914",
+        "20231023",
+        "20231031",
+        "20231122"
+      ],
+      "test_recording_dates": [
+        "20230525",
+        "20230720",
+        "20231116"
+      ]
+    },
+    "4": {
+      "Fixed_noise_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.1,
+        "development_NLL": 0.6057027736721899
+      },
+      "Data_fitted_Q_KF": {
+        "r_m2": 0.0001,
+        "q_m2_s3": 0.03660552499680651,
+        "development_NLL": 0.2504639841240322,
+        "optimizer_success": true
+      },
+      "Joint_innovation_ML_KF": {
+        "objective": -12.978294265946952,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.00288938842157586,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+        "starts": [
+          {
+            "objective": -12.978294265935416,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002889403646080686,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.978294265946952,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.00288938842157586,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          },
+          {
+            "objective": -12.978294265944696,
+            "r_m2": 9.999999999999982e-09,
+            "q_m2_s3": 0.002889395131364524,
+            "success": true,
+            "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+          }
+        ]
+      },
+      "development_recording_dates": [
+        "20230323",
+        "20230525",
+        "20230526",
+        "20230720",
+        "20230824",
+        "20230907",
+        "20230912",
+        "20230914",
+        "20231023",
+        "20231031",
+        "20231116",
+        "20231122"
+      ],
+      "test_recording_dates": [
+        "20230322",
+        "20230523",
+        "20230911"
+      ]
+    }
+  }
+}

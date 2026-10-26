@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "files": 147,
+  "source_python_compiles": true,
+  "credential_scan_passed": true,
+  "raw_data_included": false,
+  "model_checkpoints_included": false,
+  "scope": "View2Risk only, aggregate results and source snapshots",
+  "public_repository": "riverblue72/view2risk",
+  "materialize_smoke_passed": true,
+  "materialized_files": 49,
+  "relative_markdown_links_verified": true,
+  "rebased_python_compiles": true,
+  "payload_bytes_excluding_this_check": 1421448
+}

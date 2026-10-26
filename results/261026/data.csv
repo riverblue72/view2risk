@@ -1,0 +1,18 @@
+﻿dataset,scope,metric,count,unit,note
+SPD,full_annotation_and_infrastructure_images,source_frames,11275,frame,
+SPD,full_annotation_and_infrastructure_images,source_sequences,67,sequence,
+SPD,full_annotation_and_infrastructure_images,paired_sequences,34,sequence,
+SPD,full_annotation_and_infrastructure_images,paired_track_groups,233,sequence_track_group,
+SPD,full_annotation_and_infrastructure_images,pairs,10109,annotation_pair,
+SPD,full_annotation_and_infrastructure_images,intersections,6,intersection,
+IMPTC,Full01-05_without_Samples,source_sequences,270,sequence,
+IMPTC,Full01-05_without_Samples,pedestrian_sequences,264,sequence,
+IMPTC,Full01-05_without_Samples,pedestrian_tracks,1920,sequence_track_group,
+IMPTC,Full01-05_without_Samples,observations,1710765,observation,
+IMPTC,Full01-05_without_Samples,evaluated_tracks,1906,sequence_track_group,
+IMPTC,Full01-05_without_Samples,recording_dates,15,recording_date,
+IMPTC,Full01-05_without_Samples,common_origins,265578,forecast_origin,
+IMPTC,Full01-05_without_Samples,predictions_all_models_horizons,2124624,forecast,
+TFD,Example_single_infrastructure_only,trajectory_files,77,CSV,Not full TFD; groups are not independent people
+TFD,Example_single_infrastructure_only,pedestrian_observations,19978,observation,Not full TFD; groups are not independent people
+TFD,Example_single_infrastructure_only,pedestrian_scene_track_groups,908,scene_track_group,Not full TFD; groups are not independent people

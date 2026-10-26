@@ -1,0 +1,62 @@
+{
+  "Fixed_noise_KF": {
+    "r_m2": 0.0001,
+    "q_m2_s3": 0.1,
+    "development_NLL": 0.6057027736721899
+  },
+  "Data_fitted_Q_KF": {
+    "r_m2": 0.0001,
+    "q_m2_s3": 0.03660552499680651,
+    "development_NLL": 0.2504639841240322,
+    "optimizer_success": true
+  },
+  "Joint_innovation_ML_KF": {
+    "objective": -12.978294265946952,
+    "r_m2": 9.999999999999982e-09,
+    "q_m2_s3": 0.00288938842157586,
+    "success": true,
+    "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL",
+    "starts": [
+      {
+        "objective": -12.978294265935416,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.002889403646080686,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+      },
+      {
+        "objective": -12.978294265946952,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.00288938842157586,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+      },
+      {
+        "objective": -12.978294265944696,
+        "r_m2": 9.999999999999982e-09,
+        "q_m2_s3": 0.002889395131364524,
+        "success": true,
+        "message": "CONVERGENCE: NORM OF PROJECTED GRADIENT <= PGTOL"
+      }
+    ]
+  },
+  "development_recording_dates": [
+    "20230323",
+    "20230525",
+    "20230526",
+    "20230720",
+    "20230824",
+    "20230907",
+    "20230912",
+    "20230914",
+    "20231023",
+    "20231031",
+    "20231116",
+    "20231122"
+  ],
+  "test_recording_dates": [
+    "20230322",
+    "20230523",
+    "20230911"
+  ]
+}

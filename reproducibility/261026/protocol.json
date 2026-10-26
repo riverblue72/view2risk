@@ -1,0 +1,60 @@
+{
+  "seed": 42,
+  "population_R": "SPD train/val, all infrastructure annotations and images; samples not pooled",
+  "population_Q": "Canonical Full Sequence Sets01–05 only; Samples never pooled",
+  "R_validation": "leave-one-intersection-out, all tracks/sequences at a site held together",
+  "Q_validation": "5 outer folds of whole recording dates, deterministic seed42 date permutation and round-robin allocation",
+  "Q_objective": "development date/horizon-macro forecast Gaussian NLL, no outer-test tuning",
+  "future_horizons_s": [
+    1.0,
+    3.0
+  ],
+  "past_warmup_s": 1.0,
+  "origin_stride_s": 0.2,
+  "max_valid_dt_s": 0.06,
+  "future_tolerance_s": 0.0201,
+  "paired_horizon_eligibility": true,
+  "velocity_windows_s": [
+    0.12,
+    0.4,
+    1.0
+  ],
+  "fixed_observation_sd_grid_m": [
+    0.01,
+    0.05,
+    0.2
+  ],
+  "fixed_q_grid_m2_s3": [
+    0.01,
+    0.1,
+    1.0
+  ],
+  "q_bounds_m2_s3": [
+    1e-06,
+    100
+  ],
+  "joint_R_bounds_m2": [
+    1e-08,
+    4
+  ],
+  "covariance_ddof": 0,
+  "Q_model": "continuous white acceleration CV",
+  "models": [
+    "Deterministic_CV",
+    "Fixed_noise_KF",
+    "Data_fitted_Q_KF",
+    "Joint_innovation_ML_KF"
+  ],
+  "bootstrap_unit_R": "intersection, only 6 groups",
+  "bootstrap_unit_Q": "recording date, 15 groups",
+  "bootstrap_repetitions": 2000,
+  "forbidden": [
+    "SPD R as true IMPTC R",
+    "signals/weather/age/violation as predictors",
+    "G95",
+    "signal optimization",
+    "pure R_camera or Q_true claims"
+  ],
+  "change_from_sample": "Larger canonical population and stronger groups; model equations/grids/horizons unchanged. Sample4-sequence LOSO remains frozen separately.",
+  "original_results_read_only": true
+}
