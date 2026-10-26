@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "files": 147,
+  "files": 157,
   "source_python_compiles": true,
   "credential_scan_passed": true,
   "model_checkpoints_included": false,
@@ -10,9 +10,16 @@
   "materialized_files": 49,
   "relative_markdown_links_verified": true,
   "rebased_python_compiles": true,
-  "payload_bytes_excluding_this_check": 1421448,
+  "payload_bytes_excluding_this_check": 1460004,
   "raw_data_in_git_history": false,
   "data_release": "data-261026",
   "release_expected_bytes": 22604243602,
-  "release_data_parts": 28
+  "release_data_parts": 28,
+  "data_release_published": true,
+  "release_verified_bytes": 22604243602,
+  "release_data_assets": 28,
+  "release_logical_files": 12,
+  "download_resume_and_SHA256_tests_passed": true,
+  "actual_analysis_workspace_metrics_reproduced": true,
+  "public_data_download_and_Q_recheck": true
 }

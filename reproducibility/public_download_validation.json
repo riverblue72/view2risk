@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "public_manifest_byte_exact": true,
+  "public_original_map_ZIP_SHA256_verified": true,
+  "public_analysis_download_extract_SHA256": true,
+  "independent_workspace": true,
+  "saved_Q_metrics_reproduced_from_public_download": true,
+  "public_release_requires_no_token": true
+}

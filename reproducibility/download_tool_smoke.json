@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "multipart_reassembly_SHA256": true,
+  "corrupt_completed_part_redownload": true,
+  "HTTP_range_resume": true,
+  "extraction_byte_exact": true,
+  "existing_valid_download_idempotent": true,
+  "path_traversal_refused": true
+}

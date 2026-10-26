@@ -1,0 +1,177 @@
+{
+  "passed": true,
+  "raw_archives_byte_preserved": true,
+  "logical_files": 12,
+  "data_assets": 28,
+  "total_data_bytes": 22604243602,
+  "assets": [
+    {
+      "name": "V2X-Seq-SPD.zip",
+      "size": 234358463,
+      "digest": "sha256:10bbf7130114e693cda8c99c6f3e0f88949b2224be9725a268cd5ee3825c97c1",
+      "id": 677150076
+    },
+    {
+      "name": "V2X-Seq-SPD-infrastructure-side-image.zip.part000",
+      "size": 1073741824,
+      "digest": "sha256:f8aab4a205fd34d407c0fa90b42b0f0e55100da8bf926dd25ea938fc0bc3e12a",
+      "id": 677158895
+    },
+    {
+      "name": "V2X-Seq-SPD-infrastructure-side-image.zip.part001",
+      "size": 1073741824,
+      "digest": "sha256:f382da3c01aedf36cdf63468c28a84ef4441bc7dfb7284557e806696d88e676f",
+      "id": 677159948
+    },
+    {
+      "name": "V2X-Seq-SPD-infrastructure-side-image.zip.part002",
+      "size": 1073741824,
+      "digest": "sha256:b69f9ec122cbfaaf3a1c5fc8053e258fc131c1ce3a55fd9d664209e52b00c77d",
+      "id": 677160597
+    },
+    {
+      "name": "V2X-Seq-SPD-infrastructure-side-image.zip.part003",
+      "size": 339406348,
+      "digest": "sha256:06eb6fa1f5571594db44948f14363e3a27b92b907366b7b0ad74dec8c6f3a343",
+      "id": 677153480
+    },
+    {
+      "name": "V2X-Seq-TFD-Example.zip",
+      "size": 285827698,
+      "digest": "sha256:3c391b2514ad6ba32592454ce5309aaf93ebcdc3ba9351b61ae70da370549b91",
+      "id": 677151015
+    },
+    {
+      "name": "imptc_samples.tar.gz",
+      "size": 347692691,
+      "digest": "sha256:b815d1a6652e1ba496034746d52dab17e4f80ed3b5dd6055579eb4a9f76dc44e",
+      "id": 677153475
+    },
+    {
+      "name": "imptc_set_01.tar.gz.part000",
+      "size": 1073741824,
+      "digest": "sha256:7cce6ca0b599f2f6a8130748489e63674300f2baf3a3152bab7de61e8284784a",
+      "id": 677160890
+    },
+    {
+      "name": "imptc_set_01.tar.gz.part001",
+      "size": 1073741824,
+      "digest": "sha256:3e29c41df365a51b4023e91475a118dc7a1db59a3524a67eb8a9186d4362deef",
+      "id": 677164230
+    },
+    {
+      "name": "imptc_set_01.tar.gz.part002",
+      "size": 595412065,
+      "digest": "sha256:3ae8a0adea0f6b1abeb35becb7fbcff633863e72af0d052882fd7c6ae0726da4",
+      "id": 677155396
+    },
+    {
+      "name": "imptc_set_02.tar.gz.part000",
+      "size": 1073741824,
+      "digest": "sha256:64ae9bff98193c8f351481ebbb096b5c04c29072ec94e1791f627b5b40dcefab",
+      "id": 677166692
+    },
+    {
+      "name": "imptc_set_02.tar.gz.part001",
+      "size": 1073741824,
+      "digest": "sha256:99e5780d64d750ed57f1a207b7439a56bd54f5bf2b9a78f8b565c4cfe3075efc",
+      "id": 677167223
+    },
+    {
+      "name": "imptc_set_02.tar.gz.part002",
+      "size": 322059022,
+      "digest": "sha256:59b7b530a164ae26c0e2ed8e818dfe2f8cf0416a6fe86f5a1d568d7d8a4289e9",
+      "id": 677153481
+    },
+    {
+      "name": "imptc_set_03.tar.gz.part000",
+      "size": 1073741824,
+      "digest": "sha256:234d084f95f112628b04c9685fa7736493ee0d07c62ce8fe7dc2b8319858370f",
+      "id": 677168350
+    },
+    {
+      "name": "imptc_set_03.tar.gz.part001",
+      "size": 1073741824,
+      "digest": "sha256:9585013173f33e7f9401901c61c11265fa2ce440a59a3d170ee31044d77262e9",
+      "id": 677169343
+    },
+    {
+      "name": "imptc_set_03.tar.gz.part002",
+      "size": 721671044,
+      "digest": "sha256:9eb844ac06b2d1282d4d94dce77ecbaaf0f597ac409c5f53b9e5f442f61635ed",
+      "id": 677155450
+    },
+    {
+      "name": "imptc_set_04.tar.gz.part000",
+      "size": 1073741824,
+      "digest": "sha256:42591d7516644be2404d5dc28215a8fc9bf990535d018969196082704bb28190",
+      "id": 677171678
+    },
+    {
+      "name": "imptc_set_04.tar.gz.part001",
+      "size": 1073741824,
+      "digest": "sha256:35baf95042b80abca7ac357113ad530325bcc30cf446447b387008aca13be769",
+      "id": 677172542
+    },
+    {
+      "name": "imptc_set_04.tar.gz.part002",
+      "size": 1073741824,
+      "digest": "sha256:cd624986b75f8427fc375f902bea478e942fd7e93c6612fb9f8275109c427806",
+      "id": 677174208
+    },
+    {
+      "name": "imptc_set_04.tar.gz.part003",
+      "size": 351780893,
+      "digest": "sha256:330be5e209613524a5252157e7d936e64bf9c2a9a6bd49b4b402ddb6a164065b",
+      "id": 677153476
+    },
+    {
+      "name": "imptc_set_05.tar.gz.part000",
+      "size": 1073741824,
+      "digest": "sha256:3ae0a44029ee2854f16c464daefc961696ac7b5f0045e1ee9c8723988442dac6",
+      "id": 677175766
+    },
+    {
+      "name": "imptc_set_05.tar.gz.part001",
+      "size": 1073741824,
+      "digest": "sha256:7c6c09929252772e441b727d5ec75ead4d4d760ec3e161717c44bebe7af8781b",
+      "id": 677178037
+    },
+    {
+      "name": "imptc_set_05.tar.gz.part002",
+      "size": 1073741824,
+      "digest": "sha256:0ff6719b727d8237b9ccf63fd9cc10831551669afab0432c0e01d894a4b2bfd7",
+      "id": 677179823
+    },
+    {
+      "name": "imptc_set_05.tar.gz.part003",
+      "size": 1073741824,
+      "digest": "sha256:83b8ef0182e7ead2fda074afe9060589069f3dc6553870db7cd389fa151b69b1",
+      "id": 677181638
+    },
+    {
+      "name": "imptc_set_05.tar.gz.part004",
+      "size": 809673000,
+      "digest": "sha256:c11456eb06e99216ae48959edc8d498f14a1ffdd5bafcf3713c68a319ca688c1",
+      "id": 677155593
+    },
+    {
+      "name": "imptc_ground_plane.zip",
+      "size": 11513994,
+      "digest": "sha256:7a54c56483287c567fe1dfee44e76ce7773d7f46a93b177e876a7b551875bd85",
+      "id": 677150002
+    },
+    {
+      "name": "spd_example_261026.tar",
+      "size": 706119680,
+      "digest": "sha256:b7a3e56605330d2b85d33b1e663dd3f0c66ff531e26581d25f93be62a8151566",
+      "id": 677155407
+    },
+    {
+      "name": "analysis_261026.tar",
+      "size": 698859520,
+      "digest": "sha256:1d6d40833482564e04ad172e6ded13e284daf4df15e2f62df2ebda9a8d3ca381",
+      "id": 677150004
+    }
+  ]
+}
