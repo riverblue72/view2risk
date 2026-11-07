@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>View2Risk 핵심 정리 — 횡단보도별 필요 보행시간 G*(p)</title>
+<style>
+:root{--bg:#fafaf8;--card:#fff;--bd:#e3e2dc;--fg:#1c1c1a;--mut:#62615c;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--warn:#c0392b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--bg:#151514;--card:#1e1e1c;--bd:#33332f;--fg:#ecebe6;--mut:#a3a29b;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--warn:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151514;--card:#1e1e1c;--bd:#33332f;--fg:#ecebe6;--mut:#a3a29b;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--warn:#ff7b6b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 -apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+main{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:23px;margin:0 0 4px;line-height:1.35}
+h2{font-size:18px;margin:38px 0 10px;padding-top:8px;border-top:1px solid var(--bd)}
+h3{font-size:15px;margin:20px 0 6px}
+p{margin:6px 0}.mut{color:var(--mut);font-size:13px}
+.lead{background:var(--card);border:1px solid var(--bd);border-left:4px solid var(--s1);border-radius:10px;padding:14px 16px;margin:16px 0}
+.lead b{font-size:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:14px 0}
+.tile{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
+.tile .v{font-size:24px;font-weight:700;display:block;line-height:1.25}
+.tile .l{font-size:12.5px;color:var(--mut)}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--bd);padding:7px 8px;text-align:left;vertical-align:top}
+th{color:var(--mut);font-weight:600;white-space:nowrap}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.hl{font-weight:700}
+.note{border-left:3px solid var(--warn);padding:4px 12px;margin:8px 0;font-size:14px}
+.ok{border-left:3px solid var(--s3);padding:4px 12px;margin:8px 0;font-size:14px}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;padding:1px 7px;border-radius:9px;border:1px solid var(--bd);color:var(--mut);margin-right:4px;white-space:nowrap}
+.p1{border-color:var(--warn);color:var(--warn)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--mut);margin:4px 0 8px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+svg{display:block;width:100%;height:auto}
+svg text{fill:var(--mut);font-size:12px}
+svg .lab{fill:var(--fg);font-size:12px}
+svg rect.bar{cursor:default}
+svg rect.bar:hover{opacity:.8}
+#tip{position:fixed;pointer-events:none;background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:5px 9px;font-size:12.5px;display:none;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+ol li,ul li{margin:4px 0}
+code{font-size:12.5px;background:var(--bg);border:1px solid var(--bd);border-radius:4px;padding:0 4px}
+</style>
+</head>
+<body>
+<main>
+<h1>View2Risk 핵심 정리 — 횡단보도별 필요 보행시간 G*(p)</h1>
+<p class="mut">2026-11-07 · 데이터: IMPTC Full 01–05(독일 교차로 1곳, 횡단보도 f1/f2/f3), V2X-Seq SPD(카메라 오차 R), 서울시 보행신호(토 10/24, 화 11/3) · 상세 수치는 같은 폴더의 <code>README.md</code>와 <code>analysis/</code></p>
+
+<div class="lead">
+<b>질문:</b> 카메라로 측정한 보행 완료시간으로 횡단보도별 필요 보행시간을 정할 수 있는가, 그리고 그 값은 무엇에 가장 크게 좌우되는가?<br>
+<b>답:</b> 정할 수 있다. G*는 <b>보행자 사이의 속도 차이와 횡단 길이</b>에 좌우된다. 카메라 무작위 오차와 신호 시점 오차는 거의 영향이 없다. 위험한 것은 <b>캘리브레이션(거리 축척) 오류</b>와 <b>느린 보행자의 검출 누락</b>이다.
+</div>
+
+<div class="tiles">
+<div class="tile"><span class="v">14s → 약 20s</span><span class="l">f2(15.8m) 실측 녹색 vs 필요 보행시간 G*(95%). 녹색 진입자의 77%가 녹색 종료 후 완료</span></div>
+<div class="tile"><span class="v">+0.01~0.12s</span><span class="l">카메라 무작위 오차(σ 0.21m)가 G*(95%)를 바꾸는 크기</span></div>
+<div class="tile"><span class="v">−0.46~−1.25s</span><span class="l">가장 느린 10%가 검출 누락될 때 G*(95%) 변화. 신호를 <b>짧게</b> 만드는 위험한 방향</span></div>
+<div class="tile"><span class="v">σ 0.44s</span><span class="l">서울 신호 전환 시점 오차. 1초 관측 해상도 수준이라 무시 가능</span></div>
+</div>
+
+<h2>1. 횡단보도별 필요 보행시간</h2>
+<p><b>G*(p) = 7초 + Q<sub>p</sub>(T)</b> — T는 완료 이벤트의 횡단 소요시간, Q<sub>p</sub>는 p% 분위(Kaplan–Meier로 중도절단 포함), 신뢰구간은 촬영일 단위 bootstrap. 국내 공식 7초 + L/v와 같은 형태다.</p>
+<div class="legend"><span><i style="background:var(--s1)"></i>G*(95%) 실측 기반</span><span><i style="background:var(--s2)"></i>국내 공식 (1.0 m/s)</span><span><i style="background:var(--s3)"></i>실측 녹색 (중앙값)</span></div>
+<div class="box"><svg id="g" viewBox="0 0 760 250" role="img" aria-label="횡단보도별 G*(95%), 국내 공식, 실측 녹색 비교 막대그래프"></svg></div>
+<div class="box"><table>
+<tr><th>횡단보도</th><th>길이</th><th>중앙 속도</th><th>하위 15% 속도</th><th>G*(85%)</th><th>G*(95%)</th><th>국내 공식 1.0 / 0.8 m/s</th><th>실측 녹색</th></tr>
+<tr><td>f1</td><td class="n">10.9m</td><td class="n">1.48 m/s</td><td class="n">1.30 m/s</td><td class="n">15.5s</td><td class="n hl">16.1s</td><td class="n">17.9 / 20.6s</td><td class="n">46s (가변)</td></tr>
+<tr><td>f2</td><td class="n">15.8m</td><td class="n">1.56 m/s</td><td class="n">1.38 m/s</td><td class="n">18.6s</td><td class="n hl">19.8–20.4s</td><td class="n">22.8 / 26.7s</td><td class="n hl">14s 고정</td></tr>
+<tr><td>f3</td><td class="n">10.0m</td><td class="n">1.44 m/s</td><td class="n">1.22 m/s</td><td class="n">15.3s</td><td class="n hl">16.2s</td><td class="n">17.0 / 19.5s</td><td class="n">43s (가변)</td></tr>
+</table></div>
+<ul>
+<li><b>f2는 녹색이 부족하다.</b> 녹색 14초에 필요 시간은 약 20초다. 독일식은 녹색 뒤 적색 정리시간에 마치는 구조지만, 한국식 녹색+점멸 기준으로 보면 가장 부족한 곳이다.</li>
+<li>국내 공식(1.0 m/s)은 실측 95% 분위보다 1~2.4초 길다. 다만 독일 보행자이고 연령을 알 수 없으므로 <b>"국내 공식이 과하다"고 결론 내리면 안 된다.</b></li>
+<li>다 건너지 못한 사람(중도절단 376, 도착확인부족 187)의 속도를 궤적으로 추정해 넣어도 G*(95%) 변화는 0.2초 이하였다.</li>
+</ul>
+
+<h2>2. 무엇이 G*를 좌우하나 — 오차 요인별 영향</h2>
+<div class="box"><table>
+<tr><th>요인</th><th>크기</th><th>G*(95%) 영향</th><th>판단</th></tr>
+<tr><td>보행자 간 속도 차이 + 횡단 길이</td><td>속도 하위 15% 1.22~1.38 m/s</td><td class="n">G* 자체를 결정</td><td class="hl">지배 요인</td></tr>
+<tr><td>카메라 무작위 위치 오차 R</td><td>σ 0.21m (원거리 0.32m)</td><td class="n">+0.01~0.21s</td><td>무시 가능</td></tr>
+<tr><td>R × 3 (σ 0.63m)</td><td>스트레스 테스트</td><td class="n">+0.18~0.49s</td><td>R이 3배여도 0.5초 이내</td></tr>
+<tr><td>거리 축척 오차 ±3~5%</td><td>캘리브레이션 오류</td><td class="n">±0.27~0.63s</td><td class="hl">관리 필요</td></tr>
+<tr><td>가장 느린 10% 검출 누락</td><td>가림·원거리</td><td class="n">−0.46~−1.25s</td><td class="hl">가장 위험 (신호를 짧게 만듦)</td></tr>
+<tr><td>신호 시점 오차 S (서울)</td><td>σ 0.44s, 95% −0.5~+1.2s</td><td class="n">관측 해상도 수준</td><td>무시 가능</td></tr>
+<tr><td>주변 보행자 수 (5m)</td><td>Spearman ρ = −0.04</td><td class="n">층별 0.5s 이내</td><td>효과 작음</td></tr>
+<tr><td>날씨 (약한 비)</td><td>횡단보도별 8~12건</td><td class="n">—</td><td>표본 부족</td></tr>
+</table></div>
+<p class="mut">R은 V2X-Seq(중국) 카메라–LiDAR <b>주석 간 차이</b>다. 실제 검출기 오차가 아니며 검출 누락·ID 전환·야간을 반영하지 않으므로 과소추정일 가능성이 크다. Q(보행자 흔들림)는 측정된 소요시간 T에 이미 들어 있어서 G*에 다시 더하지 않았다(이중 계산 방지).</p>
+
+<h2>3. 시간대·요일·연령별로 보면</h2>
+<div class="box"><table>
+<tr><th></th><th>보행자 (IMPTC)</th><th>신호 (IMPTC + 서울)</th></tr>
+<tr><td>시간대</td><td>중앙 속도 1.48~1.51 m/s, G* 차이 0.5s 이내.<br>달라지는 것은 보행량(점심 148건/h)과 적색 진입 비율(오후 8.3%)뿐</td><td>IMPTC 주기 90s 일정. 서울 녹색 약 12s, 점멸 약 15s(토요일 12~16시만 +1s)</td></tr>
+<tr><td>요일</td><td>요일별 촬영일 1~3일이라 촬영일 효과와 구분 불가 → 주장하지 않음</td><td>서울 같은 교차로 4,741쌍의 토·평일 차이 중앙값 0.0s, 상관 0.95</td></tr>
+<tr><td>연령</td><td colspan="2"><b>어느 데이터에도 연령 라벨이 없다.</b> 대신 속도 시나리오(1.0 / 0.8 m/s)로 다룬다 → 4절</td></tr>
+</table></div>
+<div class="ok"><b>결론:</b> 시간대·요일별로 신호를 다르게 줄 근거는 없다. 필요 보행시간은 <b>횡단보도별 값 하나</b>로 정해도 된다.</div>
+
+<h2>4. 서울 신호에 적용하면 — 속도(연령) 시나리오</h2>
+<p>서울 교차로·방향 4,779쌍의 보행 가능 총시간(녹색+점멸, 중앙값 32s)이 필요 시간 <b>7초 + L/v</b>보다 짧은 비율이다.</p>
+<div class="box"><table>
+<tr><th>횡단 길이</th><th>1.5 m/s<br><span class="mut">IMPTC 중앙</span></th><th>1.15 m/s<br><span class="mut">IMPTC 95% 분위</span></th><th>1.0 m/s<br><span class="mut">국내 일반</span></th><th>0.8 m/s<br><span class="mut">국내 교통약자</span></th></tr>
+<tr><td>10 m</td><td class="n">1%</td><td class="n">2%</td><td class="n">3%</td><td class="n">6%</td></tr>
+<tr><td>15 m</td><td class="n">3%</td><td class="n">6%</td><td class="n">10%</td><td class="n">22%</td></tr>
+<tr><td>20 m</td><td class="n">7%</td><td class="n">17%</td><td class="n">27%</td><td class="n hl">52%</td></tr>
+<tr><td>25 m</td><td class="n">15%</td><td class="n">35%</td><td class="n">52%</td><td class="n">80%</td></tr>
+<tr><td>30 m</td><td class="n">27%</td><td class="n">57%</td><td class="n">76%</td><td class="n">94%</td></tr>
+</table></div>
+<ul>
+<li><b>녹색 끝에 진입한 사람 기준</b>: 서울 점멸 중앙값 15초로 건널 수 있는 최대 길이는 1.15 m/s 17.3m, 1.0 m/s 15m, 0.8 m/s 12m다. f2 문제를 한국식 신호로 옮긴 판정 기준이다.</li>
+<li>같은 신호라도 기준속도에 따라 판정이 크게 달라진다(20m: 17% → 52%). 독일 실측 속도만으로 서울 신호가 충분하다고 판단하면 안 된다.</li>
+</ul>
+<div class="note"><b>팀 결정 필요:</b> 서울 참고자료 7절은 필요 시간을 L/v로만 계산했다(20m·1.0 m/s → 부족 6.8%). 7초 진입시간을 넣으면 27%가 된다. G*와 비교하려면 <b>7초 + L/v 기준으로 통일</b>하는 것을 제안한다. 또 구간 중앙값 합(12+15=27s)과 교차로 단위 총시간 중앙값(32s)이 다르므로 원자료에서 확인이 필요하다.</div>
+
+<h2>5. 다음 분석 추천</h2>
+<p class="mut">우선순위: <span class="tag p1">1순위</span> G* 결론을 바꿀 수 있는 것 · <span class="tag">2순위</span> 정밀도·확장</p>
+
+<h3>R (카메라 인식 오차)</h3>
+<div class="box"><table>
+<tr><th>#</th><th>분석</th><th>왜 필요한가</th><th>방법 제안</th></tr>
+<tr><td><span class="tag p1">1순위</span><br>R1</td><td><b>실제 검출기 오차와 누락률 측정</b></td><td>지금 R은 주석–주석 차이라 과소추정이다. 스트레스 테스트에서 가장 위험한 오류가 검출 누락이었다.</td><td>확보한 SPD 인프라 이미지(3.3GB)에 공개 검출기를 돌려 LiDAR 주석과 비교한다. 위치 오차와 누락률을 거리·가림 상태별로 구한다.</td></tr>
+<tr><td><span class="tag p1">1순위</span><br>R2</td><td><b>느린 보행자가 더 많이 누락되는가</b></td><td>누락이 속도와 무관하면 G* 영향이 작고, 느린 사람에게 몰리면 G*가 최대 1.25s 짧아진다.</td><td>SPD LiDAR 트랙에서 속도를 구하고, 속도 구간별 누락률을 본다.</td></tr>
+<tr><td><span class="tag p1">1순위</span><br>R3</td><td><b>거리 축척(캘리브레이션) 오차 정량화</b></td><td>±3%면 ±0.3s다. 조원 repo에 SPD 카메라 행렬이 정규직교가 아닌 문제가 미해결로 남아 있다.</td><td>지면 기준 길이(차선 폭·횡단보도 길이)를 카메라 투영과 LiDAR로 각각 재서 축척 비율 분포를 구한다.</td></tr>
+<tr><td><span class="tag">2순위</span><br>R4</td><td>조건부 R (거리·교차로)</td><td>근거리 RMSE 0.17m, 원거리 0.45m. 교차로 하나(yizhuang10)는 95% 영역 실제 포함률이 61%로 무너졌다.</td><td>yizhuang10의 원인(거리 분포·가림·보정)을 사례로 확인하고, 거리 구간별 R을 둔다.</td></tr>
+<tr><td><span class="tag">2순위</span><br>R5</td><td>진입·이탈 오차의 상관</td><td>지금은 두 시점의 오차를 독립으로 가정했다. 양의 상관이면 영향이 더 작고, 축척 오류처럼 체계적이면 상쇄되지 않는다.</td><td>같은 트랙 안 연속 주석쌍 오차의 자기상관을 시간 간격별로 구한다.</td></tr>
+</table></div>
+
+<h3>Q (보행자 흔들림·예측 불확실성)</h3>
+<div class="box"><table>
+<tr><th>#</th><th>분석</th><th>왜 필요한가</th><th>방법 제안</th></tr>
+<tr><td><span class="tag p1">1순위</span><br>Q1</td><td><b>녹색 종료(점멸 시작) 시점의 완료 가능성 예측</b></td><td>Q의 본래 쓰임새다. 정적 G* 대신 "지금 건너는 사람이 끝낼 수 있는가"를 실시간으로 판단한다.</td><td>f2 녹색 종료 순간 횡단 중인 사람마다 Q-KF로 남은 시간 분포를 예측하고, 실제 완료 시각과 비교한다(Brier 점수, 신뢰도 곡선).</td></tr>
+<tr><td><span class="tag p1">1순위</span><br>Q2</td><td><b>3초 예측영역 과소포함 보정</b></td><td>목표 95% 영역의 실제 포함률이 1초 94.1%, 3초 90.4%다. Joint-ML은 58%로 무너진다. 꼬리가 Gaussian보다 두껍다.</td><td>개발 날짜에서만 영역 배율을 보정한다(conformal 또는 스케일 계수). Student-t나 혼합분포 대안과 비교한다.</td></tr>
+<tr><td><span class="tag">2순위</span><br>Q3</td><td>상황별 q</td><td>신호가 끝날 무렵 서두르기, 정지·회전처럼 움직임이 바뀌는 구간에서 q가 다를 것이다.</td><td>횡단보도 위 / 보도, 녹색 / 적색 정리, 가감속 구간으로 나눠 q를 따로 추정한다(조원 repo에 진단 표가 이미 있음).</td></tr>
+<tr><td><span class="tag">2순위</span><br>Q4</td><td>Q와 G*의 역할 분리 유지</td><td>T에 이미 흔들림이 들어 있어서 Q를 G*에 더하면 이중 계산이 된다.</td><td>G*는 T 분포로만 계산하고, Q는 Q1 같은 실시간 확장에만 쓴다.</td></tr>
+</table></div>
+
+<h3>신호·공통</h3>
+<ol>
+<li><b>서울 횡단보도 길이 연결</b>: 서울 열린데이터광장의 횡단보도 정보를 교차로 ID에 붙이면, 4절 표를 가정이 아닌 <b>실제 부족 교차로 목록</b>으로 바꿀 수 있다.</li>
+<li><b>필요 시간 기준 통일</b>: 7초 + L/v (4절 참고).</li>
+<li><b>국내 보행자 데이터</b>: 연령 구성이 다른 국내 횡단 영상이나 연령별 보행속도 문헌값으로 0.8 m/s 시나리오에 근거를 붙인다.</li>
+</ol>
+
+<h2>6. 한계</h2>
+<ol class="mut" style="font-size:14px">
+<li>보행자 데이터는 독일 교차로 1곳, 횡단보도 3개다. 일반화는 길이 L에 대한 관계식 수준으로만 주장할 수 있다.</li>
+<li>연령·보행보조 여부를 알 수 없다. 0.8 m/s는 시나리오다.</li>
+<li>'완료'는 지도 기반 운영 규칙이며, 사람이 직접 확인한 정답 라벨이 아니다.</li>
+<li>R은 주석 간 차이로 만든 대리값이며, 중국 데이터라서 '카메라로 측정했다면'이라는 시나리오로만 썼다.</li>
+<li>서울 신호는 토요일·평일 각 하루치이고 보행자 정보가 없다. protected=녹색, permissive=점멸 해석은 가설이다.</li>
+<li>차량 측 trade-off는 가정값 시나리오다.</li>
+</ol>
+</main>
+<div id="tip"></div>
+<script>
+(function(){
+  const data=[["f1",16.1,17.9,46],["f2",20.1,22.8,14],["f3",16.2,17.0,43]];
+  const names=["G*(95%)","국내 공식 1.0 m/s","실측 녹색"],cols=["var(--s1)","var(--s2)","var(--s3)"];
+  const s=document.getElementById("g"),NS="http://www.w3.org/2000/svg",tip=document.getElementById("tip");
+  const L=50,R=60,T=10,W=760,max=50,x=v=>L+(W-L-R)*v/max,bh=16,gap=2,gh=3*(bh+gap)+22;
+  function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);s.appendChild(e);return e}
+  for(let v=0;v<=max;v+=10){el("line",{x1:x(v),x2:x(v),y1:T,y2:T+3*gh-14,stroke:"var(--bd)"});const t=el("text",{x:x(v),y:T+3*gh,"text-anchor":"middle"});t.textContent=v+"s"}
+  data.forEach((d,i)=>{const y0=T+i*gh;const t=el("text",{x:L-10,y:y0+1.5*(bh+gap)+4,"text-anchor":"end",class:"lab"});t.textContent=d[0];
+    for(let j=0;j<3;j++){const y=y0+j*(bh+gap),w=x(d[j+1])-L;
+      const r=el("path",{d:`M${L},${y}h${w-4}a4,4 0 0 1 4,4v${bh-8}a4,4 0 0 1 -4,4h${-(w-4)}z`,fill:cols[j],class:"bar"});
+      const msg=`${d[0]} · ${names[j]}: ${d[j+1]}s`;
+      r.addEventListener("mousemove",e=>{tip.style.display="block";tip.textContent=msg;tip.style.left=(e.clientX+12)+"px";tip.style.top=(e.clientY+12)+"px"});
+      r.addEventListener("mouseleave",()=>tip.style.display="none");
+      if(j!==1){const l=el("text",{x:x(d[j+1])+6,y:y+bh-4});l.textContent=d[j+1]+"s"}}});
+})();
+</script>
+</body>
+</html>

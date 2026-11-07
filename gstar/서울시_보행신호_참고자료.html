@@ -1,0 +1,177 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>서울시 보행신호 데이터 참고자료 (토요일 + 평일)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fafaf8;--fg:#1c1c1a;--mut:#6b6b66;--card:#fff;--bd:#e3e2dc;--a:#2a6fdb;--b:#e0813a;--c:#c0392b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151514;--fg:#ecebe6;--mut:#9a9a93;--card:#1e1e1c;--bd:#33332f;--a:#6aa2ff;--b:#f0a064;--c:#ff7b6b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151514;--fg:#ecebe6;--mut:#9a9a93;--card:#1e1e1c;--bd:#33332f;--a:#6aa2ff;--b:#f0a064;--c:#ff7b6b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:17px;margin:32px 0 8px}p{margin:6px 0}.mut{color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:16px}
+.k{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px}.k b{display:block;font-size:22px}.k span{font-size:12px;color:var(--mut)}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;overflow-x:auto}
+svg{width:100%;height:auto;display:block;min-width:420px}svg text{fill:var(--mut);font-size:11px}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:left}th{color:var(--mut);font-weight:600}
+.w{border-left:3px solid var(--c);padding:4px 12px;margin:6px 0}
+.lg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px}
+</style></head><body><main>
+<h1>서울시 보행신호 데이터 참고자료 (토요일 + 평일)</h1>
+<p class="mut">RQ(카메라·보행자 불확실성) 분석에 붙일 신호 측 입력값 · 2026-10-24(토) 00:00~22:14 · 교차로·방향 4,805쌍, 세그먼트 1,327,758개 기준(1~4번은 토요일). 평일(2026-11-03 화)은 5번에서 비교한다.</p>
+<div class="grid">
+<div class="k"><b>32초</b><span>보행 가능 총시간 중앙값<br>(protected+permissive)</span></div>
+<div class="k"><b>19~46초</b><span>교차로 간 5~95% 범위</span></div>
+<div class="k"><b>±0.15초</b><span>protected 교차로 내 변동<br>(거의 고정시간)</span></div>
+<div class="k"><b>±3.0초</b><span>permissive 교차로 내 변동<br>(robust σ 중앙값)</span></div>
+<div class="k"><b>0.30초</b><span>신호 전환 예측 오차<br>(절대오차 중앙값)</span></div>
+<div class="k"><b>−0.5~+1.2초</b><span>전환 시점 오차 95% 범위<br>(부호 포함)</span></div>
+</div>
+
+<h2>1. 현재 보행 가능 총시간 분포 (교차로·방향별 중앙값)</h2>
+<div class="box"><svg id="c1" viewBox="0 0 640 230"></svg></div>
+<p class="mut">평균 32.1초, 표준편차 8.2초. 팀 모델의 “현재 신호시간” 기준선(세로선)으로 쓸 수 있는 분포이다.</p>
+
+<h2>2. 상태별 지속시간 분포</h2>
+<div class="box"><svg id="c2" viewBox="0 0 640 230"></svg></div>
+<p class="lg mut"><i style="background:var(--a)"></i>protected(중앙값 11.1초)<i style="background:var(--b)"></i>permissive(중앙값 15.0초) · 3~40초 구간 세그먼트</p>
+
+<h2>3. 시간대별 변화 (중앙값)</h2>
+<div class="box"><svg id="c3" viewBox="0 0 640 230"></svg></div>
+<p class="mut">토요일 permissive는 12~16시에 약 16초로 다른 시간대(약 15초)보다 1초 길고, protected는 대부분 12초 안팎이다. protected는 18·19·21시에 11초로 짧아진다. protected 값은 11초와 12초가 섞여 있어 중앙값이 1초 단위로 뒤집힐 수 있으니 해석에 주의한다.</p>
+
+<h2>4. 신호 전환 시점 오차 (잔여시간 기반 예측 vs 실제 전환)</h2>
+<div class="box"><svg id="c4" viewBox="0 0 640 230"></svg></div>
+<p class="mut">적색→보행 시작, 보행 종료→적색 두 전환의 오차 합산(110만 건, −1.5~+3.0초 구간). 가로축은 초, 점선은 오차 0이다.</p>
+<div class="box"><table>
+<tr><th>전환</th><th>건수</th><th>절대오차<br>중앙값</th><th>90%</th><th>95%</th><th>99%</th></tr>
+<tr><td>stop → protected (보행 시작)</td><td>551,446</td><td>0.30초</td><td>0.53초</td><td>0.99초</td><td>3.51초</td></tr>
+<tr><td>permissive → stop (보행 종료)</td><td>551,248</td><td>0.30초</td><td>0.70초</td><td>0.90초</td><td>2.00초</td></tr>
+<tr><td>protected → permissive</td><td>553,544</td><td colspan="4">중앙값 19.0초 → 오차 아님(아래 설명)</td></tr>
+</table></div>
+<div class="w" style="border-color:var(--a)">두 전환 모두 오차 중앙값이 0에 가깝고(+0.01 / +0.10초) robust σ는 약 0.44초이다. 1초 간격 관측(σ 0.29초)과 잔여시간 갱신 간격(1초로 추정, σ 0.29초)을 합친 약 0.41초와 비슷하여, <b>신호 자체의 오차는 측정 해상도에 묻힐 정도로 작아 보인다.</b> 전환의 80~87%는 오차 구간이 0을 포함한다.</div>
+<div class="w">꼬리가 있다. |오차|가 2초를 넘는 전환이 약 1.1%, 5초를 넘는 전환이 약 0.9%이고, 중앙값 절대오차가 1초를 넘는 교차로가 2,324곳 중 약 3%(73곳)이다. 이상 교차로는 따로 걸러 보는 것이 좋다.</div>
+<div class="w">protected → permissive 전환의 “오차”가 약 19초인 것은 잔여시간이 protected 종료가 아니라 <b>보행신호 전체(녹색+점멸) 종료까지</b>를 세기 때문으로 보인다. S 계산에서는 이 전환을 제외해야 하며, protected 시작 시점의 잔여시간은 보행 가능 총시간으로 읽을 수 있다. (추정, 명세서 확인 필요)</div>
+
+<h2>5. 토요일 vs 평일 (평일 = 2026-11-03 화요일)</h2>
+<div class="w">평일 데이터는 하루(화요일) 00:00~17:04이지만 10~11시는 없고 9시와 16시 이후는 거의 없다. 사실상 0~8시 중심에 12~15시가 조금 있는 구성이라, 시간대 구성을 맞추지 않은 비교는 요일 효과로 해석하면 안 된다.</div>
+<div class="box"><svg id="c5" viewBox="0 0 640 230"></svg></div>
+<p class="lg mut"><i style="background:var(--a)"></i>토요일<i style="background:var(--b)"></i>평일 · 시간대별 구간 수(천 개)</p>
+
+<h2 style="font-size:15px">교차로·방향 단위 비교 (보행 가능 총시간)</h2>
+<div class="box"><table>
+<tr><th>항목</th><th>토요일</th><th>평일</th></tr>
+<tr><td>교차로·방향 쌍</td><td>4,805</td><td>4,769</td></tr>
+<tr><td>총시간 중앙값</td><td>32.0초</td><td>32.0초</td></tr>
+<tr><td>5% / 25% / 75% / 95%</td><td>19.0 / 27.0 / 37.0 / 46.0초</td><td>19.0 / 26.9 / 37.1 / 46.0초</td></tr>
+<tr><td>protected 교차로 내 변동 σ</td><td>0.15초</td><td>0.03초</td></tr>
+<tr><td>permissive 교차로 내 변동 σ</td><td>2.96초</td><td>2.41초</td></tr>
+<tr><td>지속시간 변동 합 σ</td><td>3.79초</td><td>3.71초</td></tr>
+</table></div>
+<div class="w" style="border-color:var(--a)">양일에 모두 잡힌 같은 교차로·방향 4,741쌍을 짝지어 비교하면 상관이 0.95이고 차이의 중앙값이 0.0초이다. 64%는 ±0.5초 이내이고 약 13%는 3초 넘게 다르다. 교차로 단위의 신호시간은 요일과 거의 무관하게 같다.</div>
+
+<h2 style="font-size:15px">같은 시간대끼리 비교 (구간 풀링 중앙값)</h2>
+<div class="box"><svg id="c6" viewBox="0 0 640 230"></svg></div>
+<p class="lg mut"><i style="background:var(--a)"></i>토요일 permissive<i style="background:var(--b)"></i>평일 permissive · 구간이 없는 시간대는 끊어서 그렸다.</p>
+<div class="box"><table>
+<tr><th>시간대</th><th>상태</th><th>토요일</th><th>평일</th><th>구간 수 (토 / 평)</th></tr>
+<tr><td rowspan="2">0~8시</td><td>permissive</td><td>15.0초</td><td>16.0초</td><td rowspan="2">645,115 / 1,297,961</td></tr>
+<tr><td>protected</td><td>12.0초</td><td>12.0초</td></tr>
+<tr><td rowspan="2">12~15시</td><td>permissive</td><td>16.0초</td><td>14.8초</td><td rowspan="2">809,802 / 44,081</td></tr>
+<tr><td>protected</td><td>12.0초</td><td>11.0초</td></tr>
+</table></div>
+<div class="w">새벽~아침(0~8시)에는 평일 permissive가 약 1초 길고, 낮(12~15시)에는 평일이 약 1초 짧다. 평일 낮 표본은 44,081구간뿐이라 잠정 값이다. 토요일에 보였던 낮 시간대의 +1초 연장은 평일에는 보이지 않는다.</div>
+
+<h2 style="font-size:15px">신호 전환 오차 (평일 상세 파일)</h2>
+<div class="box"><svg id="c7" viewBox="0 0 640 230"></svg></div>
+<p class="lg mut"><i style="background:var(--a)"></i>토요일<i style="background:var(--b)"></i>평일 · 두 전환 합산, 각 날의 비중(%), 점선은 오차 0</p>
+<div class="box"><table>
+<tr><th>전환 (토 / 평)</th><th>건수</th><th>중앙 절대오차</th><th>90%</th><th>95%</th><th>99%</th></tr>
+<tr><td>stop → protected</td><td>551,446 / 321,803</td><td>0.30 / 0.30초</td><td>0.53 / 0.59초</td><td>0.99 / 1.00초</td><td>3.51 / 2.41초</td></tr>
+<tr><td>permissive → stop</td><td>551,248 / 322,197</td><td>0.30 / 0.30초</td><td>0.70 / 0.70초</td><td>0.90 / 0.99초</td><td>2.00 / 1.60초</td></tr>
+<tr><td>합산 robust σ</td><td colspan="5">0.444초 / 0.445초 · 95% 범위 −0.5~+1.2초 / −0.5~+1.2초</td></tr>
+<tr><td>|오차| &gt; 2초 / &gt; 5초</td><td colspan="5">1.1% / 0.9% (토) · 1.0% / 0.8% (평)</td></tr>
+<tr><td>이상 교차로 (중앙 절대오차 &gt; 1초)</td><td colspan="5">73곳 / 2,324곳 (토) · 90곳 / 2,314곳 (평) · 두 날 모두 48곳</td></tr>
+</table></div>
+<div class="w" style="border-color:var(--a)">신호 전환 오차의 분포가 두 날 사이에 사실상 같다. 중앙값, σ, 95% 범위가 일치하므로 신호 오차 S는 측정 해상도 수준이고 요일에 따라 달라지지 않는다는 결론이 두 날로 확인되었다.</div>
+<div class="w">이상 교차로는 토요일의 73곳 중 48곳(66%)이 평일에도 이상으로 나타나고, 교차로별 중앙 절대오차의 상관이 0.95이다. 데이터 문제가 아니라 그 교차로의 운영 특성일 가능성이 높아 S 추정에서는 따로 분리하는 편이 좋다.</div>
+
+<div class="w">앞서 방향별 요약으로 비교했을 때 “평일이 평균 0.6초 길다”와 “dark 비율이 4배 높다”는 결과는 시간대 구성 차이로 설명된다. 평일 데이터가 0~8시에 몰려 있고, 그 시간대에는 평일 permissive가 16초이며 dark 비율이 두 날 모두 0.4~0.9%로 높다(이후 시간대는 0.1~0.2%). 요일 효과로 인용하지 않는다.</div>
+<div class="w">평일은 하루치라 평일 사이의 날짜별 변동은 알 수 없다. 평일 전환 오차 파일에는 시간 컬럼이 없어 시간대별 오차 비교도 불가능하다.</div>
+
+<h2>6. RQ 모델에 넣을 수 있는 신호 측 값</h2>
+<div class="box"><table>
+<tr><th>항목</th><th>값</th><th>모델에서의 쓰임</th></tr>
+<tr><td>관측 양자화 (1초 간격)</td><td>σ ≈ 0.29초</td><td>신호 시점 측정 오차의 하한 (균등분포 1/√12)</td></tr>
+<tr><td>protected 교차로 내 변동</td><td>σ ≈ 0.15초</td><td>사실상 고정, 무시 가능 수준</td></tr>
+<tr><td>permissive 교차로 내 변동</td><td>σ ≈ 3.0초</td><td>지속시간 자체의 주기별 변동. 잔여시간 오차 S와는 별개 (원인 확인 필요)</td></tr>
+<tr><td>지속시간 변동 합 (제곱합)</td><td>σ ≈ 3.8초 (90%: 10.4초)</td><td>보행 가능시간 변동의 참고 상한</td></tr>
+<tr><td><b>신호 전환 예측 오차 S</b></td><td>중앙값 ≈ 0, σ ≈ 0.44초<br>95% 범위 −0.5~+1.2초</td><td>측정 해상도 수준. 모델에서는 무시 가능 또는 σ≈0.4초 고정항 후보</td></tr>
+<tr><td>전환 오차의 시간대 의존성</td><td>없음 (중앙값 0.30초 일정)</td><td>시간대별로 S를 따로 둘 필요 없음</td></tr>
+<tr><td>전환 오차의 요일 의존성</td><td>없음 (토·평일 모두 중앙값 0.30초, σ 0.44초, 95% 범위 −0.5~+1.2초)</td><td>요일별로 S를 따로 둘 필요 없음</td></tr>
+<tr><td>교차로 단위 총시간의 요일 차이</td><td>중앙값 0.0초 (같은 교차로 4,741쌍, 상관 0.95)</td><td>요일별 분포를 따로 둘 필요 작음</td></tr>
+<tr><td>시간대 이동</td><td>토요일 permissive 12~16시 +1초</td><td>시간대별 조건부 분포</td></tr>
+<tr><td>교차로 간 편차</td><td>평균 32.1 / σ 8.2초</td><td>횡단보도 유형별 prior</td></tr>
+</table></div>
+
+<h2>7. 충분성 진단 예시 (가정값)</h2>
+<div class="box"><table>
+<tr><th>횡단 길이</th><th>속도 1.0 m/s<br>필요시간 → 부족 비율</th><th>속도 0.8 m/s<br>필요시간 → 부족 비율</th></tr>
+<tr><td>15 m</td><td>15초 → 1.9%</td><td>18.8초 → 4.3%</td></tr>
+<tr><td>20 m</td><td>20초 → 6.8%</td><td>25.0초 → 19.3%</td></tr>
+<tr><td>25 m</td><td>25초 → 19.3%</td><td>31.2초 → 48.2%</td></tr>
+<tr><td>30 m</td><td>30초 → 41.8%</td><td>37.5초 → 76.0%</td></tr>
+<tr><td>40 m</td><td>40초 → 84.3%</td><td>50.0초 → 97.9%</td></tr>
+</table></div>
+<p class="mut">“부족 비율” = 보행 가능 총시간이 필요시간보다 짧은 교차로·방향의 비율. 실제 횡단보도 길이 자료로 교체 전까지는 개념 설명용이다.</p>
+
+<h2>8. 사용 전 확인할 점</h2>
+<div class="w">protected/permissive가 각각 보행녹색/녹색점멸이라는 해석은 가설이다. 명세서 확인 필요(합계는 영향 없음).</div>
+<div class="w">상세 분석은 토요일(10/24, 0~22시)과 평일(11/3 화, 실질적으로 0~8시와 12~15시) 각각 하루치이다. 교차로·방향당 관측은 하루의 약 19%뿐이라 다른 날짜로 일반화하기 어렵다.</div>
+<div class="w">끊긴 구간 이상치를 막으려 3~60초 세그먼트만 사용했다. permissive 변동 3초가 실제 감응식 운영인지 추출 오류인지는 미확인이다.</div>
+<div class="w">오차 S는 전환 직전 관측 1회의 잔여시간으로 계산한 값이다. 36001(알 수 없음을 뜻하는 표준 코드)은 예측 잔여시간 최댓값이 254.5초라서 제외된 것으로 확인했다. 잔여시간 단위(0.1초)는 전환 오차가 약 0.3초로 맞는다는 점이 뒷받침하지만, 갱신 간격(1초 추정)은 명세서 확인이 필요하다.</div>
+<h2>9. 상태 비중과 36001 비율 (토요일)</h2>
+<div class="box"><table>
+<tr><th>상태</th><th>관측 비중</th><th>36001 비율</th></tr>
+<tr><td>stop-And-Remain</td><td>74.0%</td><td>7.3%</td></tr>
+<tr><td>permissive-Movement-Allowed</td><td>14.7%</td><td>6.5%</td></tr>
+<tr><td>protected-Movement-Allowed</td><td>10.9%</td><td>6.6%</td></tr>
+<tr><td>dark</td><td>0.28%</td><td>82.4%</td></tr>
+<tr><td>permissive-clearance / protected-clearance / stop-Then-Proceed</td><td>각 0.02%</td><td>24% / 10% / 99.9%</td></tr>
+</table></div>
+<p class="mut">정상 3개 상태에서도 약 7%는 잔여시간이 36001이라 필터링이 필요하다. 전체 78,472,445행(8개 방향 합계) 기준이다.</p>
+</main>
+<script>
+const D={"hP": [15225, 15449, 16541, 19701, 25369, 39120, 60244, 68982, 76522, 73048, 54286, 44386, 37175, 26257, 19403, 13971, 11100, 6518, 3800, 2970, 2866, 2521, 2056, 1038, 836, 1001, 616, 322, 354, 340, 253, 115, 128, 99, 135, 119, 104], "hQ": [16272, 17380, 18089, 21340, 22999, 25104, 26587, 30545, 32001, 31790, 37275, 36961, 35342, 42252, 40119, 32070, 30647, 29724, 29672, 22075, 19465, 16778, 10010, 10442, 10935, 7529, 6480, 6060, 4168, 2566, 2544, 1842, 1226, 1150, 582, 552, 618], "hT": [7, 24, 56, 77, 139, 185, 257, 328, 419, 492, 486, 492, 491, 328, 247, 235, 186, 124, 59, 49, 31, 39, 12, 12, 4], "hrP": [11.98, 11.8, 11.96, 11.95, 11.99, 11.98, 11.98, 11.98, 11.99, 11.98, 11.8, 11.98, 12.0, 12.0, 12.0, 12.0, 11.99, 11.99, 11.03, 11.02, 11.95, 11.04, 11.95], "hrQ": [15.01, 15.0, 15.0, 15.0, 15.0, 15.06, 15.13, 15.01, 15.99, 15.01, 15.0, 15.81, 16.0, 16.0, 16.0, 16.0, 15.99, 15.48, 15.01, 15.02, 15.0, 14.99, 15.15], "n": 4805, "nseg": 1327758, "pct": [19.0, 27.0, 32.0, 37.0, 46.0], "sd": [0.148257968865826, 2.960711638250556, 3.787756524718647]};
+const NS="http://www.w3.org/2000/svg";
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function txt(p,x,y,s,anc){const t=el("text",{x,y,"text-anchor":anc||"middle"},p);t.textContent=s}
+const W=640,H=230,L=40,R=10,T=14,B=30;
+function frame(svg,max,ticks){for(let i=0;i<=4;i++){const y=T+(H-T-B)*(1-i/4);el("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:"var(--bd)"},svg);txt(svg,L-6,y+4,Math.round(max*i/4).toLocaleString(),"end")}}
+function bars(id,data,x0,step,col,marks){const s=document.getElementById(id);const max=Math.max(...data);frame(s,max);const w=(W-L-R)/data.length;
+data.forEach((v,i)=>{const h=(H-T-B)*v/max;el("rect",{x:L+i*w+1,y:H-B-h,width:w-2,height:h,fill:col,opacity:.85},s)});
+const every=Math.ceil(data.length/12);data.forEach((v,i)=>{if(i%every===0)txt(s,L+i*w+w/2,H-B+14,+(x0+i*step).toFixed(2))});
+(marks||[]).forEach(m=>{const x=L+(m.v-x0)/step*w;el("line",{x1:x,x2:x,y1:T,y2:H-B,stroke:"var(--c)","stroke-dasharray":"4 3"},s);txt(s,x,T+10,m.l)});return {w,max}}
+bars("c1",D.hT,10,2,"var(--a)",[{v:D.pct[2],l:"중앙 "+D.pct[2]},{v:D.pct[0],l:"5% "+D.pct[0]},{v:D.pct[4],l:"95% "+D.pct[4]}]);
+(function(){const s=document.getElementById("c2");const max=Math.max(...D.hP,...D.hQ);frame(s,max);const n=D.hP.length,w=(W-L-R)/n;
+[[D.hP,"var(--a)"],[D.hQ,"var(--b)"]].forEach(([d,c])=>{const pts=d.map((v,i)=>(L+i*w+w/2)+","+(H-B-(H-T-B)*v/max)).join(" ");el("polyline",{points:pts,fill:"none",stroke:c,"stroke-width":2},s)});
+d=D.hP;for(let i=0;i<n;i+=3)txt(s,L+i*w+w/2,H-B+14,3+i)})();
+(function(){const s=document.getElementById("c3");const a=D.hrP,b=D.hrQ;const lo=8,hi=18;const y=v=>H-B-(H-T-B)*(v-lo)/(hi-lo);
+for(let i=0;i<=5;i++){const v=lo+i*2,yy=y(v);el("line",{x1:L,x2:W-R,y1:yy,y2:yy,stroke:"var(--bd)"},s);txt(s,L-6,yy+4,v,"end")}
+const w=(W-L-R)/22;[[a,"var(--a)"],[b,"var(--b)"]].forEach(([d,c])=>{const pts=d.map((v,i)=>v==null?null:(L+i*w)+","+y(v)).filter(Boolean).join(" ");el("polyline",{points:pts,fill:"none",stroke:c,"stroke-width":2},s)});
+for(let i=0;i<23;i+=2)txt(s,L+i*w,H-B+14,i+"시");txt(s,L-6,T-2,"초","end")})();
+const E=[271,186,421,228,409,660,496,1025,1257,27135,93692,57881,111934,69754,95041,121327,69201,117928,59309,83654,78229,23513,23341,10165,9073,9935,6828,7450,3378,3489,1002,313,510,316,369,415,292,304,179,178,127,34,42,16,47];
+bars("c4",E,-1.5,0.1,"var(--a)",[{v:0,l:"0"}]);
+const HR={"cs": [63743, 44413, 14220, 28985, 64186, 131875, 112745, 110438, 141776, 85067, 63379, 134480, 196600, 247209, 262525, 263663, 196555, 139503, 132381, 148280, 94886, 40434, 4675, 0], "cw": [291853, 258344, 206322, 185850, 171665, 150312, 96322, 78329, 53942, 4679, 0, 0, 9972, 10137, 8664, 18418, 5, 1, 0, 0, 0, 0, 0, 0], "hs": [11.97, 11.8, 11.96, 11.95, 11.99, 11.98, 11.98, 11.98, 11.99, 11.98, 11.8, 11.98, 12.0, 12.0, 12.0, 12.0, 11.99, 11.99, 11.03, 11.02, 11.95, 11.04, 11.95, null], "hw": [12.0, 12.0, 12.0, 11.99, 11.99, 11.99, 11.9, 11.97, 11.16, 11.01, null, null, 11.0, 11.0, 11.0, 11.01, null, null, null, null, null, null, null, null], "qs": [15.01, 15.0, 15.0, 15.0, 15.0, 15.06, 15.13, 15.01, 15.99, 15.01, 15.0, 15.81, 16.0, 16.0, 16.0, 16.0, 15.99, 15.48, 15.01, 15.02, 15.0, 14.99, 15.15, null], "qw": [16.02, 16.01, 16.0, 16.0, 15.99, 15.94, 15.04, 15.0, 14.99, 15.0, null, null, 14.01, 15.0, 14.0, 14.98, null, null, null, null, null, null, null, null]};
+const EH={"hw": [111, 140, 184, 192, 210, 255, 361, 406, 735, 14800, 41412, 42988, 48388, 56713, 56450, 57788, 55338, 54657, 49836, 48735, 41462, 17240, 12177, 7353, 6322, 6767, 5248, 5364, 2065, 2246, 491, 161, 199, 176, 244, 189, 172, 139, 113, 92, 63, 13, 10, 10, 21], "hs": [271, 186, 421, 228, 409, 660, 496, 1025, 1257, 27135, 93692, 57881, 111934, 69754, 95041, 121327, 69201, 117928, 59309, 83654, 78229, 23513, 23341, 10165, 9073, 9935, 6828, 7450, 3378, 3489, 1002, 313, 510, 316, 369, 415, 292, 304, 179, 178, 127, 34, 42, 16, 47]};
+function runs(a,fx,fy){const o=[];let c=[];a.forEach((v,i)=>{if(v==null){if(c.length)o.push(c);c=[]}else c.push([fx(i),fy(v)])});if(c.length)o.push(c);return o}
+function lines(s,a,col,fx,fy){runs(a,fx,fy).forEach(r=>{if(r.length>1)el("polyline",{points:r.map(p=>p.join(",")).join(" "),fill:"none",stroke:col,"stroke-width":2},s);else el("circle",{cx:r[0][0],cy:r[0][1],r:3,fill:col},s)})}
+function grid(s,lo,hi,n,fm){for(let i=0;i<=n;i++){const v=lo+(hi-lo)*i/n,y=H-B-(H-T-B)*i/n;el("line",{x1:L,x2:W-R,y1:y,y2:y,stroke:"var(--bd)"},s);txt(s,L-6,y+4,fm(v),"end")}}
+(function(){const s=document.getElementById("c5");grid(s,0,300,4,v=>Math.round(v));const fx=i=>L+i*(W-L-R)/23,fy=v=>H-B-(H-T-B)*v/300;
+lines(s,HR.cs.map(v=>v/1000),"var(--a)",fx,fy);lines(s,HR.cw.map(v=>v/1000),"var(--b)",fx,fy);for(let i=0;i<24;i+=2)txt(s,fx(i),H-B+14,i+"시")})();
+(function(){const s=document.getElementById("c6");grid(s,13,17,4,v=>v);const fx=i=>L+i*(W-L-R)/23,fy=v=>H-B-(H-T-B)*(v-13)/4;
+lines(s,HR.qs,"var(--a)",fx,fy);lines(s,HR.qw,"var(--b)",fx,fy);for(let i=0;i<24;i+=2)txt(s,fx(i),H-B+14,i+"시");txt(s,L-6,T-2,"초","end")})();
+(function(){const s=document.getElementById("c7");const n=EH.hs.length,u=(W-L-R)/n,sa=EH.hs.reduce((a,b)=>a+b),sb=EH.hw.reduce((a,b)=>a+b);
+const A=EH.hs.map(v=>v/sa*100),Bv=EH.hw.map(v=>v/sb*100),mx=Math.ceil(Math.max(...A,...Bv)/4)*4;grid(s,0,mx,4,v=>Math.round(v)+"%");
+const fx=i=>L+(i+.5)*u,fy=v=>H-B-(H-T-B)*v/mx;lines(s,A,"var(--a)",fx,fy);lines(s,Bv,"var(--b)",fx,fy);
+const x0=L+15*u;el("line",{x1:x0,x2:x0,y1:T,y2:H-B,stroke:"var(--c)","stroke-dasharray":"4 3"},s);
+for(let i=0;i<=n;i+=5)txt(s,L+i*u,H-B+14,(-1.5+i*.1).toFixed(1))})();
+</script></body></html>
