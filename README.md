@@ -1,3 +1,15 @@
+# Final View2Risk
+
+[**Simulation & Results**](https://riverblue72.github.io/view2risk/final/) · [**Modeling Guide**](https://riverblue72.github.io/view2risk/final/modeling.html) · [Final research code and documentation](final/README.md)
+
+Official pretrained DD-MDN Q-only is the main predictor. PedPy analyzes actual pedestrian dynamics; SPD/FilterPy R+Q is an optional observation-robustness comparison. No new model training is introduced. The static public demo uses three licensed IMPTC excerpts; inD appears only as aggregate results. IMPTC Exit estimates remain **Simulation-only**. See [data policy](final/DATA_POLICY.md).
+
+GitHub Pages serves `main` → `/docs`; the final site is under `/final/`. Existing research directories and results are preserved.
+
+---
+
+## Old Experiments — preserved original README
+
 # View2Risk
 
 보행자 위치 관측의 불확실성 **R**과 등속도 움직임 모델의 효과적 과정 잡음 **Q**를 공개 데이터에서 감사하고, 기록 궤적에 대한 예측분포를 검증한 연구 작업이다. 코드, 고정 프로토콜, 집계 CSV, 보고서와 검증 기록을 보관한다.

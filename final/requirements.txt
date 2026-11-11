@@ -1,0 +1,8 @@
+numpy
+scipy
+pandas
+contourpy
+filterpy==1.4.5
+pedpy==1.5.0
+shapely
+# Install the pinned official DD-MDN environment separately; do not train.

@@ -1,0 +1,26 @@
+{
+  "relative_link_errors": [],
+  "public_cases": [
+    {
+      "id": "imptc-01",
+      "dataset": "IMPTC",
+      "origins": 9,
+      "sha256": "39ffb523a24d6bca5ad7d7b8e168b07404641aec7cb441864c7033db1906cda8"
+    },
+    {
+      "id": "imptc-02",
+      "dataset": "IMPTC",
+      "origins": 9,
+      "sha256": "b0bddf4b91f1a4b1b1d820611af82dd9d92173f8bd370ffdfbde52792f8eec8b"
+    },
+    {
+      "id": "imptc-03",
+      "dataset": "IMPTC",
+      "origins": 9,
+      "sha256": "5c3b5e00a01c85cd5a8cd5ca8051231a9c7a7791ed8221a7d48153e5c4a8e5c9"
+    }
+  ],
+  "inD_replay_exported": false,
+  "weights_exported": false,
+  "status": "PASSED"
+}

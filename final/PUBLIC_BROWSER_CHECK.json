@@ -1,0 +1,41 @@
+{
+  "base": "http://127.0.0.1:18774/final/",
+  "simulation": {
+    "loaded": true,
+    "mode": "clean",
+    "cases": 3,
+    "origin": 0,
+    "notice": "실제 DD-MDN 사전 계산 출력 · IMPTC 공개 구간 · 배경은 도식 · 1초/4초 캐시 재생 · Exit는 Simulation-only",
+    "images": [],
+    "mathErrors": 0,
+    "requests": []
+  },
+  "rMode": {
+    "mode": "rq",
+    "posterior": 8,
+    "probabilityStatus": "Simulation-only"
+  },
+  "origin8": {
+    "t": 8.00001521110535,
+    "origin": 8
+  },
+  "guide": {
+    "ready": true,
+    "math": 21,
+    "errors": 0,
+    "units": 48,
+    "brokenAnchors": []
+  },
+  "mobileGuide": {
+    "width": 390,
+    "bodyWidth": 390,
+    "mathErrors": 0
+  },
+  "mobileSimulation": {
+    "loaded": true,
+    "width": 390,
+    "bodyWidth": 390,
+    "brokenImages": []
+  },
+  "errors": []
+}
