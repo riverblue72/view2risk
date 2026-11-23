@@ -1,0 +1,207 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "Normal viewer opens with predictions",
+      "passed": true
+    },
+    {
+      "name": "Play and slider are enabled",
+      "passed": true
+    },
+    {
+      "name": "Actual time and pedestrian advance",
+      "passed": true,
+      "start": {
+        "t": 8,
+        "x": 2.860154636121742,
+        "z": 4.1939605007318255,
+        "origin": 8
+      },
+      "moved": {
+        "t": 9.813800000190737,
+        "x": 1.0732413872591897,
+        "z": 1.7920774431373478,
+        "origin": 9
+      }
+    },
+    {
+      "name": "Rolling origin advanced",
+      "passed": true
+    },
+    {
+      "name": "Right panel matches current origin",
+      "passed": true
+    },
+    {
+      "name": "Pin freezes the current origin",
+      "passed": true
+    },
+    {
+      "name": "Seeking releases old anchor",
+      "passed": true
+    },
+    {
+      "name": "Saved DD probability used at replay origin",
+      "passed": true
+    },
+    {
+      "name": "Missing AFT cannot reuse old origin",
+      "passed": true
+    },
+    {
+      "name": "Preforecast period clears old values",
+      "passed": true
+    },
+    {
+      "name": "Back to matched original origin",
+      "passed": true
+    },
+    {
+      "name": "GT reveal separately enabled",
+      "passed": true
+    },
+    {
+      "name": "GT can be hidden again",
+      "passed": true
+    },
+    {
+      "name": "Pending choice not overwritten by refresh",
+      "passed": true
+    },
+    {
+      "name": "Apply updates actual case and view",
+      "passed": true
+    },
+    {
+      "name": "Layout 756 usable",
+      "passed": true
+    },
+    {
+      "name": "Layout 390 usable",
+      "passed": true
+    },
+    {
+      "name": "Presentation still locks same origin",
+      "passed": true
+    },
+    {
+      "name": "Public case ID, relative origin, stored probability",
+      "passed": true
+    },
+    {
+      "name": "Presentation keyboard navigation",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 0 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 1 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 2 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 3 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 4 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 5 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 6 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 7 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 8 equations",
+      "passed": true
+    },
+    {
+      "name": "Methods chapter 9 equations",
+      "passed": true
+    },
+    {
+      "name": "Same origin / stored R iid_0.5",
+      "passed": true
+    },
+    {
+      "name": "Same origin / stored R iid_1",
+      "passed": true
+    },
+    {
+      "name": "Same origin / stored R iid_2",
+      "passed": true
+    },
+    {
+      "name": "Same origin / stored R correlated_1",
+      "passed": true
+    },
+    {
+      "name": "Same origin / stored R dropout_1",
+      "passed": true
+    },
+    {
+      "name": "Only allowlisted IMPTC cases",
+      "passed": true
+    },
+    {
+      "name": "Results trajectory",
+      "passed": true
+    },
+    {
+      "name": "Results completion",
+      "passed": true
+    },
+    {
+      "name": "Results exit",
+      "passed": true
+    },
+    {
+      "name": "Results robustness",
+      "passed": true
+    },
+    {
+      "name": "Results limitations",
+      "passed": true
+    },
+    {
+      "name": "Legacy route #condition-analysis",
+      "passed": true
+    },
+    {
+      "name": "Legacy route #r-analysis",
+      "passed": true
+    },
+    {
+      "name": "Legacy route #clearance-aft",
+      "passed": true
+    },
+    {
+      "name": "Legacy route #exit-final",
+      "passed": true
+    },
+    {
+      "name": "Public mobile no overflow",
+      "passed": true
+    },
+    {
+      "name": "Modeling legacy page",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "networkFailures": []
+}

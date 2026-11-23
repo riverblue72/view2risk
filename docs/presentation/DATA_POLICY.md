@@ -1,0 +1,5 @@
+# Public presentation data policy
+
+The small IMPTC-derived excerpts and stored DD-MDN outputs are shared for noncommercial research under CC BY-NC 4.0. Source: https://zenodo.org/records/14811016 . Authors: Manuel Hetzel, Hannes Reichert, Günther Reitberger, Konrad Doll and Bernhard Sick. License: https://creativecommons.org/licenses/by-nc/4.0/ . Changes: three excerpts selected, original IDs replaced, acquisition timestamps made relative; world coordinates and stored probabilities retained. Attribution and license must accompany reuse. This is data minimization, not an anonymity guarantee.
+
+No inD trajectories, camera backgrounds, reconstructable per-origin data, model checkpoints or private API endpoints are distributed. inD appears only in aggregate statistics. Dataset-derived files are not relicensed as repository code. No model is trained or executed by this static site. Noise trajectories are saved synthetic perturbation experiments of real IMPTC observations, not sensor measurements. Completion calibration remains independently unvalidated.
