@@ -37,7 +37,7 @@ await call('Emulation.setDeviceMetricsOverride',{width:1440,height:900,deviceSca
 
 await check('Public case ID, relative origin, stored probability','P_STATE.c.event_id==="public-imptc-01"&&Math.abs(P_STATE.c.origin_s-8)<1e-5&&P_STATE.c.cdf.DDMDN[60]===.6625');
 await call('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowLeft',code:'ArrowLeft'});await check('Presentation keyboard navigation','P_STAGE===4');
-await call('Page.navigate',{url:host+'/methods.html'});await until('window.methodsReady===true&&document.querySelectorAll(".katex").length>0',90);for(let step=0;step<10;step++){await ev('mShow('+step+')');await check('Methods chapter '+step+' equations','document.querySelectorAll(".katex").length>0&&document.querySelectorAll(".katex-error").length===0');}await screenshot('methods_public.png');
+await call('Page.navigate',{url:host+'/methods.html'});await until('window.methodsReady===true&&document.querySelectorAll(".katex").length>0',90);for(let step=0;step<6;step++){await ev('mShow('+step+')');await check('Methods chapter '+step+' equations','document.querySelectorAll(".katex").length>0&&document.querySelectorAll(".katex-error").length===0');}await screenshot('methods_public.png');
 await call('Page.navigate',{url:host+'/?case=o0008#/noise'});await until('window.presentationViewerReady===true&&uMatchedR()',180);
 const fixed=await ev('({id:caseData.event_id,origin:packet.origin_s})');
 for(const scenario of ['iid_0.5','iid_1','iid_2','correlated_1','dropout_1']){

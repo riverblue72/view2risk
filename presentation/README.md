@@ -2,7 +2,9 @@
 
 기존 `final/` 및 `docs/final/`과 독립된 발표용 공개 웹사이트입니다.
 
-**[발표 시작](https://riverblue72.github.io/view2risk/presentation/)** · **[시뮬레이션](https://riverblue72.github.io/view2risk/presentation/?case=o0008#/simulation)** · **[Methods & Mathematics](https://riverblue72.github.io/view2risk/presentation/methods.html)** · **[Observation Noise Lab](https://riverblue72.github.io/view2risk/presentation/?case=o0008#/noise)** · **[Results](https://riverblue72.github.io/view2risk/presentation/#/results/trajectory)**
+**[발표 시작](https://riverblue72.github.io/view2risk/presentation/)** · **[Compare Models](https://riverblue72.github.io/view2risk/presentation/compare.html)** · **[Methods & Mathematics](https://riverblue72.github.io/view2risk/presentation/methods.html)** · **[Observation Noise Lab](https://riverblue72.github.io/view2risk/presentation/?case=o0008#/noise)** · **[Results](https://riverblue72.github.io/view2risk/presentation/#/results/trajectory)**
+
+> Local redesign review: `compare.html` and the six-chapter Methods redesign are prepared locally. They have not been pushed; the currently deployed site remains the previous release until authorization.
 
 ## Folder separation
 
@@ -66,3 +68,12 @@ node presentation/tools/browser_check.mjs
 ```
 
 The script tests a local static HTTP server by default. Set `V2R_PUBLIC_URL` to the deployed `/presentation` URL to verify GitHub Pages. See [PUBLICATION_CHECK.md](PUBLICATION_CHECK.md) for executed evidence and [THIRD_PARTY.md](THIRD_PARTY.md) for attribution.
+
+
+## Final seven-scene research presentation
+
+The default public entry is [Presentation](https://riverblue72.github.io/view2risk/presentation/), followed by [Methods](site/methods.html), [recorded-case comparison](site/compare.html) and [Results](site/results.html). The presentation follows problem → operational GT → parallel predictors → observed outcome → synthetic observation error → three aggregate findings → contribution and limits.
+
+Read [Storyboard](FINAL_PRESENTATION_STORYBOARD.md), [Methods](FINAL_METHODS_EXPLANATION.md), [Simulation UX](FINAL_SIMULATION_UX_REPORT.md), [Results interpretation](FINAL_RESULTS_INTERPRETATION.md) and [Browser verification](FINAL_BROWSER_VERIFICATION.md). Review screenshots and aggregate-only evidence are under `review/`.
+
+This public site replays allowlisted saved outputs. Predictions are not model accuracies. XGBoost forecasts remaining time, DD-MDN forecasts trajectories, and R is an optional synthetic observation-noise analysis. Previous `final/` and `docs/final/` releases remain separate.

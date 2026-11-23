@@ -1,0 +1,178 @@
+{
+  "scope": "Existing aggregates only; no private trajectories or predictions",
+  "key_table": [
+    {
+      "model": "DDMDN",
+      "h1": 0.0032441841634114,
+      "h4": 0.0347182102028383,
+      "mean_brier": 0.0161721290051344,
+      "mean_ece": 0.0211526085940821,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M0__calibrated",
+      "h1": 0.0072037177079013,
+      "h4": 0.0238393103429916,
+      "mean_brier": 0.0163507635404887,
+      "mean_ece": 0.0156599205638218,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M0__raw",
+      "h1": 0.0071247345271483,
+      "h4": 0.0269992810378197,
+      "mean_brier": 0.0176569904441783,
+      "mean_ece": 0.0208838367182496,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M1__calibrated",
+      "h1": 0.0061832158675772,
+      "h4": 0.0239602127204338,
+      "mean_brier": 0.0163452870393154,
+      "mean_ece": 0.0147967224741101,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M1__raw",
+      "h1": 0.0064409924779177,
+      "h4": 0.0269216453688789,
+      "mean_brier": 0.0176388101659376,
+      "mean_ece": 0.0205235953565886,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M2__calibrated",
+      "h1": 0.0064015472337653,
+      "h4": 0.0238670118372672,
+      "mean_brier": 0.0162663191193747,
+      "mean_ece": 0.0161012153921247,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "EA_M2__raw",
+      "h1": 0.0065775117882187,
+      "h4": 0.0269066745269663,
+      "mean_brier": 0.017592368523107,
+      "mean_ece": 0.0256755309073476,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M0__calibrated",
+      "h1": 0.1082774576680694,
+      "h4": 0.045214179153342,
+      "mean_brier": 0.0562141513580106,
+      "mean_ece": 0.0574304542384947,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M0__raw",
+      "h1": 0.1070160193080154,
+      "h4": 0.0400387456388837,
+      "mean_brier": 0.0538159513046317,
+      "mean_ece": 0.0515018558332832,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M1__calibrated",
+      "h1": 0.1082696359288958,
+      "h4": 0.0441012478637827,
+      "mean_brier": 0.056464704648502,
+      "mean_ece": 0.0573334908330087,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M1__raw",
+      "h1": 0.1067040007698138,
+      "h4": 0.0387072775824704,
+      "mean_brier": 0.0539437952075193,
+      "mean_ece": 0.0521137950558079,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M2__calibrated",
+      "h1": 0.1082493983393905,
+      "h4": 0.0443685120495231,
+      "mean_brier": 0.0565714625515989,
+      "mean_ece": 0.0573458304336024,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "M2__raw",
+      "h1": 0.1066153092368764,
+      "h4": 0.0390765834760916,
+      "mean_brier": 0.054138112288261,
+      "mean_ece": 0.051680873883053,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "conditional_AFT__calibrated",
+      "h1": 0.0098266981763628,
+      "h4": 0.0177252400938674,
+      "mean_brier": 0.0118229305470584,
+      "mean_ece": 0.0144098293947014,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "conditional_AFT__raw",
+      "h1": 0.0099137382116386,
+      "h4": 0.0183631538482403,
+      "mean_brier": 0.0121114527532253,
+      "mean_ece": 0.0173514460604863,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "constant_speed",
+      "h1": 0.0083333333333333,
+      "h4": 0.018348623853211,
+      "mean_brier": 0.0156191689179614,
+      "mean_ece": 0.0156191689179613,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "distance_speed__calibrated",
+      "h1": 0.0100249151602156,
+      "h4": 0.0183811407121807,
+      "mean_brier": 0.0122665118424821,
+      "mean_ece": 0.0129342785607858,
+      "n_origins": 236,
+      "n_events": 120
+    },
+    {
+      "model": "distance_speed__raw",
+      "h1": 0.0098811580061885,
+      "h4": 0.018880827956883,
+      "mean_brier": 0.0124300125021276,
+      "mean_ece": 0.0139406917950603,
+      "n_origins": 236,
+      "n_events": 120
+    }
+  ],
+  "gt_catalog": {
+    "complete": 1019,
+    "unresolved": 218,
+    "right_censored": 170,
+    "returned": 8
+  },
+  "cohorts": {
+    "completion": "236 origins / 120 events historical Test",
+    "R": "237 origins / 120 events historical Test"
+  },
+  "selection": "Exit-aware M1 selected on Validation"
+}

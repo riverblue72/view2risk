@@ -1,0 +1,602 @@
+[
+  {
+    "suite": "browser_check.json",
+    "n_passed": 54,
+    "checks": [
+      {
+        "name": "Seven scenes initialized from saved case",
+        "passed": true
+      },
+      {
+        "name": "Scene 1 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "Scene 2 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "Scene 3 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "Model screen fits presentation viewport",
+        "passed": true
+      },
+      {
+        "name": "Parallel model diagrams",
+        "passed": true
+      },
+      {
+        "name": "Scene 4 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 1 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 2 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 3 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 4 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 5 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 6 identity",
+        "passed": true
+      },
+      {
+        "name": "Reveal step 7 identity",
+        "passed": true
+      },
+      {
+        "name": "Actual iframe origin locked across reveal",
+        "passed": true
+      },
+      {
+        "name": "Actual GT vertical line, full curves",
+        "passed": true
+      },
+      {
+        "name": "Individual errors exact",
+        "passed": true
+      },
+      {
+        "name": "Scene 5 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "R eight stored FFBS histories",
+        "passed": true
+      },
+      {
+        "name": "Scene 6 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "Finding 0 uses saved evidence",
+        "passed": true
+      },
+      {
+        "name": "Finding 1 uses saved evidence",
+        "passed": true
+      },
+      {
+        "name": "Finding 2 uses saved evidence",
+        "passed": true
+      },
+      {
+        "name": "Scene 7 meaningful content",
+        "passed": true
+      },
+      {
+        "name": "CDF horizon 1 matches saved",
+        "passed": true
+      },
+      {
+        "name": "CDF horizon 2 matches saved",
+        "passed": true
+      },
+      {
+        "name": "CDF horizon 3 matches saved",
+        "passed": true
+      },
+      {
+        "name": "CDF horizon 4 matches saved",
+        "passed": true
+      },
+      {
+        "name": "Exact R scenario iid_0.5",
+        "passed": true
+      },
+      {
+        "name": "Exact R scenario iid_1",
+        "passed": true
+      },
+      {
+        "name": "Exact R scenario iid_2",
+        "passed": true
+      },
+      {
+        "name": "Exact R scenario correlated_1",
+        "passed": true
+      },
+      {
+        "name": "Exact R scenario dropout_1",
+        "passed": true
+      },
+      {
+        "name": "Presenter notes usable",
+        "passed": true
+      },
+      {
+        "name": "Keyboard advances scene",
+        "passed": true
+      },
+      {
+        "name": "Keyboard previous",
+        "passed": true
+      },
+      {
+        "name": "Six continuous five-field sections",
+        "passed": true
+      },
+      {
+        "name": "All visible central equations render",
+        "passed": true
+      },
+      {
+        "name": "Default fully matched replay",
+        "passed": true
+      },
+      {
+        "name": "Same origin all spatial modes",
+        "passed": true
+      },
+      {
+        "name": "Compare horizon 1",
+        "passed": true
+      },
+      {
+        "name": "Compare horizon 2",
+        "passed": true
+      },
+      {
+        "name": "Compare horizon 3",
+        "passed": true
+      },
+      {
+        "name": "Compare horizon 4",
+        "passed": true
+      },
+      {
+        "name": "R forecast containment at correct horizon",
+        "passed": true
+      },
+      {
+        "name": "Case selection updates same identity",
+        "passed": true
+      },
+      {
+        "name": "Reliability uses saved bins",
+        "passed": true
+      },
+      {
+        "name": "Cohort separation explicit",
+        "passed": true
+      },
+      {
+        "name": "Mobile no overflow results.html",
+        "passed": true
+      },
+      {
+        "name": "Mobile no overflow methods.html",
+        "passed": true
+      },
+      {
+        "name": "Mobile no overflow presentation.html",
+        "passed": true
+      },
+      {
+        "name": "Presentation next sequence reaches conclusion",
+        "passed": true
+      },
+      {
+        "name": "No uncaught JavaScript errors",
+        "passed": true
+      },
+      {
+        "name": "No failed HTTP",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "suite": "ux/browser_check.json",
+    "n_passed": 46,
+    "checks": [
+      {
+        "name": "Default fully matched o0008",
+        "passed": true
+      },
+      {
+        "name": "Exact saved main probabilities",
+        "passed": true
+      },
+      {
+        "name": "Known GT shown in ordinary exploration",
+        "passed": true
+      },
+      {
+        "name": "No normal NOT EVALUATED",
+        "passed": true
+      },
+      {
+        "name": "Safe probability formatting",
+        "passed": true
+      },
+      {
+        "name": "Main outcome visible at 1440x900",
+        "passed": true
+      },
+      {
+        "name": "Unavailable near-exit and slow disabled",
+        "passed": true
+      },
+      {
+        "name": "Crosswalk filter picks actual f1 common packet",
+        "passed": true
+      },
+      {
+        "name": "Empty intersection hides prior predictions",
+        "passed": true
+      },
+      {
+        "name": "Reset clears filters and restores valid case",
+        "passed": true
+      },
+      {
+        "name": "Speed filter selects recorded data only",
+        "passed": true
+      },
+      {
+        "name": "Combined crowd and speed filters exact",
+        "passed": true
+      },
+      {
+        "name": "Acceleration rule not intention",
+        "passed": true
+      },
+      {
+        "name": "Same event origin GT and HDR H1",
+        "passed": true
+      },
+      {
+        "name": "Stored matched values H1",
+        "passed": true
+      },
+      {
+        "name": "Same event origin GT and HDR H2",
+        "passed": true
+      },
+      {
+        "name": "Stored matched values H2",
+        "passed": true
+      },
+      {
+        "name": "Same event origin GT and HDR H3",
+        "passed": true
+      },
+      {
+        "name": "Stored matched values H3",
+        "passed": true
+      },
+      {
+        "name": "Same event origin GT and HDR H4",
+        "passed": true
+      },
+      {
+        "name": "Stored matched values H4",
+        "passed": true
+      },
+      {
+        "name": "Presentation hides GT without changing origin",
+        "passed": true
+      },
+      {
+        "name": "Reveal restores same GT",
+        "passed": true
+      },
+      {
+        "name": "DD optional math accessible",
+        "passed": true
+      },
+      {
+        "name": "Independent saved variant M0",
+        "passed": true
+      },
+      {
+        "name": "Independent saved variant M1",
+        "passed": true
+      },
+      {
+        "name": "Independent saved variant M2",
+        "passed": true
+      },
+      {
+        "name": "Same saved noise origin clean",
+        "passed": true
+      },
+      {
+        "name": "Same saved noise origin iid_0.5",
+        "passed": true
+      },
+      {
+        "name": "Same saved noise origin iid_1",
+        "passed": true
+      },
+      {
+        "name": "Same saved noise origin iid_2",
+        "passed": true
+      },
+      {
+        "name": "Four actual overlays use one axis",
+        "passed": true
+      },
+      {
+        "name": "Expert broadens to 35 origins",
+        "passed": true
+      },
+      {
+        "name": "Expert dropout saved values",
+        "passed": true
+      },
+      {
+        "name": "Expert correlated saved values",
+        "passed": true
+      },
+      {
+        "name": "Missing noise is not model failure",
+        "passed": true
+      },
+      {
+        "name": "Interval-boundary unknown not zero",
+        "passed": true
+      },
+      {
+        "name": "Missing model and horizon distinguished",
+        "passed": true
+      },
+      {
+        "name": "Return to guided has matched results",
+        "passed": true
+      },
+      {
+        "name": "Mobile compare no page overflow",
+        "passed": true
+      },
+      {
+        "name": "Mobile filter controls fit",
+        "passed": true
+      },
+      {
+        "name": "Four narrative research findings",
+        "passed": true
+      },
+      {
+        "name": "R metrics match saved JSON",
+        "passed": true
+      },
+      {
+        "name": "Cohorts and no superiority claim",
+        "passed": true
+      },
+      {
+        "name": "Mobile Results no page overflow",
+        "passed": true
+      },
+      {
+        "name": "Mobile R bars fit",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "suite": "legacy/browser_check.json",
+    "n_passed": 43,
+    "checks": [
+      {
+        "name": "Normal viewer opens with predictions",
+        "passed": true
+      },
+      {
+        "name": "Play and slider are enabled",
+        "passed": true
+      },
+      {
+        "name": "Actual time and pedestrian advance",
+        "passed": true
+      },
+      {
+        "name": "Rolling origin advanced",
+        "passed": true
+      },
+      {
+        "name": "Right panel matches current origin",
+        "passed": true
+      },
+      {
+        "name": "Pin freezes the current origin",
+        "passed": true
+      },
+      {
+        "name": "Seeking releases old anchor",
+        "passed": true
+      },
+      {
+        "name": "Saved DD probability used at replay origin",
+        "passed": true
+      },
+      {
+        "name": "Missing AFT cannot reuse old origin",
+        "passed": true
+      },
+      {
+        "name": "Preforecast period clears old values",
+        "passed": true
+      },
+      {
+        "name": "Back to matched original origin",
+        "passed": true
+      },
+      {
+        "name": "GT reveal separately enabled",
+        "passed": true
+      },
+      {
+        "name": "GT can be hidden again",
+        "passed": true
+      },
+      {
+        "name": "Pending choice not overwritten by refresh",
+        "passed": true
+      },
+      {
+        "name": "Apply updates actual case and view",
+        "passed": true
+      },
+      {
+        "name": "Layout 756 usable",
+        "passed": true
+      },
+      {
+        "name": "Layout 390 usable",
+        "passed": true
+      },
+      {
+        "name": "Presentation still locks same origin",
+        "passed": true
+      },
+      {
+        "name": "Public case ID, relative origin, stored probability",
+        "passed": true
+      },
+      {
+        "name": "Presentation keyboard navigation",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 0 equations",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 1 equations",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 2 equations",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 3 equations",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 4 equations",
+        "passed": true
+      },
+      {
+        "name": "Methods chapter 5 equations",
+        "passed": true
+      },
+      {
+        "name": "Same origin / stored R iid_0.5",
+        "passed": true
+      },
+      {
+        "name": "Same origin / stored R iid_1",
+        "passed": true
+      },
+      {
+        "name": "Same origin / stored R iid_2",
+        "passed": true
+      },
+      {
+        "name": "Same origin / stored R correlated_1",
+        "passed": true
+      },
+      {
+        "name": "Same origin / stored R dropout_1",
+        "passed": true
+      },
+      {
+        "name": "Only allowlisted IMPTC cases",
+        "passed": true
+      },
+      {
+        "name": "Results trajectory",
+        "passed": true
+      },
+      {
+        "name": "Results completion",
+        "passed": true
+      },
+      {
+        "name": "Results exit",
+        "passed": true
+      },
+      {
+        "name": "Results robustness",
+        "passed": true
+      },
+      {
+        "name": "Results limitations",
+        "passed": true
+      },
+      {
+        "name": "Legacy route #condition-analysis",
+        "passed": true
+      },
+      {
+        "name": "Legacy route #r-analysis",
+        "passed": true
+      },
+      {
+        "name": "Legacy route #clearance-aft",
+        "passed": true
+      },
+      {
+        "name": "Legacy route #exit-final",
+        "passed": true
+      },
+      {
+        "name": "Public mobile no overflow",
+        "passed": true
+      },
+      {
+        "name": "Modeling legacy page",
+        "passed": true
+      }
+    ]
+  },
+  {
+    "suite": "layout_check.json",
+    "n_passed": 1,
+    "checks": [
+      {
+        "name": "1440x900 architecture and takeaway fit",
+        "passed": true
+      }
+    ]
+  }
+]

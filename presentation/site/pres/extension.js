@@ -52,3 +52,94 @@ function pReplayPanel(){
  $('pCaseStamp').textContent=(caseData.crosswalk||caseData.location)+' · '+stamp+' · '+(D_GUIDED?'시점 고정':'실제 기록 재생');
  if($('pCases')&&!P_PENDING){$('pCases').selectedIndex=-1;}
 }
+// Read-only synchronized comparison bridge. Never substitutes the nearest origin.
+async function pCompareSet(q){
+ if(!P_READY)throw Error('Viewer not ready');const previousReplay=P_COMPARE_REPLAY;P_COMPARE_REPLAY=null;const index=DATA.cases.findIndex(x=>x.event_id===q.event_id);if(index<0)throw Error('Unknown public event');
+ const changed=caseData?.event_id!==q.event_id;if(changed){$('dataset').value='IMPTC';populateCases(true);$('location').value=String(DATA.cases[index].location);populateCases(false);$('case').value=index;await chooseCase();}
+ const exact=caseData.forecasts.find(f=>Math.abs(f.origin_s-q.origin_s)<1e-6);if(!exact)throw Error('Exact origin not available');
+ playing=false;$('interval').value='1';t=exact.elapsed_s;$('time').value=t;D_ANCHOR={event:caseData.event_id,elapsed:t,origin:exact.origin_s};D_GUIDED=true;
+ $('horizon').value=q.h*2-1;$('dHorizon').value=q.h*2-1;$('condition').value='clean';$('rMode').value='clean';$('compare').checked=false;$('gt').checked=!!q.gt;lastKey='';draw();pLiveStage(q.gt?5:4);lastKey='';draw();pOverlay();engine.resize();
+ pCompareReplayInit(previousReplay);
+ return {event_id:caseData.event_id,origin_s:packet.origin_s,horizon_s:(+$('horizon').value+1)*.5,gt:$('gt').checked,area95:result.area_m2['0.95'][+$('horizon').value]};
+}
+const pCompareAttach=setInterval(()=>{if(window.PBridge){window.PBridge.compareSet=pCompareSet;window.PBridge.compareState=()=>({event_id:caseData?.event_id,origin_s:packet?.origin_s,horizon_s:(+$('horizon').value+1)*.5,gt:$('gt').checked});clearInterval(pCompareAttach);}},100);
+
+// Non-disruptive entry points; archived experimental routes remain available.
+setInterval(()=>{if(document.body.classList.contains('p-embed'))return;const intro=document.querySelector('.u-intro');if(intro&&!document.getElementById('uxEntryLink')){const a=document.createElement('a');a.id='uxEntryLink';a.href='compare.html';a.textContent='처음 보시나요? 실제 결과부터 살펴보기';a.style.cssText='display:inline-block;margin:12px 0;font-size:16px';intro.append(a);}const results=document.getElementById('uResults');if(results&&!document.getElementById('uxFindingsLink')){const a=document.createElement('a');a.id='uxFindingsLink';a.href='results.html';a.textContent='네 가지 연구 질문으로 정리한 Results 보기';a.style.cssText='display:block;margin:18px 0;font-size:18px';results.prepend(a);}},1000);
+
+// Display-only recorded clock, independent of the fixed comparison forecast.
+// Read existing contiguous samples only; do not manufacture an Entry position.
+let P_COMPARE_REPLAY=null,P_COMPARE_REPLAY_OBSERVER=null;
+function pCompareReplayInit(previous){
+ const a=caseData.actual_observations,start=packet.elapsed_s;
+ let j=a.elapsed_s.findLastIndex(v=>v<=start+1e-6),first=j;while(first>0&&a.elapsed_s[first]-a.elapsed_s[first-1]<.061)first--;
+ const min=first>=0?Math.min(0,a.elapsed_s[first]-start):0;
+ let end=start;for(const v of a.elapsed_s){if(v<=start+1e-6)continue;if(v>end+.061||v>start+4+1e-6)break;end=v;}
+ const max=Math.min(4,Math.max(0,end-start));
+ const same=previous?.event_id===caseData.event_id&&previous?.origin_s===packet.origin_s;
+ let seconds=same?Math.max(min,Math.min(max,previous.seconds)):min;
+ if(!$('gt').checked)seconds=Math.min(0,seconds);
+ const evidence=D_EVIDENCE.cases.find(c=>c.event_id===caseData.event_id&&Math.abs(c.origin_s-packet.origin_s)<1e-6)||D_EVIDENCE.cases.find(c=>c.event_id===caseData.event_id);
+ const offset=start-packet.origin_s;
+ P_COMPARE_REPLAY={event_id:caseData.event_id,origin_s:packet.origin_s,start,min,max,seconds,running:false,last:performance.now(),sample:null,phase:null,entry_elapsed_s:evidence?.GT?.entry_s==null?null:evidence.GT.entry_s+offset};
+ if(!P_COMPARE_REPLAY_OBSERVER)P_COMPARE_REPLAY_OBSERVER=sc.onBeforeRenderObservable.add(pCompareReplayDraw);
+ PBridge.replay=pCompareReplayCommand;PBridge.replayState=pCompareReplayState;
+ pCompareReplayDraw();
+}
+function pCompareReplayState(){const x=P_COMPARE_REPLAY;if(!x)return null;const a=caseData.actual_observations,j=a.elapsed_s.findLastIndex(v=>v<=x.start+x.seconds+1e-6);return {...x,recording_elapsed_s:x.start+x.seconds,gt:$('gt').checked,position:[person.position.x,person.position.z],recorded_xy:j>=0?a.xy[j]:null,forecast_origin_s:packet.origin_s,horizon_s:(+$('horizon').value+1)*.5,forecast_visible:x.seconds>=0};}
+function pCompareReplayCommand(action,value){const x=P_COMPARE_REPLAY;if(!x)return null;
+ if(action==='play'&&x.seconds>=0&&!$('gt').checked)throw Error('Reveal recorded future before playback');
+ if(action==='play'){if(x.seconds>=x.max-1e-6)x.seconds=x.min;x.running=x.max>x.min;}
+ else if(action==='pause')x.running=false;
+ else if(action==='reset'){x.running=false;x.seconds=x.min;}
+ else if(action==='origin'){x.running=false;x.seconds=0;}
+ else if(action==='seek'){x.running=false;x.seconds=Math.max(x.min,Math.min($('gt').checked?x.max:0,Number(value)||0));}
+ x.last=performance.now();pCompareReplayDraw();return pCompareReplayState();
+}
+function pCompareReplayDraw(){if(P_TRIPLE_CAPTURING)return;const x=P_COMPARE_REPLAY;if(!x||caseData.event_id!==x.event_id||packet?.origin_s!==x.origin_s)return;
+ const now=performance.now(),previous=x.seconds;
+ if(x.running){x.seconds=Math.min(x.max,x.seconds+Math.min(.1,(now-x.last)/1000));if(previous<0&&x.seconds>=0){x.seconds=0;x.running=false;}}
+ x.last=now;if(x.seconds>=x.max)x.running=false;
+ if(!$('gt').checked&&x.seconds>0){x.seconds=0;x.running=false;}
+ const a=caseData.actual_observations,at=x.start+x.seconds,j=a.elapsed_s.findLastIndex(v=>v<=at+1e-6),valid=j>=0&&at-a.elapsed_s[j]<.061,phase=x.seconds<0?'history':'forecast';
+ if(x.sample!==j||x.phase!==phase){
+  const savedT=t,savedPlaying=playing;try{playing=false;t=x.seconds<0?at:x.start;updateActual();t=at;updateCrowd();}finally{t=savedT;playing=savedPlaying;}
+  if(x.phase!==phase)pOverlay();x.sample=j;x.phase=phase;
+ }
+ // Future paths/HDR and later history cannot appear before their forecast origin.
+ if(x.seconds<0){for(const m of objects)m.setEnabled(false);ghost.setEnabled(false);}else pOverlay();
+ person.setEnabled(valid);if(!valid)return;const q=a.xy[j];person.position.set(q[0],0,q[1]);
+ if(x.seconds>=0){const pred=atPrediction(packet,x.start+x.seconds);if(pred)ghost.position.set(pred[0],.14,pred[1]);}
+ const k=a.elapsed_s.findLastIndex(v=>v<=at-.2+1e-6);if(k>=0&&k<j){const dx=q[0]-a.xy[k][0],dy=q[1]-a.xy[k][1];if(Math.hypot(dx,dy)>.01)person.rotation.y=Math.atan2(dx,dy);}
+ const swing=x.running?Math.sin(x.seconds*10)*.3:0;for(const m of person.getChildren())if(m.name==='leg'||m.name==='arm')m.rotation.x=swing*(m.position.x>0?1:-1)*(m.name==='arm'?-1:1);
+}
+
+// One Babylon scene produces three synchronized views; no extra engines/inference.
+let P_TRIPLE_CAPTURING=false,P_TRIPLE_CACHE={key:'',dd:[],r:[],previous:[],gt:[],gtKey:''},P_TRIPLE_FRAME=0;
+function pTripleLine(points,col,list,alpha=1){let run=[];const emit=()=>{if(run.length>1){const m=BABYLON.MeshBuilder.CreateLines('comparison-saved-path',{points:run.map(p=>new BABYLON.Vector3(p[0],.12,p[1]))},sc);m.color=color(col);m.alpha=alpha;m.setEnabled(false);list.push(m);}run=[];};for(const p of points||[]){if(p?.length===2&&p.every(Number.isFinite))run.push(p);else emit();}emit();}
+function pTripleDrop(list){for(const m of list)m.dispose(false,true);list.length=0;}
+function pTriplePrediction(v,h,list){if(!v)return;for(const [i,path] of (v.hypotheses_xy||[]).slice(0,5).entries())pTripleLine([v.input.translation,...path],i?'#6ba69e':'#008f82',list,i?.45:1);for(const [k,col] of [['0.95','#7659c4'],['0.68','#00a88b']])for(const polygon of v.regions?.[h*2-1]?.[k]||[])pTripleLine(polygon,col,list);}
+function pTripleXY(v,seconds){if(!v?.hypotheses_xy?.[0]||seconds<0)return null;const times=[0,...v.future_times_s],points=[v.input.translation,...v.hypotheses_xy[0]];if(seconds>times.at(-1))return null;return [0,1].map(k=>linearAt(times,points.map(p=>p[k]),seconds));}
+function pTripleSnapshot(canvases,config){if(!P_COMPARE_REPLAY||P_TRIPLE_CAPTURING)return null;pCompareReplayDraw();const x=pCompareReplayState();if(x.event_id!==config.event_id||x.origin_s!==config.origin_s)throw Error('Triple-view origin mismatch');
+ const began=performance.now(),h=config.h,hasForecast=x.seconds>=0,key=[x.event_id,x.origin_s,h,config.scenario,config.method].join('|'),cache=P_TRIPLE_CACHE,prev=caseData.forecasts.filter(f=>f.origin_s<packet.origin_s).at(-1);
+ if(cache.key!==key){for(const l of [cache.dd,cache.r,cache.previous])pTripleDrop(l);pTriplePrediction(packet.conditions.clean,h,cache.dd);pTriplePrediction(config.r,h,cache.r);const hist=config.r?.robust_history;if(hist){pTripleLine(hist.observed_xy,'#d17b32',cache.r);if(config.method!=='noisy')pTripleLine(hist.mean_xy,'#008a82',cache.r);}if(prev)pTripleLine([prev.conditions.clean.input.translation,...prev.conditions.clean.hypotheses_xy[0]],'#967ab8',cache.previous,.75);cache.key=key;}
+ const obs=caseData.actual_observations,j=obs.elapsed_s.findLastIndex(v=>v<=x.recording_elapsed_s+1e-6),gtKey=[x.event_id,x.origin_s,j,config.gt].join('|');if(cache.gtKey!==gtKey){pTripleDrop(cache.gt);if(config.gt&&x.seconds>0){const pts=obs.xy.filter((p,i)=>obs.elapsed_s[i]>=x.start-1e-6&&obs.elapsed_s[i]<=x.recording_elapsed_s+1e-6);pTripleLine(pts,'#c44178',cache.gt);}cache.gtKey=gtKey;}
+ const hidden=[...objects,ghost,...D_DECOR,...(typeof R_LINES!=='undefined'?R_LINES:[])],states=hidden.map(m=>m.isEnabled()),ghostPosition=ghost.position.clone();
+ const set=(list,on)=>list.forEach(m=>m.setEnabled(on)),copy=c=>{const source=$('renderCanvas');if(c.width!==source.width)c.width=source.width;if(c.height!==source.height)c.height=source.height;c.getContext('2d').drawImage(source,0,0);};
+ let snapshots=[];P_TRIPLE_CAPTURING=true;
+ try{
+  hidden.forEach(m=>m.setEnabled(false));set(cache.gt,config.gt&&hasForecast);
+  for(const [name,list,v] of [['dd',cache.dd,packet.conditions.clean],['aft',[],null],['r',cache.r,config.r]]){
+   set(list,hasForecast);const previousOn=name==='dd'&&config.previous&&hasForecast&&prev&&x.recording_elapsed_s<=prev.elapsed_s+4;set(cache.previous,!!previousOn);
+   const xy=hasForecast?pTripleXY(v,x.seconds):null;ghost.setEnabled(!!xy);if(xy)ghost.position.set(xy[0],.18,xy[1]);sc.render();copy(canvases[name]);snapshots.push({panel:name,event_id:x.event_id,origin_s:x.origin_s,seconds:x.seconds,h,person_xy:[person.position.x,person.position.z],prediction_xy:xy,spatial_prediction:name!=='aft'&&hasForecast&&!!v});set(list,false);set(cache.previous,false);ghost.setEnabled(false);
+  }
+ }finally{set(cache.gt,false);hidden.forEach((m,i)=>m.setEnabled(states[i]));ghost.position.copyFrom(ghostPosition);P_TRIPLE_CAPTURING=false;}
+ const current=obs.xy[j],g=DATA.geometry[caseData.crosswalk],dist=current?geometryDistances(g,current,caseData.direction):null;
+ return {frame:++P_TRIPLE_FRAME,...x,snapshots,capture_ms:performance.now()-began,current_distance_m:dist?.remaining??null,previous_origin_s:prev?.origin_s??null,previous_visible:!!(config.previous&&hasForecast&&prev&&x.recording_elapsed_s<=prev.elapsed_s+4)};
+}
+const pTripleAttach=setInterval(()=>{if(!window.PBridge)return;PBridge.captureTriple=pTripleSnapshot;PBridge.setHorizon=h=>{const x=P_COMPARE_REPLAY;if(!x)return null;$('horizon').value=h*2-1;$('dHorizon').value=h*2-1;lastKey='';draw();x.sample=null;pCompareReplayDraw();return {event_id:caseData.event_id,origin_s:packet.origin_s,horizon_s:h,gt:$('gt').checked,area95:result.area_m2['0.95'][h*2-1]};};PBridge.tripleCamera=(action,a=0,b=0)=>{if(action==='reset')resetCamera();if(action==='rotate'){camera.alpha+=a;camera.beta=Math.max(.15,Math.min(1.4,camera.beta+b));}if(action==='zoom')camera.radius=Math.max(5,Math.min(250,camera.radius*a));};clearInterval(pTripleAttach);},100);
+
+// Plain-language metric help follows the existing live panel on archived replay.
+setInterval(()=>{if(P_EMBED||!P_READY||D_PAGE!=='simulation')return;const right=$('pRight');if(right&&!$('guideReplayHelp')){const d=document.createElement('details');d.id='guideReplayHelp';d.className='guide-glossary';d.innerHTML='<summary>결과 숫자는 어떻게 읽나요?</summary>'+guideMetrics();right.append(d);}},600);
+
+const pFitAttach=setInterval(()=>{if(!window.PBridge)return;PBridge.fitComparison=(r,h)=>{if(!r||!caseData)return;const pts=[...caseData.actual_observations.xy,...worldBoundary(DATA.geometry[caseData.crosswalk],DATA.geometry[caseData.crosswalk].end_A),...worldBoundary(DATA.geometry[caseData.crosswalk],DATA.geometry[caseData.crosswalk].end_B),...r.regions[h*2-1]['0.95'].flat()];const lo=[0,1].map(k=>Math.min(...pts.map(p=>p[k]))),hi=[0,1].map(k=>Math.max(...pts.map(p=>p[k]))),mid=lo.map((v,k)=>(v+hi[k])/2);camera.target.set(mid[0],.25,mid[1]);camera.radius=(Math.hypot(hi[0]-lo[0],hi[1]-lo[1])/2+1)/Math.sin(camera.fov/2)*1.2;};clearInterval(pFitAttach);},100);
