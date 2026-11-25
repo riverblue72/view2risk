@@ -69,7 +69,7 @@ function uqHistory(s,scenario) {
     uqLegend([['기준',colors[0]],['합성 관측',colors[1]],['Kalman 보정',colors[2]],['95% 측정오차 타원',colors[1],true]]);
 }
 
-function uqMap(s,result,mode,h,truth) {
+function uqMap(s,result,mode,h,truth,replay=false) {
   const g=s.geometry, dir=s.c.direction, boundaries=['end_A','end_B'].map(end=>V2R.boundary(g,end));
   const [entry,exit]=dir===1?boundaries:boundaries.slice().reverse();
   const project=p=>[g.axis,g.normal].map(axis=>dir*((p[0]-g.center[0])*axis[0]+(p[1]-g.center[1])*axis[1]));
@@ -96,6 +96,7 @@ function uqMap(s,result,mode,h,truth) {
   const [x,y]=plot.xy(past.at(-1));
   svg+='<circle cx="'+x+'" cy="'+y+'" r="4.5" fill="'+colors[mode]+'" stroke="white" stroke-width="1.5"/>';
   if(truth) svg+=uqLine(plot,gt,colors.gt,3,'data-path="truth" stroke-dasharray="7 3"');
+  if(replay)svg+=uqReplayDot(colors.future)+(truth?uqRecordedCursor(plot,s):'');
   return svg+uqScale(plot.scale,1,290)+'</svg>'+uqLegend([[UQ.names[mode]+' 과거',colors[mode]],['예측 후보 · 굵은 선은 대표 경로',colors.future],['68% 실선 / 95% 점선 HDR',colors.future,true],...(truth?[['실제 미래',colors.gt,true]]:[])]);
 }
 function uqBars(result,h) {
@@ -144,6 +145,13 @@ function uqComparisonExtent(st) {
   }
   return {all:all.concat(histories),histories,edges};
 }
+function uqRecordedCursor(plot,s){
+  return '<polyline data-recorded-path="" points="'+plot.points(s.c.actual_observations.xy)+'" visibility="hidden"/>'+
+    '<circle data-actual-cursor="" r="5" fill="'+UQ.colors.gt+'" stroke="white" stroke-width="2"/>';
+}
+function uqReplayDot(color) {
+  return '<circle data-replay-cursor="" r="6" fill="'+color+'" stroke="white" stroke-width="2"/>';
+}
 function uqReplayInset(st) {
   const s=st.data,r=st.result, obs=st.stage===2,extent=uqComparisonExtent(st);
   const noisy=s.r.results[st.scenario+'__noisy'],corrected=s.r.results[st.scenario+'__filtered_mean'];
@@ -159,7 +167,7 @@ function uqReplayInset(st) {
     for(const [i,path] of extent.edges.entries())b+=uqLine(p,path,(i===1)===(s.c.direction===1)?'#b87508':'#527381',2.7);
     for(const level of ['0.95','0.68'])b+=polygon(p,r.regions[idx][level],level);
     const best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
-    r.hypotheses_xy.forEach((path,i)=>{b+=uqLine(p,[xy.at(-1),...path.slice(0,idx+1)],UQ.colors.future,i===best?3:1,i===best?'':'opacity=".42"');});
+    r.hypotheses_xy.forEach((path,i)=>{b+=uqLine(p,[xy.at(-1),...path.slice(0,idx+1)],UQ.colors.future,i===best?3:1,i===best?'data-replay-path=""':'opacity=".42"');});
     if(st.truth)b+=uqLine(p,[s.clean.input.observed_xy.at(-1),...s.r.future_GT_xy.slice(0,idx+1)],UQ.colors.gt,2.8,'stroke-dasharray="4 2"');
   }
   const allThree=obs&&st.compare;
@@ -167,7 +175,9 @@ function uqReplayInset(st) {
   if(st.mode==='filtered_mean'||allThree)b+=uqLine(p,noisy.input.observed_xy,UQ.colors.noisy,2.2,'stroke-dasharray="4 3" opacity=".65"');
   if(allThree&&st.mode!=='filtered_mean')b+=uqLine(p,corrected.input.observed_xy,UQ.colors.filtered_mean,3.2);
   if(obs&&(st.mode!=='clean'||allThree))b+=uqLine(p,ellipse,UQ.colors.noisy,1.5,'stroke-dasharray="4 3"');
-  b+=uqLine(p,xy,UQ.colors[st.mode],3.2)+dot(p.xy(xy.at(-1)),5,UQ.colors[st.mode]);
+  b+=uqLine(p,xy,UQ.colors[st.mode],3.2,obs?'data-replay-path=""':'')+dot(p.xy(xy.at(-1)),5,UQ.colors[st.mode]);
+  if(st.truth)b+=uqRecordedCursor(p,s);
+  b+=uqReplayDot(obs?UQ.colors[st.mode]:UQ.colors.future);
   const metres=obs?.25:local?1:5;
   b+=uqScale(p.scale,metres,200);
   const caption=obs?'관측 위치 확대':local?'횡단부 확대':'전체 예측영역';

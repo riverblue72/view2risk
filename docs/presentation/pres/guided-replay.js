@@ -11,8 +11,13 @@ function mountGuided(root,initial) {
   let world,disposed=false,revision=0,lastStamp=0,lastFrame=-2,fallbackFrame=0,overlayKey;
   const $g=id=>root.querySelector('#g'+id);
   const origin=()=>st.data.r.elapsed_s;
-  const start=()=>Math.max(st.data.c.actual_observations.elapsed_s[0],origin()-4);
-  const end=()=>st.truth?Math.min(origin()+st.h,st.data.c.actual_observations.elapsed_s.at(-1)):origin();
+  function start(){
+    if(st.stage===1)return Math.max(st.data.c.actual_observations.elapsed_s[0],origin()-4);
+    if(st.stage===2)return origin()+st.data.clean.input.history_times_s[0]-st.data.clean.input.origin_s;
+    return origin();
+  }
+  const end=()=>st.stage<3?origin():st.truth?Math.min(origin()+st.h,st.data.c.actual_observations.elapsed_s.at(-1)):origin()+st.h;
+  const playLabel=()=>st.running?'Ⅱ 일시정지':'▶ '+['기록 재생','관측 재생','예측 재생',st.truth?'예측·실제 재생':'예측 재생'][st.stage-1];
   const result=()=>st.data.r.results[st.mode==='clean'?'clean':st.scenario+'__'+st.mode];
   st.time=start();
   root.classList.add('guided');
@@ -21,7 +26,7 @@ function mountGuided(root,initial) {
     '<div class="g-conditionbar"><div class="g-segments" role="group" aria-label="관측 조건">'+Object.keys(UQ.names).map(mode=>'<button data-condition="'+mode+'" style="--condition:'+UQ.colors[mode]+'">'+UQ.names[mode]+'</button>').join('')+'</div><span id="gHint"></span><label id="gCompareWrap" hidden><input id="gCompare" type="checkbox"> 세 조건 겹쳐 보기</label></div>'+
     '<div class="g-grid"><section class="g-viewport"><canvas id="gCanvas" aria-label="IMPTC 기록의 3D 횡단보도와 보행자"></canvas><div id="gFallback" hidden></div><div class="g-map-tools"><button id="gCross">횡단부</button><button id="gTop">상단 비교</button><button id="gFull">전체 영역</button></div><div id="gInset" hidden></div><div id="gLegend"></div></section>'+
     '<aside class="g-info"><div class="g-meta" id="gMeta"></div><h2 id="gStageTitle"></h2><p id="gText"></p><div class="g-kpis"><div><small id="gDistanceLabel">Exit까지 거리</small><strong id="gDistance"></strong></div><div><small id="gSpeedLabel">종방향 속도</small><strong id="gSpeed"></strong></div></div><div id="gProb"></div><div id="gOutcome"></div><div id="gCaseMetrics"></div></aside></div>'+
-    '<div class="g-controls"><div class="g-time"><button id="gPlay">▶ 재생</button><button id="gReset">처음부터</button><label for="gTime">기록 시간</label><input id="gTime" type="range" step="any"><output for="gTime" id="gClock"></output></div>'+
+    '<div class="g-controls"><div class="g-time"><button id="gPlay">▶ 재생</button><button id="gReset">처음부터</button><label for="gTime" id="gTimeLabel">기록 시간</label><input id="gTime" type="range" step="any"><output for="gTime" id="gClock"></output></div>'+
     '<div class="g-settings">'+uqSelect('gNoise','오차',UQ_SCENARIOS,'iid_1')+
     uqSelect('gH','예측 시간',UQ.horizons.map(h=>[h,h+'초']),3)+'<button id="gReveal">실제 정답 공개</button><button id="gCamera">카메라 초기화</button><button id="gNext">다음 단계 →</button></div></div>';
   const canvas=$g('Canvas'),fallback=$g('Fallback');
@@ -33,20 +38,32 @@ function mountGuided(root,initial) {
       const past=r.xy.slice(Math.max(0,lim-78),lim+1);
       const plot=uqProjection([...edges.flat(),...past],640,290);
       fallback.innerHTML='<svg class="field" viewBox="0 0 640 290" aria-label="실제 과거 관측">'+edges.map((xy,i)=>uqLine(plot,xy,(i===1)===(st.data.c.direction===1)?'#b87508':'#506975',3)).join('')+uqLine(plot,past,UQ.colors.clean,4)+uqScale(plot.scale,1,290)+'</svg>';
-    }else fallback.innerHTML=st.stage===2?uqReplayInset(st):uqMap(st.data,st.result,st.mode,st.h,st.truth);
+    }else fallback.innerHTML=st.stage===2?uqReplayInset(st):uqMap(st.data,st.result,st.mode,st.h,st.truth,true);
   }
   function frame(force=false){
-    if(disposed)return;
+    if(disposed||(!st.running&&!force))return;
     const now=performance.now();
     if(st.running){
       st.time=Math.min(end(),st.time+(now-lastStamp)/1000);
-      if(st.time>=end()){st.running=false;$g('Play').textContent='▶ 재생';}
+      if(st.time>=end()){st.running=false;$g('Play').textContent=playLabel();}
     }
     lastStamp=now;
     const rec=st.data.c.actual_observations;
-    const idx=rec.elapsed_s.findLastIndex(v=>v<=st.time+1e-6);
-    const visible=idx>=0&&st.time-rec.elapsed_s[idx]<.061;
-    if(idx!==lastFrame||force||!st.running&&$g('Time').valueAsNumber!==st.time){
+    const personTime=st.stage>=3&&!st.truth?origin():st.time;
+    const idx=rec.elapsed_s.findLastIndex(v=>v<=personTime+1e-6);
+    const visible=idx>=0&&personTime-rec.elapsed_s[idx]<.061;
+    const delta=st.time-origin(),r=st.result;
+    // The two clocks share the saved origin. The cursor only visits stored positions.
+    let cursor=null;
+    if(st.stage===2){
+      const j=Math.max(0,r.input.history_times_s.findLastIndex(t=>t<=r.input.origin_s+delta+1e-6));
+      cursor={point:r.input.observed_xy[j],index:j};
+    }else if(st.stage>=3){
+      const j=r.future_times_s.findLastIndex(t=>t<=delta+1e-6);
+      cursor={point:j<0?r.input.observed_xy.at(-1):st.representative[j],index:j+1};
+    }
+    if(world)world.cursor(st,cursor);
+    if(force||idx!==lastFrame){
       if(world)world.pose(st,idx,visible);
       else if(!fallback.hidden&&(st.stage===1||force))fallbackPlot(idx);
       const atOrigin=st.stage>1||Math.abs(st.time-origin())<.001;
@@ -62,19 +79,38 @@ function mountGuided(root,initial) {
       }
       $g('Distance').textContent=d==null?'—':PN(d,2)+' m';
       $g('Speed').textContent=v==null?'—':PN(v,2)+' m/s';
-      $g('Clock').textContent=PN(st.time,2)+' s / '+PN(end(),2)+' s';
-      $g('Time').value=st.time;lastFrame=idx;
+      lastFrame=idx;
     }
+    if(cursor){
+      const host=world?$g('Inset'):fallback;
+      const path=host.querySelector('[data-replay-path]')||host.querySelector('[data-path="representative"]');
+      const marker=host.querySelector('[data-replay-cursor]');
+      const point=path?.points[cursor.index];
+      if(marker&&point){marker.setAttribute('cx',point.x);marker.setAttribute('cy',point.y);}
+      const actual=host.querySelector('[data-actual-cursor]');
+      if(actual){
+        actual.setAttribute('visibility',visible?'visible':'hidden');
+        const recorded=host.querySelector('[data-recorded-path]').points[idx];
+        if(visible&&recorded){actual.setAttribute('cx',recorded.x);actual.setAttribute('cy',recorded.y);}
+      }
+    }
+    const display=st.stage===1?st.time:delta;
+    const clock=PN(display,2)+' s / '+PN(st.stage===1?end():end()-origin(),2)+' s';
+    if($g('Clock').textContent!==clock)$g('Clock').textContent=clock;
+    if($g('Time').valueAsNumber!==st.time)$g('Time').value=st.time;
   }
   function render(){
     status();st.result=result();
+    const scores=st.result.hypothesis_confidence_scores;
+    st.representative=st.result.hypotheses_xy[scores.indexOf(Math.max(...scores))];
     root.dataset.resultKey=st.mode==='clean'?'clean':st.scenario+'__'+st.mode;
     const {data,stage,mode,h,truth}=st;
-    const canPlay=stage===1||truth, time=$g('Time');
-    time.min=stage===1?start():origin();time.max=end();time.disabled=!canPlay;
-    $g('Play').disabled=!canPlay;$g('Play').textContent=st.running?'Ⅱ 일시정지':'▶ 재생';
+    const time=$g('Time');
+    time.min=start();time.max=end();
+    $g('Play').textContent=playLabel();
+    $g('TimeLabel').textContent=stage===1?'기록 시간':'예측 시점 기준';
     root.querySelectorAll('[data-condition]').forEach(btn=>{btn.disabled=stage===1;btn.setAttribute('aria-pressed',btn.dataset.condition===mode);});
-    $g('Hint').textContent=stage===1?'기록 재생 중에는 기준 위치만 표시합니다. 2단계부터 조건을 선택하세요.':'색 고리 = 선택한 입력의 끝점 · 사람 = 실제 기록 위치';
+    $g('Hint').textContent=stage===1?'기록 재생 중에는 기준 위치만 표시합니다. 2단계부터 조건을 선택하세요.':stage===2?'관측 재생 · 색 고리가 선택한 입력 위치를 따라갑니다.':truth?'보라색 사람 = 대표 예측 · 파란 사람 = 실제 보행':'예측 재생 · 보라색 사람이 0.5초 간격의 대표 예측 위치를 따라갑니다.';
     $g('CompareWrap').hidden=stage!==2;$g('Compare').checked=st.compare;
     $g('Noise').disabled=stage<2;$g('Noise').value=st.scenario;
     $g('H').disabled=stage<3;$g('H').value=h;
@@ -127,13 +163,13 @@ function mountGuided(root,initial) {
   root.querySelectorAll('button[data-stage]').forEach(b=>b.onclick=()=>stageTo(+b.dataset.stage));
   $g('Next').onclick=()=>stageTo(st.stage+1);
   $g('Play').onclick=()=>{
-    if(!st.running&&st.time>=end())st.time=st.stage===1?start():origin();
+    if(!st.running&&st.time>=end())st.time=start();
     st.running=!st.running;lastStamp=performance.now();render();
   };
   $g('Reset').onclick=reset;
   $g('Time').oninput=e=>{st.running=false;st.time=+e.target.value;render();};
   root.querySelectorAll('[data-condition]').forEach(btn=>btn.onclick=()=>{
-    st.running=false;st.mode=btn.dataset.condition;render();
+    st.mode=btn.dataset.condition;render();
   });
   $g('Compare').onchange=e=>{st.compare=e.target.checked;render();};
   function setView(view){st.view=view;world?.view(st.data,view,st);render();}

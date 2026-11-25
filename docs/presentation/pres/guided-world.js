@@ -14,6 +14,12 @@ function guidedWorld(canvas, s, tick) {
   let boundaryExit, historyKey='', lastIndex=-1;
   let trail=null;
   const scene=sc;
+  let inputRing=null;
+  const forecastPerson=person.clone('forecast pedestrian');
+  const forecastMaterial=material(C3.future,.86);
+  forecastMaterial.emissiveColor=color(C3.future).scale(.4);
+  for(const part of forecastPerson.getChildMeshes()){part.material=forecastMaterial;part.isPickable=false;}
+  forecastPerson.setEnabled(false);
   function stroke(name,xy,hex,radius,height,alpha=1,bag=layers) {
     if(xy.length<2)return;
     const m=BABYLON.MeshBuilder.CreateTube(name,{path:xy.map(([x,y])=>new BABYLON.Vector3(x,height,y)),radius,tessellation:6,cap:BABYLON.Mesh.CAP_ALL},scene);
@@ -77,7 +83,7 @@ function guidedWorld(canvas, s, tick) {
   }
   function overlay(st){
     const {data,stage,mode,scenario,h,truth,result}=st;
-    clear(layers);historyKey='';lastIndex=-1;
+    clear(layers);inputRing=null;historyKey='';lastIndex=-1;
     boundaryExit.material.emissiveColor=color(amber).scale(stage===4?1:.5);
     if(stage===1)return;
     const xy=result.input.observed_xy;
@@ -103,13 +109,22 @@ function guidedWorld(canvas, s, tick) {
     const last=xy.at(-1);
     const ring=BABYLON.MeshBuilder.CreateTorus('observed endpoint',{diameter:.56,thickness:.085,tessellation:32},scene);
     ring.position.set(last[0],.24,last[1]);ring.material=material(C3[mode]);ring.material.emissiveColor=color(C3[mode]).scale(.45);
-    layers.push(ring);
+    layers.push(ring);inputRing=ring;
     if(stage<3)return;
     const end=result.future_times_s.indexOf(h), regions=result.regions[end];
     ['0.95','0.68'].forEach(level=>fillContours(regions[level],level));
     const best=result.hypothesis_confidence_scores.indexOf(Math.max(...result.hypothesis_confidence_scores));
     result.hypotheses_xy.forEach((path,i)=>stroke(i===best?'representative':'candidate',[xy.at(-1),...path.slice(0,end+1)],i===best?C3.future:'#907dd0',i===best?.045:.016,i===best?.14:.105,i===best?1:.65));
     if(truth)stroke('actual future',[data.clean.input.observed_xy.at(-1),...data.r.future_GT_xy.slice(0,end+1)],C3.gt,.053,.185);
+  }
+  function cursor(st,sample){
+    forecastPerson.setEnabled(st.stage>=3&&sample.index>0);
+    if(st.stage===2&&inputRing)inputRing.position.set(sample.point[0],.24,sample.point[1]);
+    if(st.stage<3||sample.index===0)return;
+    const [x,z]=sample.point;
+    const previous=sample.index===1?st.result.input.observed_xy.at(-1):st.representative[sample.index-2];
+    forecastPerson.position.set(x,0,z);
+    forecastPerson.rotation.y=Math.atan2(x-previous[0],z-previous[1]);
   }
   function pose(st,idx,visible){
     const {data,stage,time,running}=st;
@@ -136,7 +151,7 @@ function guidedWorld(canvas, s, tick) {
     }
   }
   bounds(s);view(s);
-  return {overlay,pose,view,change(data){bounds(data);view(data);legPhase=0;},dispose(){
+  return {overlay,pose,cursor,view,change(data){bounds(data);view(data);legPhase=0;},dispose(){
     resize.disconnect();engine.stopRenderLoop();scene.dispose();engine.dispose();boundaryMeshes=[];objects=[];
   }};
 }

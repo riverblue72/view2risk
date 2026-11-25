@@ -119,6 +119,35 @@ try {
   }
   await click('gReveal');assert(await ev('!gOutcome.textContent && !sc.getMeshByName("actual future")'));await click('gReveal');
   await until('sc.isReady()');await capture('stage-4');
+  // Dispatch playback and seek through the same controls a presenter uses.
+  const seek=async offset=>ev('gTime.value=8+'+offset+';gTime.dispatchEvent(new Event("input"))');
+  for(const n of [2,3,4]){
+    await step(n);
+    for(const mode of ['clean','noisy','filtered_mean']){
+      await condition(mode);
+      assert(await ev('!gPlay.disabled && +gTime.max>+gTime.min'));
+      await click('gPlay');await until('gTime.valueAsNumber>+gTime.min+.15');
+      await until('!gPlay.textContent.includes("일시정지")||gTime.valueAsNumber>+gTime.min+.2');
+      await seek(n===2?-.4:1);
+      assert(await ev(`(async()=>{
+        const s=await UQ.caseAt(V2R.ri.find(row=>row.uid==='o0008'));
+        const r=s.r.results[document.querySelector('.guided').dataset.resultKey];
+        const obs=${n}===2;
+        const times=obs?r.input.history_times_s:r.future_times_s;
+        const j=times.findLastIndex(t=>t<=(obs?7.6:1)+1e-6);
+        const best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
+        const pt=(obs?r.input.observed_xy:r.hypotheses_xy[best])[j];
+        const marker=obs?sc.getMeshByName('observed endpoint'):sc.getTransformNodeByName('forecast pedestrian');
+        return marker.isEnabled() && marker.position.x===pt[0] && marker.position.z===pt[1] && !sc.getMeshByName('actual future');
+      })()`));
+      if(n>=3)assert.deepEqual(await pose(),atOrigin);
+    }
+  }
+  await seek(0);await click('gPlay');await condition('clean');
+  assert(await ev('gPlay.textContent.includes("일시정지")'));await until('gTime.valueAsNumber>+gTime.min+.5');
+  await click('gReveal');await seek(1);
+  assert(await ev('person.position.x===caseData.actual_observations.xy[caseData.actual_observations.elapsed_s.findLastIndex(t=>t<=9.000001)][0] && sc.getTransformNodeByName("forecast pedestrian").isEnabled()'));
+  checks.push('Playback, selected history or forecast position and hidden truth in all nine stage/condition combinations; continued playback on switch and recorded future after reveal');
   let combos=0;
   for(const uid of ['o0008','o0000','o0011']){
     await set('gCase',uid);await until('document.querySelector(".guided").dataset.uid==="'+uid+'"&&!document.querySelector(".guided").inert');
@@ -252,6 +281,8 @@ try {
   await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await step(3);assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
   await step(4);await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
+  await seek(1);
+  assert(await ev('gFallback.querySelector("[data-replay-cursor]").cx.baseVal.value===gFallback.querySelector("[data-path=representative]").points[2].x && !!gFallback.querySelector("[data-actual-cursor]")'));
   await call('Page.removeScriptToEvaluateOnNewDocument',{identifier:injected.identifier});
   checks.push('forced WebGL failure, recorded 2D fallback and GT reveal');
   assert.deepEqual(errors,[]);console.log(JSON.stringify({base,checks,errors},null,2));
