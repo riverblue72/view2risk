@@ -2,9 +2,9 @@
 
 기존 `final/` 및 `docs/final/`과 독립된 발표용 공개 웹사이트입니다.
 
-**[발표 시작](https://riverblue72.github.io/view2risk/presentation/)** · **[Compare Models](https://riverblue72.github.io/view2risk/presentation/compare.html)** · **[Methods & Mathematics](https://riverblue72.github.io/view2risk/presentation/methods.html)** · **[Observation Noise Lab](https://riverblue72.github.io/view2risk/presentation/?case=o0008#/noise)** · **[Results](https://riverblue72.github.io/view2risk/presentation/#/results/trajectory)**
+**[발표 시작](https://riverblue72.github.io/view2risk/presentation/)** · **[기록 기반 시연](https://riverblue72.github.io/view2risk/presentation/demo.html)** · **[Methods & Mathematics](https://riverblue72.github.io/view2risk/presentation/methods.html)** · **[Observation Noise Lab](https://riverblue72.github.io/view2risk/presentation/?case=o0008#/noise)** · **[Results](https://riverblue72.github.io/view2risk/presentation/#/results/trajectory)**
 
-> Local redesign review: `compare.html` and the six-chapter Methods redesign are prepared locally. They have not been pushed; the currently deployed site remains the previous release until authorization.
+> 현재 발표 구성, 수치 출처, 브라우저 검증은 [PRESENTATION_REDESIGN_REPORT.md](../PRESENTATION_REDESIGN_REPORT.md)에 있습니다.
 
 ## Folder separation
 
@@ -20,8 +20,8 @@ The existing repository homepage and Pages configuration are unchanged. Open `/v
 
 ## What runs publicly
 
-- Korean five-scene presentation with keyboard navigation, speaker notes and a pinned real example.
-- Babylon.js playback of three saved IMPTC examples (f1/f2/f3), with actual DD-MDN forecasts and optional GT.
+- Korean eight-scene presentation with keyboard navigation, speaker notes and a pinned real example.
+- Unified spatial and temporal replay of three saved IMPTC examples (f1/f2/f3), with actual DD-MDN forecasts and optional GT.
 - Recorded rolling origins; DD-MDN is the default trajectory predictor. XGBoost and AFT are separate completion-time comparisons where stored outputs exist.
 - Same-event/same-origin observation-noise comparison: three public R packets with saved IID, correlated-noise and dropout scenarios.
 - Aggregate results, mathematical explanations and historical-route compatibility.
@@ -70,9 +70,9 @@ node presentation/tools/browser_check.mjs
 The script tests a local static HTTP server by default. Set `V2R_PUBLIC_URL` to the deployed `/presentation` URL to verify GitHub Pages. See [PUBLICATION_CHECK.md](PUBLICATION_CHECK.md) for executed evidence and [THIRD_PARTY.md](THIRD_PARTY.md) for attribution.
 
 
-## Final seven-scene research presentation
+## Historical seven-scene research presentation
 
-The default public entry is [Presentation](https://riverblue72.github.io/view2risk/presentation/), followed by [Methods](site/methods.html), [recorded-case comparison](site/compare.html) and [Results](site/results.html). The presentation follows problem → operational GT → parallel predictors → observed outcome → synthetic observation error → three aggregate findings → contribution and limits.
+The previous release used [Presentation](https://riverblue72.github.io/view2risk/presentation/), followed by [Methods](site/methods.html), [recorded-case comparison](site/compare.html) and [Results](site/results.html). That presentation followed problem → operational GT → parallel predictors → observed outcome → synthetic observation error → three aggregate findings → contribution and limits.
 
 Read [Storyboard](FINAL_PRESENTATION_STORYBOARD.md), [Methods](FINAL_METHODS_EXPLANATION.md), [Simulation UX](FINAL_SIMULATION_UX_REPORT.md), [Results interpretation](FINAL_RESULTS_INTERPRETATION.md) and [Browser verification](FINAL_BROWSER_VERIFICATION.md). Review screenshots and aggregate-only evidence are under `review/`.
 
