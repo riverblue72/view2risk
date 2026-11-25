@@ -85,3 +85,5 @@
 - 검증 범위는 저장된 기록의 표시와 브라우저 조작이다. 실제 센서 전이, 새로운 날짜에서의 보정, 정지·재출발 성능과 현장 안전 효과는 이 개편에서 평가하지 않았다.
 
 첫 게시 시도에서 GitHub Actions 빌드는 성공했고 Pages 배포 API가 HTTP 502를 반환했다. 해당 실행의 [배포 로그](https://github.com/riverblue72/view2risk/actions/runs/45649969535)에 서버 응답이 기록돼 있다. 발표 HTML은 새 자산에 버전 식별자를 사용해 이전 스크립트 캐시와 구분한다.
+
+최종 화면 커밋 `8d8a720`의 [Pages 빌드·배포](https://github.com/riverblue72/view2risk/actions/runs/45650374293)가 성공했다. 공개 URL에서도 같은 Chrome 검증을 실행해 데스크톱·모바일 8장, 탐색·노트·전체 화면, 시연 180조합의 공간·확률·GT 일치, 집계와 부록을 확인했다. 검증 중 JavaScript 예외와 HTTP 오류 응답은 0건이었다.
