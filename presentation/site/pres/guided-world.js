@@ -102,7 +102,7 @@ function guidedWorld(canvas, s, tick) {
     const {data,stage,mode,scenario,h,truth,result}=st;
     clear(layers);inputRing=null;historyKey='';lastIndex=-1;
     boundaryExit.material.emissiveColor=color(amber).scale(stage===4?1:.5);
-    if(stage===1)return;
+    if(stage===1||st.leadIn)return;
     const xy=result.input.observed_xy;
     const noisy=data.r.results[scenario+'__noisy'], corrected=data.r.results[scenario+'__filtered_mean'];
     const filter=corrected.filter, simultaneous=stage===2&&st.compare;
@@ -135,6 +135,7 @@ function guidedWorld(canvas, s, tick) {
     if(truth)stroke('actual future',[data.clean.input.observed_xy.at(-1),...data.r.future_GT_xy.slice(0,end+1)],C3.gt,.053,.185);
   }
   function cursor(st,sample){
+    if(!sample){forecastPerson.setEnabled(false);return;}
     forecastPerson.setEnabled(st.stage>=3&&sample.index>0);
     if(st.stage===2&&inputRing)inputRing.position.set(sample.point[0],.24,sample.point[1]);
     if(st.stage<3||sample.index===0)return;
@@ -145,7 +146,7 @@ function guidedWorld(canvas, s, tick) {
   }
   function pose(st,idx,visible){
     const {data,stage,time,running}=st;
-    const rec=data.c.actual_observations;
+    const rec=st.record;
     person.setEnabled(visible);
     if(!visible)return;
     const xy=rec.xy[idx],prior=rec.xy[Math.max(0,idx-1)];
@@ -158,10 +159,10 @@ function guidedWorld(canvas, s, tick) {
     for(const m of person.getChildren())if(m.name==='leg'||m.name==='arm')
       m.rotation.x=(running?Math.sin(legPhase)*.32:0)*Math.sign(m.position.x)*(m.name==='arm'?-1:1);
     lastIndex=idx;
-    const key=stage<=1?data.r.uid+':'+idx:'off';
+    const key=stage<=1||st.leadIn?data.r.uid+':'+idx:'off';
     if(historyKey===key)return;
     historyKey=key;trail?.dispose(false,true);trail=null;
-    if(stage<=1){
+    if(stage<=1||st.leadIn){
       let first=idx;
       while(first>0&&(stage===0||time-rec.elapsed_s[first-1]<=3.2)&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
       if(first<idx){const bag=[];trail=stroke('recorded past',rec.xy.slice(first,idx+1),C3.clean,.047,.115,1,bag);}

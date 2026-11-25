@@ -6,17 +6,23 @@ const GUIDE_STAGES=[
   ['미래 운동','가는 선은 미래 경로 후보, 굵은 선은 대표 경로입니다. 영역은 선택 시각의 위치 분포입니다.'],
   ['횡단 완료','각 막대는 그 시간 안에 Exit를 지날 확률입니다. 정답을 열어 실제 통과와 비교하세요.']
 ];
+// Use the annotated first passage, interpolated between its two recorded frames.
+function recordFromEntry(data){
+  const raw=data.c.actual_observations, t=data.e.GT.entry_s-data.c.origin0_s;
+  const next=raw.elapsed_s.findIndex(v=>v>t);
+  if(!Number.isFinite(t)||next<1)throw Error('Entry 시각을 포함하는 두 기록 좌표가 필요합니다.');
+  const i=next-1, w=(t-raw.elapsed_s[i])/(raw.elapsed_s[next]-raw.elapsed_s[i]);
+  const entry=raw.xy[i].map((v,k)=>v+w*(raw.xy[next][k]-v));
+  return {elapsed_s:[t,...raw.elapsed_s.slice(next)],xy:[entry,...raw.xy.slice(next)],sourceOffset:i};
+}
 function mountGuided(root,initial) {
   const st={data:initial,stage:0,h:4,mode:'clean',compare:false,view:'crossing',scenario:'iid_1',truth:false,running:false,time:0};
   let world,disposed=false,revision=0,lastStamp=0,lastFrame=-2,fallbackFrame=0,overlayKey,journeyKey;
   const $g=id=>root.querySelector('#g'+id);
   const origin=()=>st.data.r.elapsed_s;
-  function start(){
-    if(st.stage===0)return st.data.c.actual_observations.elapsed_s[0];
-    if(st.stage===1)return Math.max(st.data.c.actual_observations.elapsed_s[0],origin()-4);
-    if(st.stage===2)return origin()+st.data.clean.input.history_times_s[0]-st.data.clean.input.origin_s;
-    return origin();
-  }
+  st.record=recordFromEntry(initial);
+  const start=()=>st.record.elapsed_s[0];
+  const waitingForInput=()=>st.stage>=2&&st.time<(st.stage===2?origin()+st.data.clean.input.history_times_s[0]-st.data.clean.input.origin_s:origin())-1e-6;
   const end=()=>st.stage===0?st.data.c.actual_observations.elapsed_s.at(-1):st.stage<3?origin():st.truth?Math.min(origin()+st.h,st.data.c.actual_observations.elapsed_s.at(-1)):origin()+st.h;
   const playLabel=()=>st.running?'Ⅱ 일시정지':st.stage===0?'▶ 전체 횡단 재생':'▶ '+['기록 재생','관측 재생','예측 재생',st.truth?'예측·실제 재생':'예측 재생'][st.stage-1];
   const result=()=>st.data.r.results[st.mode==='clean'?'clean':st.scenario+'__'+st.mode];
@@ -29,16 +35,16 @@ function mountGuided(root,initial) {
     '<aside class="g-info"><div class="g-meta" id="gMeta"></div><h2 id="gStageTitle"></h2><p id="gText"></p><div class="g-kpis"><div><small id="gDistanceLabel">Exit까지 거리</small><strong id="gDistance"></strong></div><div><small id="gSpeedLabel">종방향 속도</small><strong id="gSpeed"></strong></div></div><div id="gProb"></div><div id="gOutcome"></div><div id="gCaseMetrics"></div></aside></div>'+
     '<div class="g-controls"><div class="g-time"><button id="gPlay">▶ 재생</button><button id="gReset">처음부터</button><label for="gTime" id="gTimeLabel">기록 시간</label><input id="gTime" type="range" step="any"><output for="gTime" id="gClock"></output></div>'+
     '<div class="g-settings">'+uqSelect('gNoise','오차',UQ_SCENARIOS,'iid_1')+
-    uqSelect('gH','예측 시간',UQ.horizons.map(h=>[h,h+'초']),3)+'<button id="gReveal">실제 정답 공개</button><button id="gCamera">카메라 초기화</button><button id="gNext">다음 단계 →</button></div></div>';
+    uqSelect('gH','예측 시간',UQ.horizons.map(h=>[h,h+'초']),3)+'<button id="gReveal">실제 정답 공개</button><button id="gCamera">카메라 초기화</button><button id="gJump" hidden>비교 시점으로</button><button id="gNext">다음 단계 →</button></div></div>';
   const canvas=$g('Canvas'),fallback=$g('Fallback');
   const status=()=>{root.dataset.stage=st.stage;root.dataset.uid=st.data.r.uid;root.dataset.truth=st.truth;root.dataset.mode=st.mode;root.dataset.h=st.h;};
   function fallbackPlot(idx) {
-    if(st.stage===1){
-      const r=st.data.c.actual_observations, lim=Math.max(0,idx),g=st.data.geometry;
+    if(st.stage===1||st.leadIn){
+      const r=st.record, lim=Math.max(0,idx),g=st.data.geometry;
       const edges=['end_A','end_B'].map(e=>V2R.boundary(g,e));
       const past=r.xy.slice(Math.max(0,lim-78),lim+1);
       const plot=uqProjection([...edges.flat(),...past],640,290);
-      fallback.innerHTML='<svg class="field" viewBox="0 0 640 290" aria-label="실제 과거 관측">'+edges.map((xy,i)=>uqLine(plot,xy,(i===1)===(st.data.c.direction===1)?'#b87508':'#506975',3)).join('')+uqLine(plot,past,UQ.colors.clean,4)+uqScale(plot.scale,1,290)+'</svg>';
+      fallback.innerHTML='<svg class="field" viewBox="0 0 640 290" aria-label="실제 과거 관측">'+edges.map((xy,i)=>uqLine(plot,xy,(i===1)===(st.data.c.direction===1)?'#b87508':'#506975',3)).join('')+uqLine(plot,past,UQ.colors.clean,4)+dot(plot.xy(past.at(-1)),6,UQ.colors.clean)+uqScale(plot.scale,1,290)+'</svg>';
     }else fallback.innerHTML=st.stage===2?uqReplayInset(st):uqMap(st.data,st.result,st.mode,st.h,st.truth,true);
   }
   // Select only forecasts already issued by this point in the recorded crossing.
@@ -91,18 +97,19 @@ function mountGuided(root,initial) {
       if(st.time>=end()){st.running=false;$g('Play').textContent=playLabel();}
     }
     lastStamp=now;
+    if(st.leadIn!==waitingForInput()){render();return;}
     if(st.stage===0)journeyLayers();
-    const rec=st.data.c.actual_observations;
-    const personTime=st.stage>=3&&!st.truth?origin():st.time;
+    const rec=st.record;
+    const personTime=st.stage>=3&&!st.truth?Math.min(origin(),st.time):st.time;
     const idx=rec.elapsed_s.findLastIndex(v=>v<=personTime+1e-6);
     const visible=idx>=0&&personTime-rec.elapsed_s[idx]<.061;
     const delta=st.time-origin(),r=st.result;
     // The two clocks share the saved origin. The cursor only visits stored positions.
     let cursor=null;
-    if(st.stage===2){
+    if(st.stage===2&&!st.leadIn){
       const j=Math.max(0,r.input.history_times_s.findLastIndex(t=>t<=r.input.origin_s+delta+1e-6));
       cursor={point:r.input.observed_xy[j],index:j};
-    }else if(st.stage>=3){
+    }else if(st.stage>=3&&!st.leadIn){
       const j=r.future_times_s.findLastIndex(t=>t<=delta+1e-6);
       cursor={point:j<0?r.input.observed_xy.at(-1):st.representative[j],index:j+1};
     }
@@ -118,16 +125,17 @@ function mountGuided(root,initial) {
           while(first>0&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
           fallback.querySelector('[data-trail]').setAttribute('points',journeyPlot.points(rec.xy.slice(first,idx+1)));
         }
-      }else if(!fallback.hidden&&(st.stage===1||force))fallbackPlot(idx);
-      const atOrigin=st.stage>1||Math.abs(st.time-origin())<.001;
+      }else if(!fallback.hidden&&(st.stage===1||st.leadIn||force))fallbackPlot(idx);
+      const atOrigin=st.stage>=2&&st.time>=origin()||Math.abs(st.time-origin())<.00001;
       let d=null,v=null;
       if(atOrigin){d=st.data.features.distance_m;v=st.data.features.v_long_mps;}
       else if(visible){
         d=geometryDistances(st.data.geometry,rec.xy[idx],st.data.c.direction)?.remaining;
-        const j=rec.elapsed_s.findLastIndex(t=>t<=rec.elapsed_s[idx]-.6);
-        if(j>=0&&rec.elapsed_s.slice(j+1,idx+1).every((t,k)=>t-rec.elapsed_s[j+k]<.061)){
-          const dt=rec.elapsed_s[idx]-rec.elapsed_s[j],g=st.data.geometry;
-          v=st.data.c.direction*g.axis.reduce((a,axis,k)=>a+axis*(rec.xy[idx][k]-rec.xy[j][k]),0)/dt;
+        const raw=st.data.c.actual_observations, ri=rec.sourceOffset+idx;
+        const j=raw.elapsed_s.findLastIndex(t=>t<=rec.elapsed_s[idx]-.6);
+        if(j>=0&&raw.elapsed_s.slice(j+1,ri+1).every((t,k)=>t-raw.elapsed_s[j+k]<.061)){
+          const dt=rec.elapsed_s[idx]-raw.elapsed_s[j],g=st.data.geometry;
+          v=st.data.c.direction*g.axis.reduce((a,axis,k)=>a+axis*(rec.xy[idx][k]-raw.xy[j][k]),0)/dt;
         }
       }
       $g('Distance').textContent=d==null?'—':PN(d,2)+' m';
@@ -143,7 +151,7 @@ function mountGuided(root,initial) {
       const actual=host.querySelector('[data-actual-cursor]');
       if(actual){
         actual.setAttribute('visibility',visible?'visible':'hidden');
-        const recorded=host.querySelector('[data-recorded-path]').points[idx];
+        const recorded=host.querySelector('[data-recorded-path]').points[idx+rec.sourceOffset];
         if(visible&&recorded){actual.setAttribute('cx',recorded.x);actual.setAttribute('cy',recorded.y);}
       }
     }
@@ -152,7 +160,7 @@ function mountGuided(root,initial) {
     if($g('Time').valueAsNumber!==st.time)$g('Time').value=st.time;
   }
   function render(){
-    status();st.result=result();
+    st.leadIn=waitingForInput();status();st.result=result();
     const scores=st.result.hypothesis_confidence_scores;
     st.representative=st.result.hypotheses_xy[scores.indexOf(Math.max(...scores))];
     delete root.dataset.forecastOrigin;
@@ -161,22 +169,23 @@ function mountGuided(root,initial) {
     const time=$g('Time');
     time.min=start();time.max=end();
     $g('Play').textContent=playLabel();
-    $g('TimeLabel').textContent=['전체 기록','기록 구간','관측 구간','예측 구간','예측 구간'][stage];
+    $g('TimeLabel').textContent='Entry부터';
     $g('Journey').setAttribute('aria-pressed',stage===0);
     root.querySelectorAll('[data-condition]').forEach(btn=>{btn.disabled=stage===1;btn.setAttribute('aria-pressed',btn.dataset.condition===mode);});
-    $g('Hint').textContent=stage===0?'접근부터 통과 이후까지 재생합니다. 각 예측의 범위는 최대 4초입니다.':stage===1?'기록 재생 중에는 기준 위치만 표시합니다. 2단계부터 조건을 선택하세요.':stage===2?'한 예측 시점 확대 · 과거 0.9초의 입력 10점입니다. 전체 이동은 ‘전체 횡단’에서 보세요.':truth?'보라색 사람 = 대표 예측 · 파란 사람 = 실제 보행':'예측 재생 · 보라색 사람이 0.5초 간격의 대표 예측 위치를 따라갑니다.';
-    $g('CompareWrap').hidden=stage!==2;$g('Compare').checked=st.compare;
+    $g('Hint').textContent=stage===0?'Entry에서 출발해 통과 이후까지 재생합니다. 각 예측의 범위는 최대 4초입니다.':stage===1?'기록 재생 중에는 기준 위치만 표시합니다. 2단계부터 조건을 선택하세요.':stage===2?'저장된 입력 10점(0.9초)에서 기준·합성·보정 위치를 비교합니다.':truth?'보라색 사람 = 대표 예측 · 파란 사람 = 실제 보행':'예측 재생 · 보라색 사람이 0.5초 간격의 대표 예측 위치를 따라갑니다.';
+    $g('CompareWrap').hidden=stage!==2||st.leadIn;$g('Compare').checked=st.compare;
     $g('Noise').disabled=stage===1||(stage===0&&mode==='clean');$g('Noise').value=st.scenario;
     $g('H').disabled=stage===1||stage===2;$g('H').value=h;
-    $g('Reveal').disabled=stage!==4;$g('Reveal').textContent=truth?'정답 숨기기':'실제 정답 공개';$g('Reveal').setAttribute('aria-pressed',truth);
+    $g('Jump').hidden=stage<2;
+    $g('Reveal').disabled=stage!==4||st.leadIn;$g('Reveal').textContent=truth?'정답 숨기기':'실제 정답 공개';$g('Reveal').setAttribute('aria-pressed',truth);
     $g('Next').disabled=stage===4;$g('Next').textContent=stage===0?'비교 시점으로':'다음 단계 →';
     root.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.stage===stage));
     $g('Meta').textContent=data.c.crosswalk+' · '+UQ.names[mode]+' · '+$g('Noise').selectedOptions[0].textContent+' · 예측 시점 '+PN(origin(),1)+' s'+(stage>=3?' · H='+h+'초':'');
     $g('StageTitle').textContent=GUIDE_STAGES[stage-1]?.[0]||'';$g('Text').textContent=truth?'':GUIDE_STAGES[stage-1]?.[1]||'';
-    $g('Prob').innerHTML=stage===4?'<h3>시간별 횡단 완료확률</h3>'+uqBars(st.result,h):'';
+    $g('Prob').innerHTML=stage===4&&!st.leadIn?'<h3>시간별 횡단 완료확률</h3>'+uqBars(st.result,h):'';
     $g('Outcome').innerHTML=truth?uqOutcome(data,h):'';
     const metrics=[];
-    if(stage>=3){
+    if(stage>=3&&!st.leadIn){
       const i=st.result.future_times_s.indexOf(h), area=st.result.area_m2?.['0.95']?.[i];
       if(Number.isFinite(area))metrics.push('HDR95 면적 <b>'+PN(area,2)+' m²</b>');
       if(truth){
@@ -194,14 +203,20 @@ function mountGuided(root,initial) {
     if(stage===2&&(mode!=='clean'||st.compare))entries.push(['측정오차 95%',UQ.colors.noisy]);
     if(stage===0||stage>=3)entries.push(['예측 경로',UQ.colors.future],['HDR 진한 68% · 옅은 95%','#8f7dd3']);
     if(truth)entries.push(['실제 미래',UQ.colors.gt]);
+    if(st.leadIn){
+      entries=[['실제 기록',UQ.colors.clean],['Entry','#336386'],['Exit','#b87508']];
+      $g('Meta').textContent=data.c.crosswalk+' · '+UQ.names[mode]+' · Entry에서 비교 시점까지';
+      $g('Hint').textContent='Entry에서 실제 기록을 따라 이동합니다. 저장된 입력이나 예측에 도달하면 비교가 시작됩니다.';
+      $g('Text').textContent='이 사례의 비교 예측은 Entry 통과 후 '+PN(origin()-start(),2)+'초에 저장되었습니다.';
+    }
     $g('Legend').innerHTML=uqLegend(entries);
     $g('Full').disabled=stage===1||stage===2;
     for(const [id,view] of [['Cross','crossing'],['Top','top'],['Full','full']])$g(id).setAttribute('aria-pressed',st.view===view);
-    $g('Inset').hidden=!world||stage<2;
+    $g('Inset').hidden=!world||stage<2||st.leadIn;
     if(!$g('Inset').hidden)$g('Inset').innerHTML=uqReplayInset(st);
-    $g('DistanceLabel').textContent=stage<=1?'현재 Exit 거리':'기준 관측 · Exit 거리';
-    $g('SpeedLabel').textContent=stage<=1?'현재 종방향 속도':'기준 관측 · 종방향 속도';
-    const nextKey=[data.r.uid,stage,mode,st.scenario,h,truth,st.compare].join('|');
+    $g('DistanceLabel').textContent=stage<=1||st.leadIn||stage===2?'현재 Exit 거리':'기준 관측 · Exit 거리';
+    $g('SpeedLabel').textContent=stage<=1||st.leadIn||stage===2?'현재 종방향 속도':'기준 관측 · 종방향 속도';
+    const nextKey=[data.r.uid,stage,mode,st.scenario,h,truth,st.compare,st.leadIn].join('|');
     if(stage===0){journeyKey=null;overlayKey=null;}
     if(stage!==0&&world&&overlayKey!==nextKey){world.overlay(st);overlayKey=nextKey;}
     frame(true);
@@ -210,7 +225,7 @@ function mountGuided(root,initial) {
     const wasJourney=st.stage===0;
     if(n===0&&!wasJourney)st.h=4;
     if(wasJourney&&n!==0)st.h=3;
-    st.running=false;st.stage=n;st.truth=false;st.time=n<=1?start():origin();
+    st.running=false;st.stage=n;st.truth=false;st.time=start();
     if(n===1)st.mode='clean';
     if(n===0||wasJourney||(n<3&&st.view==='full')){st.view='crossing';world?.view(st.data,'crossing',st);}
     render();
@@ -220,6 +235,7 @@ function mountGuided(root,initial) {
   }
   root.querySelectorAll('button[data-stage]').forEach(b=>b.onclick=()=>stageTo(+b.dataset.stage));
   $g('Journey').onclick=()=>stageTo(0);
+  $g('Jump').onclick=()=>{st.time=origin();st.running=false;render();};
   $g('Next').onclick=()=>{
     if(st.stage!==0){stageTo(st.stage+1);return;}
     st.time=origin();st.running=false;render();
@@ -228,8 +244,8 @@ function mountGuided(root,initial) {
     if(!st.running&&st.time>=end())st.time=start();
     st.running=!st.running;lastStamp=performance.now();render();
   };
-  $g('Reset').onclick=()=>reset(st.stage===0?0:1);
-  $g('Time').oninput=e=>{st.running=false;st.time=+e.target.value;render();};
+  $g('Reset').onclick=()=>stageTo(st.stage);
+  $g('Time').oninput=e=>{st.running=false;st.time=Math.max(start(),+e.target.value);if(st.time<origin())st.truth=false;render();};
   root.querySelectorAll('[data-condition]').forEach(btn=>btn.onclick=()=>{
     st.mode=btn.dataset.condition;render();
   });
@@ -247,7 +263,7 @@ function mountGuided(root,initial) {
     try{
       const data=await UQ.caseAt(V2R.ri.find(row=>row.uid===uid));
       if(disposed||revision!==token)return;
-      st.data=data;world?.change(data);reset();
+      st.record=recordFromEntry(data);st.data=data;world?.change(data);reset();
     }catch(error){if(!disposed){e.target.value=st.data.r.uid;bodyError(root,error);}}
     finally{root.inert=false;}
   };

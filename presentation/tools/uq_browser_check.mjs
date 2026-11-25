@@ -81,10 +81,31 @@ try {
   // The default replay traverses the complete public track. Read each forecast only
   // after its origin and remove overlays as soon as recorded completion is confirmed.
   const seekJourney=t=>ev('gTime.value='+t+';gTime.dispatchEvent(new Event("input"))');
-  assert(await ev('PS("gJourney").getAttribute("aria-pressed")==="true" && gClock.textContent==="0.00 s / 16.24 s"'));
+  assert(await ev('PS("gJourney").getAttribute("aria-pressed")==="true" && gClock.textContent==="0.00 s / 13.06 s"'));
   for(const uid of ['o0008','o0000','o0011']){
     await set('gCase',uid);await until('document.querySelector(".guided").dataset.uid==="'+uid+'"&&!document.querySelector(".guided").inert');
-    assert(await ev('Number(gTime.min)===caseData.actual_observations.elapsed_s[0] && Number(gTime.max)===caseData.actual_observations.elapsed_s.at(-1) && !gOutcome.textContent && !sc.getMeshByName("representative")'));
+    const checkEntry=async()=>assert(await ev(`(()=>{
+      const gt=V2R.evidence.cases.find(c=>c.event_id===caseData.event_id).GT;
+      const t=gt.entry_s-caseData.origin0_s,rec=caseData.actual_observations,i=rec.elapsed_s.findLastIndex(v=>v<=t);
+      const w=(t-rec.elapsed_s[i])/(rec.elapsed_s[i+1]-rec.elapsed_s[i]);
+      const xy=rec.xy[i].map((v,k)=>v+w*(rec.xy[i+1][k]-v));
+      const geom=DATA.geometry[caseData.crosswalk],edge=V2R.boundary(geom,caseData.direction===1?'end_A':'end_B');
+      const onBoundary=edge.slice(1).some(([x,z],j)=>{const [a,b]=edge[j];const dx=x-a,dz=z-b,l=dx*dx+dz*dz;
+        if(!l)return false;const u=Math.max(0,Math.min(1,((xy[0]-a)*dx+(xy[1]-b)*dz)/l));
+        return Math.hypot(xy[0]-a-u*dx,xy[1]-b-u*dz)<.00001;});
+      return Math.abs(+gTime.value-t)<1e-6 && person.isEnabled() && onBoundary && Math.hypot(person.position.x-xy[0],person.position.z-xy[1])<1e-7;
+    })()`));
+    await checkEntry();
+    for(const n of [1,2,3,4]){
+      await step(n);await checkEntry();
+      if(n===2){
+        await condition('noisy');await checkEntry();
+        await click('gJump');await click('gReset');await checkEntry();
+        if(uid==='o0008'){await until('sc.isReady()');await capture('entry-observation');}
+      }
+    }
+    await click('gJourney');await condition('clean');
+    assert(await ev('Number(gTime.min)===V2R.evidence.cases.find(c=>c.event_id===caseData.event_id).GT.entry_s-caseData.origin0_s && Number(gTime.max)===caseData.actual_observations.elapsed_s.at(-1) && !gOutcome.textContent && !sc.getMeshByName("representative")'));
     assert(await ev(`(()=>{sc.render();return caseData.actual_observations.xy.every(([x,z])=>{
       const pt=BABYLON.Vector3.Project(new BABYLON.Vector3(x,.9,z),BABYLON.Matrix.Identity(),sc.getTransformMatrix(),camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight()));
       return pt.x>=0 && pt.x<=engine.getRenderWidth() && pt.y>=0 && pt.y<=engine.getRenderHeight();});})()`));
@@ -105,13 +126,14 @@ try {
   }
   await set('gCase','o0008');await until('document.querySelector(".guided").dataset.uid==="o0008"&&!document.querySelector(".guided").inert');
   await click('gPlay');await until('gTime.valueAsNumber>caseData.GT_exit_elapsed_s+.2');await until('Math.abs(gTime.valueAsNumber-Number(gTime.max))<.00001 && !gPlay.textContent.includes("일시정지")');
-  assert(await ev('gOutcome.textContent.includes("10.08초") && gClock.textContent==="16.24 s / 16.24 s"'));
-  await step(2);assert(await ev('gClock.textContent==="0.90 s / 0.90 s"'));
-  checks.push('Complete public tracks for all three cases, cached forecast updates, gated conditions, camera coverage and unbroken f2 playback through Exit');
+  assert(await ev('gOutcome.textContent.includes("10.08초") && gClock.textContent==="13.06 s / 13.06 s"'));
+  await step(2);assert(await ev('gClock.textContent==="0.00 s / 8.02 s"'));
+  checks.push('Actor starts on the recorded Entry boundary on all tabs, including Noisy and restart, across three cases');
+  checks.push('Entry-aligned public tracks for all three cases, cached forecast updates, gated conditions, camera coverage and unbroken f2 playback through Exit');
   for(const [w,h] of [[1920,1080],[1440,900],[1366,768]]){
     await viewport(w,h);
     for(const n of [1,2,3,4]){
-      await step(n);if(n===4)await click('gReveal');await until('sc.isReady()');
+      await step(n);if(n>=2)await click('gJump');if(n===4)await click('gReveal');await until('sc.isReady()');
       const box=await layout();if(n===4)console.log('layout',box);assert(box.fits,JSON.stringify(box));
     }
   }
@@ -119,7 +141,7 @@ try {
   await ev('PS("pFullscreen").scrollIntoView({block:"nearest"})');
   await click('pFullscreen');await until('!!document.fullscreenElement');assert((await layout()).fits);
   await click('pFullscreen');await until('!document.fullscreenElement');
-  await viewport(1440,900);await click('gReset');
+  await viewport(1440,900);await step(1);await click('gReset');
   await click('gPlay');await until('Number(gTime.value)>Number(gTime.min)+.2');await click('gPlay');
   const paused=await ev('gTime.value');await new Promise(r=>setTimeout(r,240));assert.equal(await ev('gTime.value'),paused);
   await ev('gTime.value=7.4;gTime.dispatchEvent(new Event("input"))');await capture('stage-1');
@@ -130,11 +152,11 @@ try {
   const atOrigin=await pose();const cam=()=>ev('[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()]');
   const locked=await cam();
   assert(await ev('[...document.querySelectorAll("[data-condition]")].every(b=>b.disabled)'));
-  await click('gNext');await click('gCompare');await condition('noisy');await until('sc.isReady()');await capture('stage-2');
+  await click('gNext');await click('gJump');await click('gCompare');await condition('noisy');await until('sc.isReady()');await capture('stage-2');
   assert(await ev('!!sc.getMeshByName("measurement ellipse") && !sc.getMeshByName("representative")'));assert.deepEqual(await pose(),atOrigin);
-  await click('gNext');await condition('filtered_mean');await until('sc.isReady()');await capture('stage-3');
+  await click('gNext');await click('gJump');await condition('filtered_mean');await until('sc.isReady()');await capture('stage-3');
   assert(await ev('!!sc.getMeshByName("HDR 0.95") && !!sc.getMeshByName("HDR 0.68") && !sc.getMeshByName("actual future") && !gProb.textContent'));
-  await click('gNext');
+  await click('gNext');await click('gJump');
   for(const truth of [false,true]){
     if(truth)await click('gReveal');
     for(const mode of ['clean','noisy','filtered_mean']){
@@ -181,7 +203,7 @@ try {
   let combos=0;
   for(const uid of ['o0008','o0000','o0011']){
     await set('gCase',uid);await until('document.querySelector(".guided").dataset.uid==="'+uid+'"&&!document.querySelector(".guided").inert');
-    await step(4);await click('gReveal');
+    await step(4);await click('gJump');await click('gReveal');
     const match=await ev(`(async()=>{
       const row=V2R.ri.find(r=>r.uid===gCase.value),s=await UQ.caseAt(row);
       const set=(id,value)=>{const e=PS(id);e.value=value;e.dispatchEvent(new Event('change'));};
@@ -223,13 +245,13 @@ try {
       }return count;
     })()`);combos+=match;
     await click('gPlay');await until('Number(gTime.value)>Number(gTime.min)+.1');await click('gReveal');
-    assert(await ev('!sc.getMeshByName("actual future") && !gOutcome.textContent && +gTime.value===+gTime.min'));
+    assert(await ev('!sc.getMeshByName("actual future") && !gOutcome.textContent && +gTime.value===V2R.ri.find(row=>row.uid===gCase.value).origin_s'));
   }
   assert.equal(combos,180);await set('gCase','o0008');await until('gCase.value==="o0008"&&!document.querySelector(".guided").inert');
   await step(1);await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
   await click('pPrev');await until('location.hash==="#scene-8" && !PS("gCanvas")');
   await ev('history.back()');await ready3();await click('pNotesButton');assert(await ev('!pNotes.hidden'));await click('pNotesButton');
-  await step(3);await condition('noisy');await set('gH',4);await click('gFull');
+  await step(3);await click('gJump');await condition('noisy');await set('gH',4);await click('gFull');
   assert(await ev(`(()=>{
     sc.render();
     const visible=sc.meshes.filter(m=>m.name==='contour 0.95').every(m=>{
@@ -310,8 +332,8 @@ try {
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
   await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await seekJourney(8);assert(await ev('!!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));
-  await step(3);assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
-  await step(4);await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
+  await step(3);await click('gJump');assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
+  await step(4);await click('gJump');await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
   await seek(1);
   assert(await ev('gFallback.querySelector("[data-replay-cursor]").cx.baseVal.value===gFallback.querySelector("[data-path=representative]").points[2].x && !!gFallback.querySelector("[data-actual-cursor]")'));
   await call('Page.removeScriptToEvaluateOnNewDocument',{identifier:injected.identifier});
