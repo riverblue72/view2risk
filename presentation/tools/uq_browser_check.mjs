@@ -78,6 +78,36 @@ try {
     }
   }
   await ev('location.hash="#scene-9"');await ready3();
+  // The default replay traverses the complete public track. Read each forecast only
+  // after its origin and remove overlays as soon as recorded completion is confirmed.
+  const seekJourney=t=>ev('gTime.value='+t+';gTime.dispatchEvent(new Event("input"))');
+  assert(await ev('PS("gJourney").getAttribute("aria-pressed")==="true" && gClock.textContent==="0.00 s / 16.24 s"'));
+  for(const uid of ['o0008','o0000','o0011']){
+    await set('gCase',uid);await until('document.querySelector(".guided").dataset.uid==="'+uid+'"&&!document.querySelector(".guided").inert');
+    assert(await ev('Number(gTime.min)===caseData.actual_observations.elapsed_s[0] && Number(gTime.max)===caseData.actual_observations.elapsed_s.at(-1) && !gOutcome.textContent && !sc.getMeshByName("representative")'));
+    assert(await ev(`(()=>{sc.render();return caseData.actual_observations.xy.every(([x,z])=>{
+      const pt=BABYLON.Vector3.Project(new BABYLON.Vector3(x,.9,z),BABYLON.Matrix.Identity(),sc.getTransformMatrix(),camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight()));
+      return pt.x>=0 && pt.x<=engine.getRenderWidth() && pt.y>=0 && pt.y<=engine.getRenderHeight();});})()`));
+    const selected=await ev('Number(V2R.ri.find(r=>r.uid===gCase.value).origin_s)');
+    for(const f of await ev('caseData.forecasts.filter(f=>f.elapsed_s<caseData.GT_exit_elapsed_s).map(f=>f.elapsed_s)')){
+      await seekJourney(f);
+      assert(await ev(`(()=>{const r=caseData.forecasts.find(f=>f.elapsed_s===${f}).conditions.clean;
+        const p=r.exit.probabilities?.[4]??r.exit.model_probability_4s;
+        return +document.querySelector(".guided").dataset.forecastOrigin===${f} && !!sc.getMeshByName("representative") && !!sc.getMeshByName("HDR 0.95") && Number(gProb.querySelector('[data-t="4"]').dataset.probability)===p && (r.exit.probabilities?gProb.children.length>0:gProb.innerText.includes("미저장"));})()`));
+    }
+    for(const mode of ['noisy','filtered_mean']){
+      await condition(mode);await seekJourney(selected-.1);
+      assert(await ev('!sc.getMeshByName("representative")&&!gProb.textContent'));
+      await click('gNext');assert(await ev('!!sc.getMeshByName("representative") && gTime.valueAsNumber==='+selected));
+    }
+    await seekJourney(await ev('caseData.actual_observations.elapsed_s.at(-1)'));
+    assert(await ev('gOutcome.textContent.includes("Entry → Exit") && !sc.getMeshByName("representative")'));
+  }
+  await set('gCase','o0008');await until('document.querySelector(".guided").dataset.uid==="o0008"&&!document.querySelector(".guided").inert');
+  await click('gPlay');await until('gTime.valueAsNumber>caseData.GT_exit_elapsed_s+.2');await until('Math.abs(gTime.valueAsNumber-Number(gTime.max))<.00001 && !gPlay.textContent.includes("일시정지")');
+  assert(await ev('gOutcome.textContent.includes("10.08초") && gClock.textContent==="16.24 s / 16.24 s"'));
+  await step(2);assert(await ev('gClock.textContent==="0.90 s / 0.90 s"'));
+  checks.push('Complete public tracks for all three cases, cached forecast updates, gated conditions, camera coverage and unbroken f2 playback through Exit');
   for(const [w,h] of [[1920,1080],[1440,900],[1366,768]]){
     await viewport(w,h);
     for(const n of [1,2,3,4]){
@@ -196,7 +226,7 @@ try {
     assert(await ev('!sc.getMeshByName("actual future") && !gOutcome.textContent && +gTime.value===+gTime.min'));
   }
   assert.equal(combos,180);await set('gCase','o0008');await until('gCase.value==="o0008"&&!document.querySelector(".guided").inert');
-  await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
+  await step(1);await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
   await click('pPrev');await until('location.hash==="#scene-8" && !PS("gCanvas")');
   await ev('history.back()');await ready3();await click('pNotesButton');assert(await ev('!pNotes.hidden'));await click('pNotesButton');
   await step(3);await condition('noisy');await set('gH',4);await click('gFull');
@@ -279,6 +309,7 @@ try {
   assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
   await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
+  await seekJourney(8);assert(await ev('!!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));
   await step(3);assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
   await step(4);await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
   await seek(1);

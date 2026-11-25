@@ -101,7 +101,8 @@ function uqMap(s,result,mode,h,truth,replay=false) {
 }
 function uqBars(result,h) {
   return '<div class="prob-chart" role="group" aria-label="시간별 누적 완료확률">'+UQ.horizons.map(t=>{
-    const p=result.exit.probabilities[t];
+    const p=result.exit.probabilities?.[t]??(t===4?result.exit.model_probability_4s:null);
+    if(!Number.isFinite(p))return '<div class="prob-row"><span>'+t+'초</span><div class="bar-track"></div><strong>미저장</strong></div>';
     return '<div class="prob-row '+(t===h?'chosen':'')+'" data-t="'+t+'" data-probability="'+p+'"><span>'+t+'초</span><div class="bar-track"><i style="width:'+(100*p)+'%"></i></div><strong>'+UQ.pct(p)+'</strong></div>';
   }).join('')+'</div>';
 }

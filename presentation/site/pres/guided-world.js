@@ -71,6 +71,23 @@ function guidedWorld(canvas, s, tick) {
     const span=Math.max(10,g.nominal_length_m+5);
     const aspect=canvas.clientWidth/Math.max(1,canvas.clientHeight);
     camera.radius=Math.max(15,span/(2*Math.tan(camera.fov/2)*Math.min(2.15,aspect)),span*.76);
+    if(st?.stage===0){
+      const edges=['end_A','end_B'].flatMap(e=>V2R.boundary(g,e));
+      const all=[...edges,...data.c.actual_observations.xy];
+      if(kind==='full'){
+        all.push(...uqComparisonExtent(st).all);
+        for(const f of data.c.forecasts){
+          const r=f.conditions.clean,i=r.future_times_s.indexOf(st.h);
+          all.push(...r.regions[i]['0.95'].flat(),...r.hypotheses_xy.flatMap(path=>path.slice(0,i+1)));
+        }
+      }
+      const axes=[g.axis,g.normal];
+      const limits=axes.map(a=>{const v=all.map(p=>a[0]*p[0]+a[1]*p[1]);return [Math.min(...v),Math.max(...v)];});
+      const mid=limits.map(([lo,hi])=>(lo+hi)/2),half=limits.map(([lo,hi])=>(hi-lo)/2);
+      camera.target.set(mid[0]*g.axis[0]+mid[1]*g.normal[0],0,mid[0]*g.axis[1]+mid[1]*g.normal[1]);
+      const distance=(Math.max((half[0]+1)/aspect,half[1]+2))/Math.tan(camera.fov/2)+half[1]+2;
+      camera.upperRadiusLimit=Math.max(130,distance*1.1);camera.radius=Math.max(15,distance);
+    }
     if(kind==='full'&&st?.stage>=3){
       const {all}=uqComparisonExtent(st);
       const mid=[0,1].map(k=>(Math.min(...all.map(p=>p[k]))+Math.max(...all.map(p=>p[k])))/2);
@@ -141,12 +158,12 @@ function guidedWorld(canvas, s, tick) {
     for(const m of person.getChildren())if(m.name==='leg'||m.name==='arm')
       m.rotation.x=(running?Math.sin(legPhase)*.32:0)*Math.sign(m.position.x)*(m.name==='arm'?-1:1);
     lastIndex=idx;
-    const key=stage===1?data.r.uid+':'+idx:'off';
+    const key=stage<=1?data.r.uid+':'+idx:'off';
     if(historyKey===key)return;
     historyKey=key;trail?.dispose(false,true);trail=null;
-    if(stage===1){
+    if(stage<=1){
       let first=idx;
-      while(first>0&&time-rec.elapsed_s[first-1]<=3.2&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
+      while(first>0&&(stage===0||time-rec.elapsed_s[first-1]<=3.2)&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
       if(first<idx){const bag=[];trail=stroke('recorded past',rec.xy.slice(first,idx+1),C3.clean,.047,.115,1,bag);}
     }
   }
