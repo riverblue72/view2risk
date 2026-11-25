@@ -46,17 +46,20 @@ function uqLine(plot,path,color,width,attrs='') {
 function uqScale(scale,length,height) {
   return '<path d="M22 '+(height-16)+'h'+(length*scale)+'" stroke="#435762" stroke-width="2"/><text x="22" y="'+(height-23)+'">'+length+' m</text>';
 }
+function uqEllipse(R,centre) {
+  const radius=Math.sqrt(-2*Math.log(.05));
+  const a=Math.sqrt(R[0][0]), b=R[1][0]/a, c=Math.sqrt(R[1][1]-b*b);
+  return Array.from({length:73},(_,i)=>{
+    const t=i*Math.PI/36;
+    return [centre[0]+radius*a*Math.cos(t),centre[1]+radius*(b*Math.cos(t)+c*Math.sin(t))];
+  });
+}
 function uqHistory(s,scenario) {
   const clean=s.r.results.clean, noisy=s.r.results[scenario+'__noisy'], corrected=s.r.results[scenario+'__filtered_mean'];
   const n=corrected.filter.observed_points;
   const paths=[clean.input.observed_xy,noisy.input.observed_xy.slice(0,n),corrected.input.observed_xy];
   // 95% bivariate Gaussian measurement-error contour, centred on the last available noisy observation.
-  const R=corrected.filter.filter_R, centre=paths[1].at(-1), radius=Math.sqrt(-2*Math.log(.05));
-  const a=Math.sqrt(R[0][0]), b=R[1][0]/a, c=Math.sqrt(R[1][1]-b*b);
-  const ellipse=Array.from({length:73},(_,i)=>{
-    const t=i*Math.PI/36;
-    return [centre[0]+radius*a*Math.cos(t),centre[1]+radius*(b*Math.cos(t)+c*Math.sin(t))];
-  });
+  const ellipse=uqEllipse(corrected.filter.filter_R,paths[1].at(-1));
   const plot=uqProjection([...paths.flat(),...ellipse],450,240), colors=Object.values(UQ.colors);
   const lines=paths.map((path,i)=>uqLine(plot,path,colors[i],2.4)+path.map(p=>{
     const [x,y]=plot.xy(p);
@@ -81,7 +84,7 @@ function uqMap(s,result,mode,h,truth) {
   svg+='<polygon fill="#e6eeef" points="'+plot.points([...entry,...exit.slice().reverse()])+'"/>';
   for(const [label,boundary] of [['Entry',entry],['Exit',exit]]) {
     const [x,y]=plot.xy(boundary.reduce((a,b)=>plot.xy(a)[1]<plot.xy(b)[1]?a:b));
-    svg+=uqLine(plot,boundary,'#506975',2,label==='Entry'?'stroke-dasharray="4 3"':'')+
+    svg+=uqLine(plot,boundary,label==='Exit'?'#b87508':'#506975',2,label==='Entry'?'stroke-dasharray="4 3"':'')+
       '<text text-anchor="middle" x="'+x+'" y="'+(y-8)+'">'+label+'</text>';
   }
   for(const level of ['0.95','0.68']) for(const polygon of region[level]) {
@@ -101,13 +104,16 @@ function uqBars(result,h) {
     return '<div class="prob-row '+(t===h?'chosen':'')+'" data-t="'+t+'" data-probability="'+p+'"><span>'+t+'초</span><div class="bar-track"><i style="width:'+(100*p)+'%"></i></div><strong>'+UQ.pct(p)+'</strong></div>';
   }).join('')+'</div>';
 }
-function uqRobustness() {
+function uqRobustness(part="both") {
   const rows=Object.keys(UQ.names).map(mode=>UQ.evidence.r.find(r=>r.dataset==='IMPTC'&&r.split==='test'&&r.horizon_s===4&&r.condition==='overall'&&r.group==='All'&&r.location==='pooled'&&r.mode===mode&&(mode==='clean'?r.noise_type==='clean':r.noise_type==='iid'&&r.noise_scale===1)));
   const [,n,k]=rows;
-  return '<div class="pair"><article><h2>위치 오차와 완료확률 오차</h2>'+pTable(['입력 조건','ADE (m)','H4 Brier'],rows.map(r=>[UQ.names[r.mode],PN(r.ade_m),PN(r.brier,5)]))+
-    '<p class="annotation">Noisy 대비 보정 후 <b>ADE '+UQ.reduction(n.ade_m,k.ade_m)+'</b>, <b>H4 Brier '+UQ.reduction(n.brier,k.brier)+'</b> 감소</p></article>'+
-    '<article><h2>4초 후 위치의 95% 예측영역</h2>'+pTable(['입력 조건','Coverage95','HDR95 (m²)'],rows.map(r=>[UQ.names[r.mode],UQ.pct(r.coverage95),PN(r.hdr95_area_m2,2)]))+
-    '<p class="annotation">영역은 다시 좁아졌지만 실제 위치를 포함한 비율은 <b>'+UQ.pct(k.coverage95)+'</b>에 머물렀습니다.</p></article></div>'+
+  const accuracy='<article><h2>위치 오차와 완료확률 오차</h2>'+pTable(['입력 조건','ADE (m)','H4 Brier'],rows.map(r=>[UQ.names[r.mode],PN(r.ade_m),PN(r.brier,5)]))+
+    '<p class="annotation">Noisy 대비 보정 후 <b>ADE '+UQ.reduction(n.ade_m,k.ade_m)+'</b>, <b>H4 Brier '+UQ.reduction(n.brier,k.brier)+'</b> 감소</p></article>';
+  const spatial='<article><h2>4초 후 위치의 95% 예측영역</h2>'+pTable(['입력 조건','Coverage95','HDR95 (m²)'],rows.map(r=>[UQ.names[r.mode],UQ.pct(r.coverage95),PN(r.hdr95_area_m2,2)]))+
+    '<p class="annotation">영역은 다시 좁아졌지만 실제 위치를 포함한 비율은 <b>'+UQ.pct(k.coverage95)+'</b>에 머물렀습니다.</p></article>';
+  if(part==='accuracy')return accuracy;
+  if(part==='spatial')return spatial;
+  return '<div class="pair">'+accuracy+spatial+'</div>'+
     '<p class="caption">IMPTC Test · 같은 237개 예측 시점 / 120건의 횡단 · IID 1×. ADE는 4초간 대표 경로의 평균 위치 오차(n=215), Brier는 완료확률과 실제 0·1 결과의 제곱오차(n=218)입니다. Coverage는 4초 위치 포함률(n=228), HDR 면적은 95% 최고밀도영역의 넓이(n=237)입니다. '+UQ.source('r_robustness/r_robustness_metrics.csv')+'</p>';
 }
 function uqTraining() {

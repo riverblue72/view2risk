@@ -95,3 +95,55 @@
 .uq #pNotes{position:static;width:auto;border-radius:4px;box-shadow:none}
 
 .uq .protocol{color:#3d565b;background:#f2f5f4;padding:9px 13px;margin-bottom:18px;font-size:.94em}
+/* Guided projection layout. Canvas backing resolution follows its CSS box. */
+.uq.on-guided-slide #deck{max-width:1680px;padding:12px max(3vw,20px) 8px}
+.uq.on-guided-slide .slide-heading{align-items:center;margin:0 0 10px;padding-bottom:8px}
+.uq.on-guided-slide .slide-heading h1{font-size:clamp(24px,2.1vw,37px);margin:0}
+.uq.on-guided-slide .slide-heading .kicker{margin-bottom:2px}
+.uq.on-guided-slide #pSubtitle{font-size:14px}
+.uq .guided{font-variant-numeric:tabular-nums}
+.uq .g-head,.uq .g-head nav,.uq .g-time,.uq .g-settings,.uq .g-map-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.uq .g-head{justify-content:space-between;margin:0 0 8px}
+.uq .g-head nav button{font-size:15px}
+.uq .guided button[aria-pressed=true],.uq #gNext,.uq #gPlay{background:#194c49;color:white}
+.uq .guided button:disabled,.uq .guided select:disabled{opacity:.55;cursor:default}
+.uq .guided label,.uq .guided output{font-size:14px}
+.uq .g-grid{display:grid;grid-template-columns:7fr 3fr;border:1px solid #c8d8d5;background:#f5f8f7;border-radius:5px;overflow:hidden}
+.uq .g-viewport{position:relative;min-width:0;min-height:0}
+.uq .g-viewport canvas,.uq #gFallback{display:block;width:100%;height:clamp(330px,52vh,580px);touch-action:none;outline-offset:-3px}
+.uq .g-viewport canvas[hidden],.uq #gFallback[hidden]{display:none}
+.uq .g-map-tools{position:absolute;right:10px;top:9px}
+.uq .g-map-tools button{font-size:13px;padding:4px 8px;background:#fff}
+.uq #gLegend{position:absolute;bottom:8px;left:8px;right:8px;pointer-events:none}
+.uq #gLegend .uq-legend{display:inline-flex;margin:0;background:#fffffff0;border-radius:4px;padding:4px 8px}
+.uq .g-info{padding:clamp(12px,1.5vw,25px);border-left:1px solid #c8d8d5;background:#fff;line-height:1.4}
+.uq .g-info h2{font-size:clamp(21px,1.65vw,31px);margin:3px 0 6px}
+.uq .g-info h3{font-size:16px;margin:8px 0 4px}
+.uq .g-info p,.uq .g-info small{font-size:clamp(13px,1.05vw,17px);margin:0 0 6px;color:#4a5c63}
+.uq .g-meta{color:#006b60;font-size:13px;font-weight:700}
+.uq .g-kpis{display:grid;grid-template-columns:1fr 1fr;border-block:1px solid #dce6e3;padding:7px 0;margin:9px 0 4px}
+.uq .g-kpis small,.uq .g-kpis strong{display:block;margin:0}
+.uq .g-kpis strong{font-size:clamp(18px,1.55vw,28px)}
+.uq .g-info .prob-row{padding:3px 6px;font-size:clamp(15px,1.1vw,20px)}
+.uq .g-info .outcome{font-size:15px;padding:5px 10px;margin:6px 0 2px}
+.uq .g-controls{padding-top:8px}.uq .g-time{flex-wrap:nowrap}
+.uq .g-time input{flex:1;min-width:40px;accent-color:#176c63}
+.uq .g-time output{min-width:100px;text-align:right}
+.uq .g-settings{margin-top:7px}.uq #gNext{margin-left:auto}
+.uq #gFallback .field{width:100%;height:100%;border:none}
+.uq #gFallback .uq-legend{display:none}
+.uq .g-fallback-label{position:absolute;left:8px;top:6px;font-size:13px}
+.uq .completion-slide .p-table td,.uq .completion-slide .p-table th{padding:6px 8px}
+.uq .completion-slide .p-table+.p-table{margin-top:12px}
+@media(min-width:851px) and (max-height:800px){
+ .uq.on-guided-slide #deck{padding-top:7px}
+ .uq .g-viewport canvas,.uq #gFallback{height:clamp(295px,48vh,380px)}
+ .uq .g-info{padding:10px 15px}.uq .g-info .prob-row{padding-block:1px}
+}
+@media(max-width:850px){
+ .uq .g-grid{grid-template-columns:1fr}
+ .uq .g-viewport canvas,.uq #gFallback{height:310px}
+ .uq .g-info{border-left:0;border-top:1px solid #c8d8d5}
+ .uq .g-time{flex-wrap:wrap}.uq .g-time input{flex-basis:45%}
+ .uq .g-head nav button{font-size:13px;padding:6px}
+}

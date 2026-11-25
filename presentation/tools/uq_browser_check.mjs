@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import {writeFile} from 'node:fs/promises';
 
-const base=process.env.V2R_PUBLIC_URL||'http://127.0.0.1:19854/presentation';
-const cdp=process.env.V2R_CDP||'http://127.0.0.1:19855';
+const base=process.env.V2R_PUBLIC_URL||'http://127.0.0.1:19864/presentation';
+const cdp=process.env.V2R_CDP||'http://127.0.0.1:19865';
 const tab=await (await fetch(cdp+'/json/new?about:blank',{method:'PUT'})).json();
 const ws=new WebSocket(tab.webSocketDebuggerUrl);
 await new Promise(resolve=>ws.onopen=resolve);
@@ -13,6 +13,7 @@ ws.onmessage=({data})=>{
   const m=JSON.parse(data);
   if(m.id){pending.get(m.id)?.(m);pending.delete(m.id);}
   if(m.method==='Runtime.exceptionThrown')errors.push(m.params.exceptionDetails);
+  if(m.method==="Network.loadingFailed"&&!m.params.canceled&&m.params.errorText!=="net::ERR_ABORTED")errors.push(m.params.errorText);
   if(m.method==='Network.responseReceived'&&m.params.response.status>=400)errors.push(m.params.response.url);
 };
 async function call(method,params={}) {
@@ -37,39 +38,117 @@ const viewport=(width,height)=>call('Emulation.setDeviceMetricsOverride',{width,
 const checks=[];
 try {
   await call('Page.enable');await call('Runtime.enable');await call('Network.enable');
-  for(const [width,height] of [[1366,768],[390,844]]){
-    await viewport(width,height);await goto('presentation.html#scene-1');
-    await until('document.querySelector("#pProgress a")');
-    for(let i=1;i<=8;i++){
-      await until('document.querySelector("#pProgress a[aria-current]")?.textContent==="'+i+'"');
-      assert(await ev('document.documentElement.scrollWidth<=innerWidth+1 && !document.querySelector("[role=alert]")'));
-      if(i===4)for(const value of ['0.283','3.925','0.742','0.03472','0.33527','0.08594','81.1%','74.4%','96.05%','74.12%','78.51%','7.37','748.20','10.27'])assert((await ev('pScene.textContent')).includes(value),value);
-      if(i===5)assert((await ev('pScene.textContent')).includes('2.063'));
-      if(i===6)for(const value of ['1,113','2,322','2.19','0.059','393','0.05646','0.01635','0.10827','0.00618','71.0%','94.3%'])assert((await ev('pScene.textContent')).includes(value),value);
-      if(i===7){await click('uqReveal');assert(await ev('!!document.querySelector("[data-path=truth]")'));await click('uqReveal');}
-      if(i===8)break;
-      await click('pNext');
+  await viewport(1440,900);await goto('presentation.html#scene-1');
+  await until('document.querySelector("#pProgress a")');
+  const dest=process.env.V2R_SHOTS;
+  async function capture(name){
+    if(!dest)return;
+    const shot=await call('Page.captureScreenshot',{format:'jpeg',quality:87});
+    await writeFile(dest+'/'+name+'.jpg',Buffer.from(shot.data,'base64'));
+  }
+  const step=async n=>{
+    await ev('document.querySelectorAll("button[data-stage]")['+(n-1)+'].click()');
+    await until('document.querySelector(".guided").dataset.stage==="'+n+'"');
+  };
+  const set=async(id,value)=>ev('(()=>{const e=PS('+JSON.stringify(id)+');e.value='+JSON.stringify(value)+';e.dispatchEvent(new Event("change"));})()');
+  const ready3=()=>until('document.querySelector(".guided")?.dataset.renderer==="babylon" && !!sc.getMeshByName("actualMap") && sc.isReady()');
+  const layout=()=>ev(`(()=>{
+    const rect=id=>PS(id).getBoundingClientRect();
+    const next=rect('gNext'), footer=document.querySelector('.deck-footer')?.getBoundingClientRect();
+    return {width:innerWidth,height:innerHeight,canvas:[rect('gCanvas').width,rect('gCanvas').height],bottom:next.bottom,
+      fits:document.documentElement.scrollWidth<=innerWidth+1 && (!footer||next.bottom<=footer.top+1) && next.bottom<=innerHeight &&
+        [...document.querySelectorAll('.guided button:not(:disabled),.guided select:not(:disabled),#gTime:not(:disabled)')].filter(el=>el.offsetWidth).every(el=>{
+          const r=el.getBoundingClientRect(), hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})};
+  })()`);
+  for(let n=1;n<=8;n++){
+    await ev('location.hash="#scene-'+n+'"');await until('document.querySelector("#pProgress a[aria-current]").textContent==="'+n+'"');
+    if(n===7){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
+    await capture('scene-'+n);
+  }
+  await ev('location.hash="#scene-7"');await ready3();
+  for(const [w,h] of [[1920,1080],[1440,900],[1366,768]]){
+    await viewport(w,h);
+    for(const n of [1,2,3,4]){
+      await step(n);if(n===4)await click('gReveal');await until('sc.isReady()');
+      const box=await layout();if(n===4)console.log('layout',box);assert(box.fits,JSON.stringify(box));
     }
-    checks.push('8 slides and embedded GT at '+width+'px');
   }
-  await click('pPrev');await until('!!document.querySelector("#slideReplay")');
-  await call('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowLeft'});await until('location.hash==="#scene-6"');
-  await ev('history.back()');await until('location.hash==="#scene-7"');
-  await ev('document.querySelector("#pProgress a").click()');await until('location.hash==="#scene-1"');
-  await click('pNotesButton');assert(await ev('pNotes.hidden===false'));
-  await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape'});assert(await ev('pNotes.hidden'));
   await call('Page.bringToFront');
-  const fsSupported=await ev('document.fullscreenEnabled');
-  if(fsSupported) {
-    const fsClick=async()=>{
-      const {x,y}=await ev("(()=>{const el=PS('pFullscreen');el.scrollIntoView();const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
-      for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
-    };
-    await fsClick();await until('!!document.fullscreenElement');await fsClick();await until('!document.fullscreenElement');
+  const fsClick=async()=>{
+    const {x,y}=await ev("(()=>{const r=PS('pFullscreen').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
+    for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
+  };
+  await fsClick();await until('!!document.fullscreenElement');assert((await layout()).fits);await fsClick();await until('!document.fullscreenElement');
+  await viewport(1440,900);await click('gReset');
+  await click('gPlay');await until('Number(gTime.value)>Number(gTime.min)+.2');await click('gPlay');
+  const paused=await ev('gTime.value');await new Promise(r=>setTimeout(r,240));assert.equal(await ev('gTime.value'),paused);
+  await ev('gTime.value=7.4;gTime.dispatchEvent(new Event("input"))');await capture('stage-1');
+  await click('gPlay');await until('Number(gTime.value)>=8 && gPlay.textContent.includes("재생")');
+  assert(await ev('!sc.getMeshByName("actual future")&&!sc.getMeshByName("representative")&&!gProb.textContent'));
+  const pose=()=>ev('person.position.asArray()');
+  assert(await ev('JSON.stringify([person.position.x,person.position.z])===JSON.stringify(caseData.actual_observations.xy[caseData.actual_observations.elapsed_s.findLastIndex(t=>t<=+gTime.value+1e-6)])'));
+  const atOrigin=await pose();const cam=()=>ev('[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()]');
+  const locked=await cam();
+  await click('gNext');await set('gMode','noisy');await until('sc.isReady()');await capture('stage-2');
+  assert(await ev('!!sc.getMeshByName("measurement ellipse") && !sc.getMeshByName("representative")'));assert.deepEqual(await pose(),atOrigin);
+  await click('gNext');await set('gMode','filtered_mean');await until('sc.isReady()');await capture('stage-3');
+  assert(await ev('!!sc.getMeshByName("HDR 0.95") && !!sc.getMeshByName("HDR 0.68") && !sc.getMeshByName("actual future") && !gProb.textContent'));
+  await click('gNext');assert(await ev('!gOutcome.textContent && !sc.getMeshByName("actual future")'));await click('gReveal');
+  await until('sc.isReady()');await capture('stage-4');
+  let combos=0;
+  for(const uid of ['o0008','o0000','o0011']){
+    await set('gCase',uid);await until('document.querySelector(".guided").dataset.uid==="'+uid+'"&&!document.querySelector(".guided").inert');
+    await step(4);await click('gReveal');
+    const match=await ev(`(async()=>{
+      const row=V2R.ri.find(r=>r.uid===gCase.value),s=await UQ.caseAt(row);
+      const set=(id,value)=>{const e=PS(id);e.value=value;e.dispatchEvent(new Event('change'));};
+      const coords=()=>person.position.asArray().join(','), reference=coords();
+      const camera0=[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()].join(',');
+      let count=0;
+      const vertexMatches=(mesh,path)=>{
+        // Tube rings have six sides plus a seam. Their centres recover the source XY.
+        const vertices=mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind), stride=7*3;
+        const close=(a,b)=>Math.abs(a-b)<.002;
+        const ringMatches=(index,p)=>{
+          let x=0,z=0;for(let i=0;i<6;i++){x+=vertices[index*stride+i*3];z+=vertices[index*stride+i*3+2];}
+          return close(x/6,p[0])&&close(z/6,p[1]);};
+        // CAP_ALL prepends/appends two end rings, including the cap centre.
+        return path.every((p,i)=>ringMatches(i+2,p));};
+      for(const [noise] of UQ_SCENARIOS)for(const mode of Object.keys(UQ.names))for(const h of UQ.horizons){
+        set('gNoise',noise);set('gMode',mode);set('gH',h);
+        const r=s.r.results[mode==='clean'?'clean':noise+'__'+mode],i=r.future_times_s.indexOf(h),best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
+        if(coords()!==reference||camera0!==[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()].join(','))throw Error('pose/camera changed');
+        if(!vertexMatches(sc.getMeshByName('actual future'),[s.clean.input.observed_xy.at(-1),...s.f.future_GT_xy.slice(0,i+1)]))throw Error('3D GT vertices');
+        if(!vertexMatches(sc.getMeshByName('representative'),[r.input.observed_xy.at(-1),...r.hypotheses_xy[best].slice(0,i+1)]))throw Error('representative vertices');
+        for(const level of ['0.68','0.95']){
+          const outlines=sc.meshes.filter(m=>m.name==='contour '+level);
+          if(outlines.length!==r.regions[i][level].length||!outlines.every((m,j)=>vertexMatches(m,r.regions[i][level][j])))throw Error('HDR vertices');
+        }
+        for(const bar of gProb.querySelectorAll('[data-t]'))if(+bar.dataset.probability!==r.exit.probabilities[bar.dataset.t])throw Error('probability');
+        if(+gProb.querySelector('.chosen').dataset.t!==h||!gOutcome.textContent.includes(V2R.gt(s,h)?'초 이내 완료':'초 이내 미완료'))throw Error('H/outcome');count++;
+      }return count;
+    })()`);combos+=match;
+    await click('gPlay');await until('Number(gTime.value)>Number(gTime.min)+.1');await click('gReveal');
+    assert(await ev('!sc.getMeshByName("actual future") && !gOutcome.textContent && +gTime.value===+gTime.min'));
   }
-  console.log('Fullscreen API supported:',fsSupported);
-  checks.push('previous, keyboard, browser history, numbered navigation, notes and fullscreen');
-  await viewport(1366,768);await goto('demo.html');await until('document.querySelector("#uqCase")');
+  assert.equal(combos,180);await set('gCase','o0008');await until('gCase.value==="o0008"&&!document.querySelector(".guided").inert');
+  await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
+  await click('pPrev');await until('location.hash==="#scene-6" && !PS("gCanvas")');
+  await ev('history.back()');await ready3();await click('pNotesButton');assert(await ev('!pNotes.hidden'));await click('pNotesButton');
+  await step(3);await set('gMode','noisy');await set('gH',4);await click('gTop');
+  assert(await ev(`(()=>{
+    sc.render();
+    const visible=sc.meshes.filter(m=>m.name==='contour 0.95').every(m=>{
+      const points=m.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+      for(let i=0;i<points.length;i+=3){
+        const p=BABYLON.Vector3.Project(BABYLON.Vector3.FromArray(points,i),m.getWorldMatrix(),sc.getTransformMatrix(),camera.viewport.toGlobal(engine.getRenderWidth(),engine.getRenderHeight()));
+        if(p.x<0||p.y<0||p.x>engine.getRenderWidth()||p.y>engine.getRenderHeight())return false;
+      }return true;});
+    return visible;
+  })()`));
+  checks.push('8 slides, four guided stages, all three requested viewports, fullscreen, navigation, camera and playback');
+  checks.push('180 WebGL case/condition/noise/horizon combinations matched cached probabilities, representative, HDR and GT vertices');
+  await goto('demo.html');await ready3();await ev('PS("extra2D").open=true');await until('document.querySelector("#uqCase")');
   const matrix=await ev(`(async()=>{
     const set=(id,value)=>{let el=PS(id);el.value=value;el.dispatchEvent(new Event('change'));};
     let count=0;
@@ -118,8 +197,8 @@ try {
       }
       PS('uqReveal').click();
       if(document.querySelector('.outcome,[data-path=truth]'))throw Error('GT hide');
-      document.querySelector('.direct summary').click();
-      if(!document.querySelector('.direct[open]')||document.querySelector('.direct').textContent.includes('자료 없음'))throw Error('AFT unavailable');
+      document.querySelector('#extraReplay .direct summary').click();
+      if(!document.querySelector('#extraReplay .direct[open]')||document.querySelector('#extraReplay .direct').textContent.includes('자료 없음'))throw Error('AFT unavailable');
     }
     return count;
   })()`);
@@ -130,9 +209,14 @@ try {
   await goto('results.html');await until('document.querySelector("#finding-noise")');
   assert(await ev('!!document.querySelector(\'a[href="r_robustness/FINAL_R_ROBUSTNESS_REPORT.md"]\')'));
   checks.push('aggregate view, mobile demo and historical appendix');
+  await viewport(1366,768);await goto('index.html?case=o0008#/simulation');
+  await until('window.demoReady&&typeof sc!=="undefined" && sc?.getMeshByName("actualMap") && !!caseData && sc.isReady()');
+  assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
+  const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
+  await goto('presentation.html#scene-7');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
+  await step(3);assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
+  await step(4);await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
+  await call('Page.removeScriptToEvaluateOnNewDocument',{identifier:injected.identifier});
+  checks.push('forced WebGL failure, recorded 2D fallback and GT reveal');
   assert.deepEqual(errors,[]);console.log(JSON.stringify({base,checks,errors},null,2));
-  if(process.env.V2R_SCREENSHOT){
-    await viewport(1366,768);await goto('presentation.html#scene-7');await until('document.querySelector(".forecast")');
-    const shot=await call('Page.captureScreenshot',{format:'png'});await writeFile(process.env.V2R_SCREENSHOT,Buffer.from(shot.data,'base64'));
-  }
-} finally {ws.close();await fetch(cdp+'/json/close/'+tab.id);}
+}finally{ws.close();await fetch(cdp+'/json/close/'+tab.id);}
