@@ -1,40 +1,41 @@
-# View2Risk 발표 및 시연 개편
+# View2Risk 과학 그림과 기록 기반 3D 시연
 
-[발표 1장](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-1) · [7장 내장 3D 시연](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-7) · [독립 시연](https://riverblue72.github.io/view2risk/presentation/demo.html) · [전체 결과와 부록](https://riverblue72.github.io/view2risk/presentation/results.html)
+[10장 발표](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-1) · [9장 내장 3D](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-9) · [독립 시연](https://riverblue72.github.io/view2risk/presentation/demo.html) · [전체 평가 기록](https://riverblue72.github.io/view2risk/presentation/results.html)
 
-연구 질문은 보행자의 현재 위치와 미래 운동의 불확실성을 횡단 완료확률로 변환했을 때 그 예측이 실제 기록과 얼마나 일치하는가이다. 공식 사전학습 DD-MDN은 미래 운동 분포를 제공한다. View2Risk는 관측오차 실험, 의미 경계와 완료 정답 구성, 경로 분포의 시간별 완료확률 변환, 기록 대조와 시각화를 구현했다.
+View2Risk는 보행자 관측의 오차가 미래 위치 예측과 기한별 횡단 완료확률에 어떻게 전파되는지 연구한다. 사전학습 DD-MDN에서 얻은 미래 운동 분포에 대해 View2Risk가 구현한 입력 보정 실험, 출구 통과확률 변환, 실제 기록 대조를 보여준다.
 
-## 발표 구성
+## 발표 구성과 도표
 
-| 장 | 화면에 포함한 자료 |
-|---|---|
-| 1. 문제 정의 | 실제 f2 경로와 3초 예측영역. 현재 위치, 가능한 미래, 완료 시각이라는 세 질문과 교통 분야의 활용 맥락 |
-| 2. 데이터 | SPD 주석 차이, IMPTC 궤적·경계·완료 정답, inD 보조 궤적 평가의 역할. 같은 사례의 과거 관측과 미래 분포를 나란히 표시 |
-| 3. UQ 구조 | 기준 관측 직행과 선택적 Kalman 보정, 공식 DD-MDN, 공간 HDR와 시간별 Exit 확률, 공통 정답 평가. Conditional AFT 및 XGBoost AFT의 직접 시간 예측 경로 |
-| 4. 관측오차와 보정 | SPD 주석 차이로 추정한 R, 같은 과거의 세 관측, Kalman 보정 전후 ADE와 H4 Brier |
-| 5. 미래 운동과 강건성 | 보정 입력의 4초 경로 후보·대표 경로·실제 미래·두 HDR. 동일 집단의 Coverage95와 면적 |
-| 6. 횡단 완료와 개선 | 실제 f2 사례의 기한별 완료확률과 정답. 별도의 Exit-aware XGBoost AFT 학습 범위와 동일 M1 전후 비교 |
-| 7. 통합 3D 시연 | 기존 Babylon.js 엔진·IMPTC 지도·보행자·카메라를 직접 마운트. 네 단계와 정답 공개를 슬라이드에서 조작 |
-| 8. 기여와 한계 | 관측·운동 모델링, 완료 UQ, 실제 기록 검증. 사전학습 모델 의존성, 대리 R, 불완전한 보정, 과도한 FFBS 영역, 정지·재출발 자료 부족, 기준선 비교, Test 재사용, 4초 한계, 오프라인 평가 |
+| 장 | 연구 질문 | 도표와 읽는 법 |
+|---|---|---|
+| 1 · 문제 정의 | 한 경로로 언제 횡단을 마칠지 설명할 수 있는가? | 개념 횡단보도 위에 현재 위치, 여러 미래, 기한 안의 Exit 통과를 직접 표시했다. |
+| 2 · 자료 | 현재 위치와 미래 운동의 불확실성은 어떻게 다른가? | 측정 위치의 산포와 미래 방향의 분기를 나란히 그렸다. SPD는 관측오차 대리값, IMPTC는 움직임과 완료 정답, inD는 보조 위치 평가에 쓴다. |
+| 3 · 관측 모형 | 입력 위치가 얼마나 흔들릴 수 있는가? | **A**. 실제 f2의 같은 열 시각에 기준·합성·보정 위치와 측정오차 95% 타원을 겹쳤다. SPD Train 2,465쌍의 X/Y 표준편차는 15.7/17.8 cm, 위치 불일치 RMSE는 23.8 cm다. |
+| 4 · 예측 구조 | 0.9초 관측에서 어떻게 4초 위치 분포를 얻는가? | **B**. 과거 10점, 0.5초 간격 미래 8점, 경로 후보·대표 경로·실제 미래·4초 HDR을 표시했다. 별도 구조도가 선택적 Kalman 처리와 공간·시간 평가의 분기를 보여준다. |
+| 5 · 위치 오차 | 관측 보정으로 예측이 실제 위치에 가까워지는가? | **C**. 같은 시각의 실제·예측 위치를 화살표로 연결했다. ADE는 8개 거리의 평균, FDE는 마지막 거리이며 둘 다 m 단위다. Noisy 대비 보정 ADE가 81.1% 줄었다. |
+| 6 · 공간 불확실성 | 95% 영역이 실제 위치를 얼마나 자주 포함하는가? | **D**. HDR의 68%·95% 예측 질량, 실제 위치의 포함·이탈 개념도, 실제 Coverage와 면적의 산점도. 가로축은 m² 로그 눈금, 가로 점선은 목표 95%다. |
+| 7 · 완료확률 | H초 안에 Exit를 지날 확률은 얼마이며 그 오차는 어떻게 재는가? | **E·F**. 6/10은 개념 그림이다. 바로 아래에 f2의 저장된 joint 통과율·실제 통과 시각을 표시한다. Brier는 0·1 정답과 확률 차이의 제곱평균이다. 80% 예측에서 완료하면 한 사례의 제곱오차는 0.04다. 집계 H4 Brier는 Noisy 대비 74.4% 감소했다. |
+| 8 · 직접 시간 예측 | 출구 직전의 학습 자료를 보강하면 어떤 변화가 있는가? | **G**. 동일한 개수 축척의 누적 막대에 실제 Train 구간별 개수를 표시했다. 1 m 미만, 1~2 m 미만, 2 m 이상이 기존 0/0/1,113개에서 393/385/1,544개로 바뀌었다. 별도 XGBoost AFT M1 실험이다. |
+| 9 · 통합 시연 | 같은 보행자에서 관측만 바꾸면 무엇이 달라지는가? | Babylon.js로 기록 → 관측오차 → 미래 분포 → 완료와 정답의 네 단계를 한 슬라이드 안에서 조작한다. |
+| 10 · 기여와 한계 | 어떤 범위에서 결론을 지지하는가? | 관측·운동의 모델링, 완료 UQ, 기록 대조의 기여와 실제 평가 범위를 설명하고 전체 결과로 연결한다. |
 
-## 통합 3D 시연
+위치 도표는 미터 축척을 양 방향에 동일하게 적용한다. 파란색은 기준, 주황은 합성 오차, 청록은 보정, 보라색은 예측, 분홍은 실제 미래, 황색은 Exit다. 선 굵기, 점선, 직접 주석, 밝기가 밀집한 선과 영역을 구분한다. 도식적 수치는 ‘개념 예시’로 표시한다. HDR은 특정 미래 시각에서 밀도가 높은 위치들의 영역이다. Coverage95는 정답 좌표가 해당 영역에 든 비율이고 HDR95 Area는 그 영역의 공간적 크기다. 걷는 통로 전체 및 충돌 사건은 이 평가의 대상 밖이다.
 
-기본 사례는 f2의 `public-imptc-01 / o0008`이다. 이 사례는 같은 +8초 시점에 세 입력 조건의 예측과 HDR이 모두 있고, 실제 Exit 통과가 예측 후 2.063초에 일어나 4초 평가 범위 안에서 예측과 비교할 수 있다. 예측 점수 순위는 사례 선정에 사용하지 않았다. 추가 드롭다운의 f1과 f3은 같은 검사를 통과한 공개 사례이며 실제 완료 시각은 각 예측 시점에서 4초 이후다.
+## 기존 조건 전환의 진단과 수정
 
-| 단계 | 발표자 조작과 화면 |
-|---|---|
-| 1. 실제 보행 | 재생하면 최대 4초 전부터 관측 좌표와 기록 시각을 따라 걷고, 캐시된 예측 시점에 자동 정지한다. 기록 슬라이더는 그 시점까지만 이동한다. 이동 중의 종방향 속도는 연속된 최근 0.6초 기록에서 계산한다. |
-| 2. 관측 오차 | 실제 보행자와 카메라를 고정하고 Clean / Noisy / Kalman 입력을 바꾼다. 합성 오차 조건에서는 마지막 유효 측정점에 저장된 측정 공분산으로 계산한 95% 타원을 그린다. |
-| 3. 미래 운동 | 저장된 20개 경로 후보와 최고 confidence 대표 경로를 나타낸다. H=1·2·3·4초에서 해당 시각의 68%·95% HDR 윤곽과 반투명 내부를 지면에 그린다. 경로는 해당 기한까지, 영역은 해당 기한의 한 시각에만 표시한다. |
-| 4. 횡단 완료 | 주황색 Exit를 강조하고 joint 분포 표본으로 평가한 네 기한의 누적 완료확률을 표시한다. 정답 공개는 실제 미래 경로·최초 Exit 통과 시각·선택 기한의 완료 여부를 함께 연다. 공개 후 재생은 해당 기한까지만 가능하다. 숨기면 기록 시계와 보행자가 예측 시점으로 돌아간다. |
+개편 직전 GitHub Pages의 Chrome 브라우저에서 f2/+8초, IID 1×, H3를 고정하고 세 조건을 선택했다. 당시에도 완료확률과 대표 경로 메시 ID는 바뀌고, 보행자 위치와 카메라는 유지됐다. 기존 드롭다운은 1단계에서 비활성화된 이유가 화면에 없었다. 관측 끝점과 실제 사람을 구별할 표시가 없었고, 보정 화면에서 원래 오차가 있는 이력을 볼 수 없었다. 좁은 횡단부 시점만으로는 큰 Noisy 영역의 범위도 파악하기 어려웠다.
 
-왼쪽 70%는 기존 3D 횡단 환경, 오른쪽 30%는 조건·시간·거리·속도·확률이다. 재생과 시점 변경은 하단에서 조작한다. 2~4단계의 거리와 속도는 동일한 기준 관측의 **예측 시점** 특징이다. 조건이나 H를 바꿀 때 카메라는 움직이지 않는다. 일부 Noisy 영역이 횡단보도 화면을 벗어날 때 **전체 영역 위에서 보기**를 누르면 해당 잡음과 H의 세 입력 조건에 있는 모든 경로·윤곽과 경계를 같은 축척에 담는다. 카메라 초기화로 횡단보도 시점에 복귀한다.
+| f2 · H3 · IID 1× | 선택 키 | 완료확률 | HDR95 면적 | 대표 끝점과 실제 간 거리 | 이 기한의 개별 제곱오차 |
+|---|---|---:|---:|---:|---:|
+| Clean | `clean` | 66.25% | 1.96 m² | 0.24 m | 0.1139 |
+| Noisy | `iid_1__noisy` | 74.44% | 818.53 m² | 2.97 m | 0.0653 |
+| Corrected | `iid_1__filtered_mean` | 85.75% | 8.57 m² | 0.77 m | 0.0203 |
 
-`app.js`의 기존 `initScene`, 지도 픽셀→월드 변환, 보행자 메시, 경계 라벨과 ArcRotateCamera를 재사용한다. `demo/demo.js`와 `ui/ui.js`의 기존 상세 탐색기는 원래 경로에서 사용할 수 있다. 새로운 슬라이드에서는 해당 라우터의 헤더·자료 패널을 올리지 않는다. 덱이 Babylon 번들과 지도 이미지를 미리 요청하고, 7장을 나갈 때 렌더 루프·메시·엔진을 해제한다.
+세그먼트 버튼은 활성 조건을 강조하며 2~4단계에서 조작할 수 있다. 한 번 선택한 저장 결과에서 입력 끝점, 대표·후보 경로, 선택 시각 HDR, 완료확률, 사례별 면적을 함께 읽는다. 원래 사람은 기록 좌표를 유지하고 색 고리가 모델 입력의 끝점을 가리킨다. Corrected는 기준 과거와 반투명 합성 과거 위에 굵은 보정선을 겹친다. 2단계에서는 세 이력의 동시 비교를 선택할 수 있다.
 
-실제 위치는 공개 사례의 `actual_observations.xy / elapsed_s`에서 읽는다. 3D 사람의 자세는 기록 이동량에 연동한 도식 표현으로, 신체 관절 측정값은 공개 자료에 없다. 공개 파일에는 joint Monte Carlo 궤적 원본 전체가 없다. 지도에는 저장된 후보를 그리며 막대는 별도로 저장된 joint 통과율을 읽는다. 68%·95% 영역은 시점별 위치 분포다. 평가 범위는 최대 4초다.
+기본 횡단부·상단 비교·전체 영역 보기가 있다. 같은 사례·오차 설정·H에서는 모든 조건의 경로와 윤곽 합집합으로 전체 범위를 결정한다. 조건 버튼은 카메라를 유지한다. 횡단부 화면에는 전체 영역 삽입도, 전체 영역 화면에는 횡단부 확대 삽입도를 제공한다. 정답 공개 전에는 실제 미래와 통과 시각 및 예측오차를 감춘다. 공개 후 선택 기한의 대표 끝점 오차와 개별 완료 제곱오차를 표시한다. 기준 거리·속도, 실제 궤적 및 완료 시각은 조건에 공통이다.
 
-WebGL 엔진 생성에 실패하면 같은 시점의 2D 기록을 사용한다. 독립 페이지의 접이식 **2D 상세 탐색**에는 직접 시간 예측과 기존 집계 비교가 있다. 공개 자료와 스크린샷의 IMPTC 출처·저자·비상업 라이선스·발췌 조건은 [자료 정책](docs/presentation/DATA_POLICY.md)에 명시돼 있다.
+기본 f2는 세 입력 조건의 예측·HDR이 같은 원점에 있고 실제 통과가 2초와 3초 사이에 관측돼 선정했다. 추가 공개 사례 f1, f3은 예측 시점 이후 4초 안에 횡단을 완료하지 않는다. 1단계는 실제 타임스탬프를 재생해 저장 원점에서 멈춘다. 3단계는 선택한 기한까지의 저장 후보와 그 한 시각의 68%·95% 윤곽을 그린다. 4단계는 정답을 공개하거나 다시 감출 수 있다. WebGL 생성 실패 시 같은 기록을 사용한 2D 보기가 작동한다. 독립 페이지에서 직접 AFT 비교와 집계 결과를 추가로 열 수 있다.
 
 ## 수치와 그림 출처
 
@@ -43,8 +44,8 @@ WebGL 엔진 생성에 실패하면 같은 시점의 2D 기록을 사용한다. 
 | 항목 | 원본과 선택 기준 |
 |---|---|
 | R과 관측 그림 | `data/public/demo-evidence.json → r_proxy.train_fit`의 SPD Train 주석 2,465쌍. `r_robustness/FINAL_R_ROBUSTNESS_REPORT.md` §3–4의 합성 교란 및 보정 방법. 사례별 `data/public/r/{uid}.json → results[설정].input.observed_xy`, 보정 자료의 `filter.filter_R`, `filter.observed_points` |
-| 합성 관측오차·공간 | `r_robustness/r_robustness_metrics.csv`. IMPTC / Test / H4 / overall / All / pooled. clean (λ0), iid (λ1) noisy, filtered_mean. `ade_m`, `brier`, `coverage95`, `hdr95_area_m2`. `pres/evidence.json → r`과 대조 |
-| 학습 범위 | `exit_aware/exit_aware_summary.json → training_distance_coverage`의 original, exit_aware 행. `n_train_origins`, `min_distance_m`, `n_train_lt1`. 화면 사본 `pres/evidence.json → audit.support`와 일치 |
+| 합성 관측오차·공간 | `r_robustness/r_robustness_metrics.csv`. IMPTC / Test / H4 / overall / All / pooled. clean (λ0), iid (λ1) noisy, filtered_mean. `ade_m`, `fde_m`, `brier`, `coverage95`, `hdr95_area_m2`. `pres/evidence.json → r`과 대조 |
+| 학습 범위 | `exit_aware/exit_aware_summary.json → training_distance_coverage`의 original, exit_aware 행. `n_train_origins`, `min_distance_m`, `n_train_lt1`, `n_train_lt2`. 화면 사본 `pres/evidence.json → audit.support`와 일치 |
 | M1 Brier | `exit_aware/exit_aware_matched_metrics.csv`에서 dd_matched / test / M1__calibrated, EA_M1__calibrated의 H1~H4 `event_weighted_brier`. H1 및 네 값의 산술평균이 `pres/evidence.json → key_table`의 `h1`, `mean_brier`와 일치 |
 | 사례, 경계와 확률 | `data/public/r-index.json`의 event_id·origin_s·uid로 `data/public/cases/public-imptc-0{1,2,3}.json`과 `data/public/r/{o0008,o0000,o0011}.json`을 결합. 위치 후보·대표 점수·HDR은 `hypotheses_xy`, `hypothesis_confidence_scores`, `regions`. 완료확률은 조건별 `exit.probabilities`. 경계는 `data/inference.json → geometry`, 실제 미래는 forecast의 `future_GT_xy` |
 | 실제 완료와 직접 예측 | `data/public/demo-evidence.json → cases[].GT, features`의 통과 시각과 기준 관측 특징. 해당 시점의 `GT_by_horizon`으로 실제 결과 판정. 선택 비교는 `data/public/ui-completion.json`의 Conditional AFT와 `data/public/exit-aware.json`의 EA_M1__calibrated |
@@ -55,7 +56,7 @@ WebGL 엔진 생성에 실패하면 같은 시점의 2D 기록을 사용한다. 
 | Noisy | 3.925 | 0.33527 | 74.12% | 748.20 |
 | Kalman 보정 | 0.742 | 0.08594 | 78.51% | 10.27 |
 
-같은 237개 시점, 120개 사건에서 지표별 유효 분모는 ADE 215, Brier 218, 4초 endpoint Coverage 228, HDR 면적 237이다. 관측 보정은 점 예측 정확도를 상당 부분 회복했으나 95% 영역의 실제 포함률은 목표 아래에 남았다.
+같은 237개 시점, 120개 사건에서 지표별 유효 분모는 ADE 215, Brier 218, 4초 FDE 및 endpoint Coverage 228, HDR 면적 237이다. 관측 보정은 점 예측 정확도를 상당 부분 회복했으나 95% 영역의 실제 포함률은 목표 아래에 남았다.
 
 | XGBoost AFT M1 | 기존 | Exit-aware |
 |---|---:|---:|
@@ -75,30 +76,40 @@ WebGL 엔진 생성에 실패하면 같은 시점의 2D 기록을 사용한다. 
 
 ## 변경 파일
 
-정적 구현은 `presentation/site/`와 `docs/presentation/`에 동일하게 반영했다.
+배포 소스는 `presentation/site/`, GitHub Pages 사본은 `docs/presentation/`이다. 두 위치에 같은 파일을 반영했다.
 
-| 파일 | 역할 |
+| 파일 | 이번 개편의 변경 |
 |---|---|
-| `app.js` | 기존 장면 초기화에 시연용 캔버스·재생 콜백을 연결. 상세 탐색기의 기존 기본 진입점 유지 |
-| `presentation.html`, `demo.html` | 같은 3D 구현과 사전 로드, 독립 페이지의 선택적 2D 탐색 |
-| `pres/story.js` | 4~6장 재구성, 7장 생성·해제 |
-| `pres/guided-world.js` | 기록 기반 자세, 경계, 측정 타원, 미래 후보·대표·GT, 저장된 윤곽을 따라 채운 지면 HDR과 카메라 |
-| `pres/guided-replay.js` | 단계별 시계, 사례·관측 조건·H, 정답 공개, 확률과 2D 대체 화면 |
-| `pres/uq-replay.js`, `pres/uq-figures.js`, `pres/uq.css` | 공통 수치·타원·표, 독립 페이지 통합, 일관된 색과 반응형 배치 |
-| `presentation/tools/uq_browser_check.mjs` | 실제 WebGL 메시, 조작, 레이아웃, 스크린샷과 대체 화면 검증 |
-| `presentation/review/guided-3d/`, `PRESENTATION_REDESIGN_REPORT.md` | 검증 화면 12장과 본 보고서 |
+| `presentation.html`, `demo.html` | SVG 모듈을 로드하고 발표와 독립 시연의 자산 버전을 맞췄다. |
+| `pres/story.js`, `pres/scientific-svg.js` | 10개 장면의 한국어 질문·해설과 발표자 노트, 도표 A–G 및 구조도, 실제 집계표를 구성했다. |
+| `pres/guided-world.js`, `pres/guided-replay.js` | 조건별 메시와 입력 끝점, 이력 중첩, 공통 카메라, 사례별 정보, 조작과 정답 공개를 구현했다. 기존 `app.js`의 장면·지도·사람과 재생 구조를 사용한다. |
+| `pres/uq-figures.js`, `pres/uq.css` | 공통 집계 행, 축척과 삽입도, 색·단위, 발표 크기별 배치를 정의했다. |
+| `presentation/tools/uq_browser_check.mjs` | 공개 JSON과 실제 Babylon 메시의 좌표 비교, 조건 버튼 클릭, 브라우저·레이아웃·캡처 검사를 확장했다. |
+| `presentation/review/scientific-uq/`, `presentation/README.md`, 본 보고서 | 전후 화면과 전체 슬라이드·단계 캡처, 발표 진입점 및 검증 기록을 갱신했다. |
 
 ## 브라우저 검증
 
-Chrome 158에서 소프트웨어 WebGL(ANGLE/SwiftShader)을 사용했다. 1920×1080, 1440×900, 1366×768에서 7장의 네 단계마다 가로 넘침과 하단 잘림을 검사했다. 사용 가능한 컨트롤의 중앙을 실제로 누를 수 있는지 확인했고, 전체 화면 진입·복귀도 시험했다. 8장과 네 단계의 캡처는 1440×900이다.
+Chrome의 ANGLE/SwiftShader WebGL로 실제 3D 장면을 구동했다. 1920×1080, 1440×900, 1366×768에서 열 장의 본문과 하단 내비게이션 경계, 시연 네 단계 컨트롤의 위치와 클릭 가능 여부를 검사했다. 전체 화면, 앞뒤 이동·뒤로 가기, 발표자 노트, 기록 재생·정지·초기화 및 카메라 복귀도 확인했다.
 
-- f2 기록 재생·일시정지·원점 자동 정지, 기록 좌표와 사람 위치 일치, 시간 슬라이더와 초기화, 조건 변경 시 원점과 카메라 고정, 전체 영역 상단 시점과 카메라 복귀를 확인했다.
-- 3사례 × 5잡음 설정 × 3입력 × 4기한의 **180가지 3D 조합**에서 대표 경로, 68%·95% 윤곽과 GT의 실제 Babylon 튜브 중심을 저장 좌표와 대조했다. 표시된 네 확률과 선택 기한의 실제 결과도 대조했다. GT는 공개 전 숨겨져 있고 숨기기를 누르면 실제 미래 메시와 시각이 제거된다.
-- 독립 페이지의 선택적 2D 비교에서도 같은 180조합을 검증했다. WebGL 컨텍스트 생성을 강제로 실패시켜 평면 그림에서도 GT 공개·숨김 규칙이 유지되는지 검사했다. 기존 상세 Babylon 탐색기의 초기화와 지도 렌더링도 확인했다. 검사 중 JavaScript 예외나 누락된 자산은 없었다.
-- `python3 presentation/tools/verify_static.py`로 정적 소스와 배포본 218개 파일의 일치 및 공개 자료 범위를 확인했다. 브라우저 검증은 자료 조회·렌더링에 한정되며 실제 장치의 실시간 검출, 외부 날짜 성능 또는 모집단 보정 성능을 평가하지 않는다.
+- 실제 포인터로 정답 공개 전후에 세 조건을 눌러 선택 키·입력 끝점과 새 메시 ID, 이전 메시 제거, 카메라와 사람 위치 보존을 확인했다.
+- **3사례 × 5오차 설정 × 3조건 × 4기한 = 180조합**에서 후보·대표 경로, HDR68·95 윤곽과 실제 경로의 Babylon 튜브 중심 좌표, 네 확률, 선택 기한, 정답 및 사례 면적을 공개 파일과 대조했다. 독립 2D 탐색에서도 같은 180조합의 확률·기한·정답 경로를 대조했다.
+- Noisy 전체 보기에서 95% 윤곽의 정점이 캔버스 경계 안에 있는지 확인했다. 원래 Babylon 상세 탐색기와 지도, 전체 평가 기록, WebGL 강제 실패 시 2D 대체 화면의 정답 공개도 검사했다.
+- 로컬 정적 소스·배포본 219개 파일의 일치와 공개 범위를 `python3 presentation/tools/verify_static.py`로 검사했다. 화면 검증은 헤드리스 Chrome 결과이며 다른 GPU·브라우저의 성능은 측정하지 않았다.
 
-## 캡처
+## 남은 한계
 
-[1장](presentation/review/guided-3d/scene-1.jpg) · [2장](presentation/review/guided-3d/scene-2.jpg) · [3장](presentation/review/guided-3d/scene-3.jpg) · [4장](presentation/review/guided-3d/scene-4.jpg) · [5장](presentation/review/guided-3d/scene-5.jpg) · [6장](presentation/review/guided-3d/scene-6.jpg) · [7장](presentation/review/guided-3d/scene-7.jpg) · [8장](presentation/review/guided-3d/scene-8.jpg)
+SPD 주석 차이는 IMPTC 검출기의 실측오차에 대한 대리값이다. 사전학습 예측기에 의존하며 별도의 물리적 과정잡음 Q를 식별하지 않았다. 보정 후 Coverage95는 78.51%에 머물렀고 FFBS 영역은 지나치게 넓었다. 정지·재출발 평가가 제한적이며 단순 기준선에 대한 일관된 우위는 관측되지 않았다. 같은 과거 Test를 재사용했으며 검증 범위는 최대 4초의 오프라인 기록이다. 공개 사례 3건으로 모집단 수준의 보정이나 실시간 안전 효과를 검증할 수 없다. 공개 파일에는 joint 표본 경로 전체가 없어 화면에는 저장된 경로 후보를 그리고 기한별 막대는 저장된 joint 표본 통과율을 쓴다. 원본 자료의 공개 조건은 [자료 정책](docs/presentation/DATA_POLICY.md)에 있다.
 
-[1. 실제 보행](presentation/review/guided-3d/stage-1.jpg) · [2. 관측 오차](presentation/review/guided-3d/stage-2.jpg) · [3. 미래 운동](presentation/review/guided-3d/stage-3.jpg) · [4. 완료와 정답](presentation/review/guided-3d/stage-4.jpg)
+## 스크린샷
+
+[1장](presentation/review/scientific-uq/scene-1.jpg) · [2장](presentation/review/scientific-uq/scene-2.jpg) · [3장](presentation/review/scientific-uq/scene-3.jpg) · [4장](presentation/review/scientific-uq/scene-4.jpg) · [5장](presentation/review/scientific-uq/scene-5.jpg) · [6장](presentation/review/scientific-uq/scene-6.jpg) · [7장](presentation/review/scientific-uq/scene-7.jpg) · [8장](presentation/review/scientific-uq/scene-8.jpg) · [9장](presentation/review/scientific-uq/scene-9.jpg) · [10장](presentation/review/scientific-uq/scene-10.jpg)
+
+[1단계 실제 기록](presentation/review/scientific-uq/stage-1.jpg) · [2단계 관측 오차](presentation/review/scientific-uq/stage-2.jpg) · [3단계 미래 위치](presentation/review/scientific-uq/stage-3.jpg) · [4단계 완료 정답](presentation/review/scientific-uq/stage-4.jpg)
+
+| 동일 f2 · H3 · 정답 공개 | 개편 전 배포 화면 | 개편 후 |
+|---|---|---|
+| Clean | [이전 화면](presentation/review/scientific-uq/before-clean.jpg) | [현재 화면](presentation/review/scientific-uq/after-clean.jpg) |
+| Noisy | [이전 화면](presentation/review/scientific-uq/before-noisy.jpg) | [현재 화면](presentation/review/scientific-uq/after-noisy.jpg) |
+| Corrected | [이전 화면](presentation/review/scientific-uq/before-filtered_mean.jpg) | [현재 화면](presentation/review/scientific-uq/after-filtered_mean.jpg) |
+
+[Noisy H4 전체 영역과 횡단부 확대](presentation/review/scientific-uq/overview-noisy.jpg)

@@ -20,7 +20,7 @@ The existing repository homepage and Pages configuration are unchanged. Open `/v
 
 ## What runs publicly
 
-- Korean eight-scene presentation with keyboard navigation, speaker notes and a pinned real example.
+- Korean ten-scene presentation with annotated scientific figures, metric definitions, keyboard navigation and the integrated Babylon.js replay in scene 9.
 - Unified spatial and temporal replay of three saved IMPTC examples (f1/f2/f3), with actual DD-MDN forecasts and optional GT.
 - Recorded rolling origins; DD-MDN is the default trajectory predictor. XGBoost and AFT are separate completion-time comparisons where stored outputs exist.
 - Same-event/same-origin observation-noise comparison: three public R packets with saved IID, correlated-noise and dropout scenarios.

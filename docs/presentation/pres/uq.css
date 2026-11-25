@@ -147,3 +147,56 @@
  .uq .g-time{flex-wrap:wrap}.uq .g-time input{flex-basis:45%}
  .uq .g-head nav button{font-size:13px;padding:6px}
 }
+.uq .science-svg{width:100%;display:block;background:#fff;border-block:1px solid #dce6e6;overflow:hidden}
+.uq .science-svg text{font-family:inherit;font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.uq .sci-figure h2{margin-bottom:6px}.uq .sci-figure figcaption{font-size:clamp(13px,1vw,16px);margin:7px 0}
+.uq .sci-figure p,.uq .p-table+p{margin-top:12px}
+.uq .sci-conclusion{font-size:clamp(17px,1.35vw,22px);border-left:4px solid #187569;background:#eff6f3;padding:10px 16px;margin:14px 0 0;font-weight:650}
+.uq .formula{font-weight:650;color:#473878;font-variant-numeric:tabular-nums}
+.uq .research-flow p{padding:8px 0;border-bottom:1px solid #dce6e6}
+.uq .research-flow b{display:block;color:#195c58}
+.uq .g-conditionbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 9px}
+.uq .g-segments{display:inline-flex;gap:2px;border:1px solid #b9c8ca;padding:2px;border-radius:6px}
+.uq .g-segments button{min-width:88px;border:0;background:#fff;color:var(--condition)}
+.uq .g-segments button[aria-pressed=true]{background:var(--condition);color:#fff}
+.uq #gHint,.uq #gCompareWrap{font-size:14px}
+.uq #gInset{position:absolute;right:9px;bottom:47px;width:clamp(155px,17vw,245px);background:#fffffff7;border:1px solid #a8bcbb;border-radius:4px;pointer-events:none}
+.uq #gInset svg{width:100%;height:clamp(83px,10vh,125px);border:0}
+.uq .inset-title{font-size:13px;font-weight:650;padding:2px 7px;color:#30525a}
+.uq .g-map-tools button[aria-pressed=true]{background:#254c4a;color:white}
+.uq #gCaseMetrics{font-size:14px;color:#41535f;margin-top:5px}.uq #gCaseMetrics small{display:block;font-weight:700}
+.uq #gOutcome small{font-size:12px}.uq .g-info h2{margin:1px 0 3px}
+.uq .g-info{padding:10px 14px}
+.uq .g-info p{font-size:14px}
+.uq #gLegend .uq-legend{font-size:12px;gap:3px 9px}
+.uq .case-note{margin:8px 0}
+@media(min-width:851px) and (max-height:800px){
+ .uq #deck{padding-top:12px;padding-bottom:10px}
+ .uq .slide-heading{margin-bottom:12px;padding-bottom:10px}
+ .uq .sci-figure .science-svg{max-height:265px}
+ .uq .g-viewport canvas,.uq #gFallback{height:clamp(300px,45vh,354px)}
+ .uq .g-info .outcome{margin:3px 0}
+ .uq .g-info h3{margin:4px 0}
+ .uq .g-kpis{margin:4px 0;padding:3px 0}
+ .uq .g-info .prob-chart{gap:2px}
+ .uq .g-info #gText{font-size:13px}
+}
+.uq .coverage-slide .p-table td,.uq .coverage-slide .p-table th{padding:5px 9px}
+.uq .coverage-slide .sci-figure svg{max-height:245px}
+.uq .coverage-slide article>p{margin-top:12px}
+.uq .g-info #gText:empty{display:none}
+.uq .g-info .outcome{display:flex;gap:6px;flex-wrap:wrap}
+.uq .g-info .outcome span{display:inline}
+.uq.on-guided-slide .g-info .g-kpis strong{font-size:20px}
+.uq .g-info #gCaseMetrics{font-size:13px}
+.uq.on-guided-slide .g-viewport canvas,.uq.on-guided-slide #gFallback{height:clamp(292px,46vh,550px)}
+@media(min-width:851px) and (max-height:800px){
+ .uq .completion-slide .science-svg{max-height:145px}
+ .uq .completion-slide p{margin-bottom:6px}
+ .uq .completion-slide .p-table td,.uq .completion-slide .p-table th{padding:4px 7px}
+ .uq .coverage-slide .sci-figure svg{max-height:204px}
+ .uq.on-guided-slide .g-viewport canvas,.uq.on-guided-slide #gFallback{height:clamp(275px,41vh,322px)}
+ .uq .g-info .prob-row{padding:0 5px}.uq .g-conditionbar{margin:3px 0 5px}
+}
+
+.framework-figure .science-svg{display:block;max-height:clamp(182px,30vh,320px);width:100%}

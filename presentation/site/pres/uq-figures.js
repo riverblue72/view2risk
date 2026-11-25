@@ -2,7 +2,7 @@
 // Both pages use the same case join, chart functions and precision.
 const UQ = {
   colors: {clean:'#225983',noisy:'#bc591e',filtered_mean:'#007566',future:'#594ca1',gt:'#ac285b'},
-  names: {clean:'Clean',noisy:'Noisy',filtered_mean:'Kalman 보정'},
+  names: {clean:'Clean',noisy:'Noisy',filtered_mean:'Corrected'},
   horizons: [1,2,3,4],
   async load() {
     const [, evidence] = await Promise.all([V2R.init({aggregate:false}), V2R.json('pres/evidence.json')]);
@@ -104,8 +104,11 @@ function uqBars(result,h) {
     return '<div class="prob-row '+(t===h?'chosen':'')+'" data-t="'+t+'" data-probability="'+p+'"><span>'+t+'초</span><div class="bar-track"><i style="width:'+(100*p)+'%"></i></div><strong>'+UQ.pct(p)+'</strong></div>';
   }).join('')+'</div>';
 }
+function uqRobustRows() {
+  return Object.keys(UQ.names).map(mode=>UQ.evidence.r.find(r=>r.dataset==='IMPTC'&&r.split==='test'&&r.horizon_s===4&&r.condition==='overall'&&r.group==='All'&&r.location==='pooled'&&r.mode===mode&&(mode==='clean'?r.noise_type==='clean':r.noise_type==='iid'&&r.noise_scale===1)));
+}
 function uqRobustness(part="both") {
-  const rows=Object.keys(UQ.names).map(mode=>UQ.evidence.r.find(r=>r.dataset==='IMPTC'&&r.split==='test'&&r.horizon_s===4&&r.condition==='overall'&&r.group==='All'&&r.location==='pooled'&&r.mode===mode&&(mode==='clean'?r.noise_type==='clean':r.noise_type==='iid'&&r.noise_scale===1)));
+  const rows=uqRobustRows();
   const [,n,k]=rows;
   const accuracy='<article><h2>위치 오차와 완료확률 오차</h2>'+pTable(['입력 조건','ADE (m)','H4 Brier'],rows.map(r=>[UQ.names[r.mode],PN(r.ade_m),PN(r.brier,5)]))+
     '<p class="annotation">Noisy 대비 보정 후 <b>ADE '+UQ.reduction(n.ade_m,k.ade_m)+'</b>, <b>H4 Brier '+UQ.reduction(n.brier,k.brier)+'</b> 감소</p></article>';
@@ -128,4 +131,45 @@ function uqM1() {
   const [old,next]=['M1__calibrated','EA_M1__calibrated'].map(model=>UQ.evidence.key_table.find(r=>r.model===model));
   return pTable(['평가 지표','기존 M1','Exit-aware M1','감소율'],[['H1–H4 평균','mean_brier'],['H1','h1']].map(([label,k])=>[label,PN(old[k],5),PN(next[k],5),'<b>'+UQ.reduction(Number(PN(old[k],5)),Number(PN(next[k],5)))+'</b>']))+
     '<p class="caption">IMPTC Test · 동일한 236개 시점 / 120건의 횡단 · 보정된 XGBoost AFT M1. 사건별 가중 Brier가 낮을수록 좋으며, 평균은 1~4초 점수의 산술평균입니다. 감소율은 표에 표시한 값 기준입니다. '+UQ.source('exit_aware/exit_aware_matched_metrics.csv')+'</p>';
+}
+
+// Camera and inset extents are shared by every condition for a given case/scenario/H.
+function uqComparisonExtent(st) {
+  const s=st.data, edges=['end_A','end_B'].map(end=>V2R.boundary(s.geometry,end));
+  const all=edges.flat(), histories=[];
+  for(const key of ['clean',st.scenario+'__noisy',st.scenario+'__filtered_mean']){
+    const r=s.r.results[key],i=r.future_times_s.indexOf(st.h);
+    histories.push(...r.input.observed_xy);
+    all.push(...r.regions[i]['0.95'].flat(),...r.regions[i]['0.68'].flat(),...r.hypotheses_xy.flatMap(path=>path.slice(0,i+1)));
+  }
+  return {all:all.concat(histories),histories,edges};
+}
+function uqReplayInset(st) {
+  const s=st.data,r=st.result, obs=st.stage===2,extent=uqComparisonExtent(st);
+  const noisy=s.r.results[st.scenario+'__noisy'],corrected=s.r.results[st.scenario+'__filtered_mean'];
+  const local=st.view==='full';
+  const ellipse=uqEllipse(corrected.filter.filter_R,noisy.input.observed_xy[corrected.filter.observed_points-1]);
+  const points=obs?extent.histories.concat(ellipse):local?extent.edges.flat():extent.all;
+  const project=obs?p=>p:crossingAxes(s);
+  const p=uqProjection(points,350,200,project);
+  const xy=r.input.observed_xy;
+  let b='';
+  if(!obs){
+    const idx=r.future_times_s.indexOf(st.h);
+    for(const [i,path] of extent.edges.entries())b+=uqLine(p,path,(i===1)===(s.c.direction===1)?'#b87508':'#527381',2.7);
+    for(const level of ['0.95','0.68'])b+=polygon(p,r.regions[idx][level],level);
+    const best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
+    r.hypotheses_xy.forEach((path,i)=>{b+=uqLine(p,[xy.at(-1),...path.slice(0,idx+1)],UQ.colors.future,i===best?3:1,i===best?'':'opacity=".42"');});
+    if(st.truth)b+=uqLine(p,[s.clean.input.observed_xy.at(-1),...s.r.future_GT_xy.slice(0,idx+1)],UQ.colors.gt,2.8,'stroke-dasharray="4 2"');
+  }
+  const allThree=obs&&st.compare;
+  if(st.mode!=='clean'||allThree)b+=uqLine(p,s.clean.input.observed_xy,UQ.colors.clean,2.2);
+  if(st.mode==='filtered_mean'||allThree)b+=uqLine(p,noisy.input.observed_xy,UQ.colors.noisy,2.2,'stroke-dasharray="4 3" opacity=".65"');
+  if(allThree&&st.mode!=='filtered_mean')b+=uqLine(p,corrected.input.observed_xy,UQ.colors.filtered_mean,3.2);
+  if(obs&&(st.mode!=='clean'||allThree))b+=uqLine(p,ellipse,UQ.colors.noisy,1.5,'stroke-dasharray="4 3"');
+  b+=uqLine(p,xy,UQ.colors[st.mode],3.2)+dot(p.xy(xy.at(-1)),5,UQ.colors[st.mode]);
+  const metres=obs?.25:local?1:5;
+  b+=uqScale(p.scale,metres,200);
+  const caption=obs?'관측 위치 확대':local?'횡단부 확대':'전체 예측영역';
+  return '<div class="inset-title">'+caption+' · 공통 축척</div>'+svgFrame(caption,b,350,200);
 }

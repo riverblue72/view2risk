@@ -37,7 +37,7 @@ const goto=path=>call('Page.navigate',{url:base+'/'+path});
 const viewport=(width,height)=>call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:false});
 const checks=[];
 try {
-  await call('Page.enable');await call('Runtime.enable');await call('Network.enable');
+  await call('Page.enable');await call('Runtime.enable');await call('Network.enable');await call('Network.setCacheDisabled',{cacheDisabled:true});
   await viewport(1440,900);await goto('presentation.html#scene-1');
   await until('document.querySelector("#pProgress a")');
   const dest=process.env.V2R_SHOTS;
@@ -51,6 +51,11 @@ try {
     await until('document.querySelector(".guided").dataset.stage==="'+n+'"');
   };
   const set=async(id,value)=>ev('(()=>{const e=PS('+JSON.stringify(id)+');e.value='+JSON.stringify(value)+';e.dispatchEvent(new Event("change"));})()');
+  async function condition(mode){
+    const {x,y}=await ev(`(()=>{const r=document.querySelector('button[data-condition="${mode}"]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+    for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
+    await until('document.querySelector(".guided").dataset.mode==="'+mode+'"');
+  }
   const ready3=()=>until('document.querySelector(".guided")?.dataset.renderer==="babylon" && !!sc.getMeshByName("actualMap") && sc.isReady()');
   const layout=()=>ev(`(()=>{
     const rect=id=>PS(id).getBoundingClientRect();
@@ -60,12 +65,19 @@ try {
         [...document.querySelectorAll('.guided button:not(:disabled),.guided select:not(:disabled),#gTime:not(:disabled)')].filter(el=>el.offsetWidth).every(el=>{
           const r=el.getBoundingClientRect(), hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})};
   })()`);
-  for(let n=1;n<=8;n++){
+  for(const [width,height] of [[1920,1080],[1366,768],[1440,900]]){
+    await viewport(width,height);
+    for(let n=1;n<=10;n++){
     await ev('location.hash="#scene-'+n+'"');await until('document.querySelector("#pProgress a[aria-current]").textContent==="'+n+'"');
-    if(n===7){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
-    await capture('scene-'+n);
+    if(n===9){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
+    const geom=await ev(`(()=>{const scene=PS('pScene');const f=document.querySelector('.deck-footer').getBoundingClientRect();
+      return {slide:${n},w:innerWidth,bottom:scene.getBoundingClientRect().bottom,footer:f.top,overflow:document.documentElement.scrollWidth>innerWidth};})()`);
+    if(geom.overflow||geom.bottom>geom.footer+1)console.log('slide layout',geom);
+    assert(!geom.overflow && geom.bottom<=geom.footer+1,JSON.stringify(geom));
+    if(width===1440)await capture('scene-'+n);
+    }
   }
-  await ev('location.hash="#scene-7"');await ready3();
+  await ev('location.hash="#scene-9"');await ready3();
   for(const [w,h] of [[1920,1080],[1440,900],[1366,768]]){
     await viewport(w,h);
     for(const n of [1,2,3,4]){
@@ -74,11 +86,9 @@ try {
     }
   }
   await call('Page.bringToFront');
-  const fsClick=async()=>{
-    const {x,y}=await ev("(()=>{const r=PS('pFullscreen').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
-    for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
-  };
-  await fsClick();await until('!!document.fullscreenElement');assert((await layout()).fits);await fsClick();await until('!document.fullscreenElement');
+  await ev('PS("pFullscreen").scrollIntoView({block:"nearest"})');
+  await click('pFullscreen');await until('!!document.fullscreenElement');assert((await layout()).fits);
+  await click('pFullscreen');await until('!document.fullscreenElement');
   await viewport(1440,900);await click('gReset');
   await click('gPlay');await until('Number(gTime.value)>Number(gTime.min)+.2');await click('gPlay');
   const paused=await ev('gTime.value');await new Promise(r=>setTimeout(r,240));assert.equal(await ev('gTime.value'),paused);
@@ -89,11 +99,25 @@ try {
   assert(await ev('JSON.stringify([person.position.x,person.position.z])===JSON.stringify(caseData.actual_observations.xy[caseData.actual_observations.elapsed_s.findLastIndex(t=>t<=+gTime.value+1e-6)])'));
   const atOrigin=await pose();const cam=()=>ev('[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()]');
   const locked=await cam();
-  await click('gNext');await set('gMode','noisy');await until('sc.isReady()');await capture('stage-2');
+  assert(await ev('[...document.querySelectorAll("[data-condition]")].every(b=>b.disabled)'));
+  await click('gNext');await click('gCompare');await condition('noisy');await until('sc.isReady()');await capture('stage-2');
   assert(await ev('!!sc.getMeshByName("measurement ellipse") && !sc.getMeshByName("representative")'));assert.deepEqual(await pose(),atOrigin);
-  await click('gNext');await set('gMode','filtered_mean');await until('sc.isReady()');await capture('stage-3');
+  await click('gNext');await condition('filtered_mean');await until('sc.isReady()');await capture('stage-3');
   assert(await ev('!!sc.getMeshByName("HDR 0.95") && !!sc.getMeshByName("HDR 0.68") && !sc.getMeshByName("actual future") && !gProb.textContent'));
-  await click('gNext');assert(await ev('!gOutcome.textContent && !sc.getMeshByName("actual future")'));await click('gReveal');
+  await click('gNext');
+  for(const truth of [false,true]){
+    if(truth)await click('gReveal');
+    for(const mode of ['clean','noisy','filtered_mean']){
+      const old=await ev('sc.getMeshByName("representative").uniqueId');
+      await condition(mode);await until('sc.isReady()');
+      assert(await ev('!!sc.getMeshByName("observed endpoint") && sc.getMeshByName("representative").uniqueId!== '+old+' && !sc.meshes.some(m=>m.uniqueId==='+old+')'));
+      assert.deepEqual(await pose(),atOrigin);assert.deepEqual(await cam(),locked);
+      assert.equal(await ev('!!sc.getMeshByName("actual future")'),truth);
+      assert.equal(await ev('gCaseMetrics.innerText.includes("끝점 오차")'),truth);
+      if(truth)await capture('after-'+mode);
+    }
+  }
+  await click('gReveal');assert(await ev('!gOutcome.textContent && !sc.getMeshByName("actual future")'));await click('gReveal');
   await until('sc.isReady()');await capture('stage-4');
   let combos=0;
   for(const uid of ['o0008','o0000','o0011']){
@@ -115,8 +139,19 @@ try {
         // CAP_ALL prepends/appends two end rings, including the cap centre.
         return path.every((p,i)=>ringMatches(i+2,p));};
       for(const [noise] of UQ_SCENARIOS)for(const mode of Object.keys(UQ.names))for(const h of UQ.horizons){
-        set('gNoise',noise);set('gMode',mode);set('gH',h);
+        set('gNoise',noise);document.querySelectorAll('[data-condition]').forEach(b=>{if(b.dataset.condition===mode)b.click()});set('gH',h);
         const r=s.r.results[mode==='clean'?'clean':noise+'__'+mode],i=r.future_times_s.indexOf(h),best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
+        const key=mode==='clean'?'clean':noise+'__'+mode;
+        if(document.querySelector('.guided').dataset.resultKey!==key||!gCaseMetrics.innerText.includes(r.area_m2['0.95'][i].toFixed(2)))throw Error('case metric/key');
+        const pt=r.hypotheses_xy[best][i],gt=s.f.future_GT_xy[i],y=V2R.gt(s,h);
+        if(gt?.every(Number.isFinite)&&!gCaseMetrics.innerText.includes(Math.hypot(pt[0]-gt[0],pt[1]-gt[1]).toFixed(2)+' m'))throw Error('case endpoint error');
+        if(y!=null&&!gCaseMetrics.innerText.includes(((r.exit.probabilities[h]-y)**2).toFixed(4)))throw Error('case squared error');
+        const end=r.input.observed_xy.at(-1),marker=sc.getMeshByName('observed endpoint').position;
+        if(marker.x!==end[0]||marker.z!==end[1]||!vertexMatches(sc.getMeshByName('model input'),r.input.observed_xy))throw Error('input/marker');
+        const candidates=sc.meshes.filter(m=>m.name==='candidate');
+        const source=r.hypotheses_xy.filter((_,j)=>j!==best);
+        if(candidates.length!==source.length||candidates.some((m,j)=>!vertexMatches(m,[end,...source[j].slice(0,i+1)])))throw Error('candidate meshes');
+        if(mode==='filtered_mean'&&(!sc.getMeshByName('reference history')||!sc.getMeshByName('noisy context')))throw Error('missing comparison histories');
         if(coords()!==reference||camera0!==[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()].join(','))throw Error('pose/camera changed');
         if(!vertexMatches(sc.getMeshByName('actual future'),[s.clean.input.observed_xy.at(-1),...s.f.future_GT_xy.slice(0,i+1)]))throw Error('3D GT vertices');
         if(!vertexMatches(sc.getMeshByName('representative'),[r.input.observed_xy.at(-1),...r.hypotheses_xy[best].slice(0,i+1)]))throw Error('representative vertices');
@@ -133,9 +168,9 @@ try {
   }
   assert.equal(combos,180);await set('gCase','o0008');await until('gCase.value==="o0008"&&!document.querySelector(".guided").inert');
   await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
-  await click('pPrev');await until('location.hash==="#scene-6" && !PS("gCanvas")');
+  await click('pPrev');await until('location.hash==="#scene-8" && !PS("gCanvas")');
   await ev('history.back()');await ready3();await click('pNotesButton');assert(await ev('!pNotes.hidden'));await click('pNotesButton');
-  await step(3);await set('gMode','noisy');await set('gH',4);await click('gTop');
+  await step(3);await condition('noisy');await set('gH',4);await click('gFull');
   assert(await ev(`(()=>{
     sc.render();
     const visible=sc.meshes.filter(m=>m.name==='contour 0.95').every(m=>{
@@ -146,7 +181,8 @@ try {
       }return true;});
     return visible;
   })()`));
-  checks.push('8 slides, four guided stages, all three requested viewports, fullscreen, navigation, camera and playback');
+  await until('sc.isReady()');await capture('overview-noisy');
+  checks.push('10 slides, four guided stages, all three requested viewports, fullscreen, navigation, camera and playback');
   checks.push('180 WebGL case/condition/noise/horizon combinations matched cached probabilities, representative, HDR and GT vertices');
   await goto('demo.html');await ready3();await ev('PS("extra2D").open=true');await until('document.querySelector("#uqCase")');
   const matrix=await ev(`(async()=>{
@@ -213,7 +249,7 @@ try {
   await until('window.demoReady&&typeof sc!=="undefined" && sc?.getMeshByName("actualMap") && !!caseData && sc.isReady()');
   assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
-  await goto('presentation.html#scene-7');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
+  await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await step(3);assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
   await step(4);await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
   await call('Page.removeScriptToEvaluateOnNewDocument',{identifier:injected.identifier});

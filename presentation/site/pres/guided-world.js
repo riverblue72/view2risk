@@ -56,22 +56,17 @@ function guidedWorld(canvas, s, tick) {
       label(idx?'EXIT':'ENTRY',[xy[0][0]-g.normal[0]*.65,xy[0][1]-g.normal[1]*.65],hex);
     }
   }
-  function view(data,top=false,st=null){
+  function view(data,kind="crossing",st=null){
     caseData=data.c;resetCamera();
     const dir=data.c.direction,g=data.geometry;
     // Side-on angle keeps longitudinal progress visible across the wide panel.
     camera.alpha=Math.atan2(dir*g.axis[1],dir*g.axis[0])+Math.PI/2;
-    camera.beta=top?.018:.91;
+    camera.beta=kind==='crossing'?.91:.018;
     const span=Math.max(10,g.nominal_length_m+5);
     const aspect=canvas.clientWidth/Math.max(1,canvas.clientHeight);
     camera.radius=Math.max(15,span/(2*Math.tan(camera.fov/2)*Math.min(2.15,aspect)),span*.76);
-    if(top&&st?.stage>=3){
-      const edges=['end_A','end_B'].flatMap(end=>V2R.boundary(g,end));
-      const all=edges.slice();
-      for(const key of ['clean',st.scenario+'__noisy',st.scenario+'__filtered_mean']){
-        const r=data.r.results[key],i=r.future_times_s.indexOf(st.h);
-        all.push(...r.regions[i]['0.95'].flat(),...r.regions[i]['0.68'].flat(),...r.hypotheses_xy.flatMap(path=>path.slice(0,i+1)));
-      }
+    if(kind==='full'&&st?.stage>=3){
+      const {all}=uqComparisonExtent(st);
       const mid=[0,1].map(k=>(Math.min(...all.map(p=>p[k]))+Math.max(...all.map(p=>p[k])))/2);
       const radius=Math.max(...all.map(p=>Math.hypot(p[0]-mid[0],p[1]-mid[1])));
       camera.target.set(mid[0],0,mid[1]);
@@ -86,20 +81,29 @@ function guidedWorld(canvas, s, tick) {
     boundaryExit.material.emissiveColor=color(amber).scale(stage===4?1:.5);
     if(stage===1)return;
     const xy=result.input.observed_xy;
+    const noisy=data.r.results[scenario+'__noisy'], corrected=data.r.results[scenario+'__filtered_mean'];
+    const filter=corrected.filter, simultaneous=stage===2&&st.compare;
+    if(mode!=='clean'||simultaneous)stroke('reference history',data.clean.input.observed_xy,C3.clean,.044,.125);
+    if(mode==='filtered_mean'||(simultaneous&&mode!=='noisy'))
+      stroke('noisy context',noisy.input.observed_xy,C3.noisy,.039,.145,.62);
+    if(simultaneous&&mode!=='filtered_mean')
+      stroke('corrected context',corrected.input.observed_xy,C3.filtered_mean,.055,.165);
     if(stage===2){
-      const noisy=data.r.results[scenario+'__noisy'], filter=data.r.results[scenario+'__filtered_mean'].filter;
-      if(mode!=='clean')stroke('reference history',data.clean.input.observed_xy,C3.clean,.041,.12);
-      if(mode!=='clean'&&filter?.filter_R){
+      if((mode!=='clean'||simultaneous)&&filter?.filter_R){
         const centre=noisy.input.observed_xy[filter.observed_points-1];
         stroke('measurement ellipse',uqEllipse(filter.filter_R,centre),C3.noisy,.025,.10);
       }
       const shown=mode==='noisy'?xy.slice(0,filter.observed_points):xy;
-      for(const p of shown){
-        const m=BABYLON.MeshBuilder.CreateSphere('observation',{diameter:.15,segments:8},scene);
-        m.position.set(p[0],.16,p[1]);m.material=material(C3[mode]);layers.push(m);
+      for(const pt of shown){
+        const m=BABYLON.MeshBuilder.CreateSphere('observation',{diameter:.14,segments:8},scene);
+        m.position.set(pt[0],.22,pt[1]);m.material=material(C3[mode]);layers.push(m);
       }
     }
-    stroke('model input',xy,C3[mode],.055,.15);
+    stroke('model input',xy,C3[mode],mode==='filtered_mean'?.073:.052,.18);
+    const last=xy.at(-1);
+    const ring=BABYLON.MeshBuilder.CreateTorus('observed endpoint',{diameter:.56,thickness:.085,tessellation:32},scene);
+    ring.position.set(last[0],.24,last[1]);ring.material=material(C3[mode]);ring.material.emissiveColor=color(C3[mode]).scale(.45);
+    layers.push(ring);
     if(stage<3)return;
     const end=result.future_times_s.indexOf(h), regions=result.regions[end];
     ['0.95','0.68'].forEach(level=>fillContours(regions[level],level));
