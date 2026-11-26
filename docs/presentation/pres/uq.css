@@ -260,3 +260,12 @@
 @media(max-width:850px){
  .uq #deck .obs-layout,.uq #deck .spatial-layout,.uq .final-text{grid-template-columns:1fr}
 }
+.uq .scope-ladder{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:8px}
+.uq .scope-ladder li{display:grid;grid-template-columns:6.5em 1fr auto;align-items:baseline;gap:12px;padding:10px 14px;border:1px solid var(--rule);border-radius:8px}
+.uq .scope-ladder li.now{border:2px solid var(--accent)}
+.uq .scope-ladder b{color:var(--accent)}
+.uq .scope-ladder em{font-style:normal;font-size:.85em;color:#5d6f75}
+.uq .semester-steps{display:flex;flex-wrap:wrap;list-style:none;gap:.5em 0;padding:12px 0 0;margin:20px 0 0;font-size:.95em}
+.uq .semester-steps::before{content:'한 학기 과정';font-weight:750;color:var(--accent);margin-right:1em}
+.uq .semester-steps li:not(:last-child)::after{content:'→';color:#72858a;margin:0 .7em}
+.uq .signal-slide .formula{font-weight:650}

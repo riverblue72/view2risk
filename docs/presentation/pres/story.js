@@ -1,6 +1,6 @@
 'use strict';
 const slides=[
- ['View2Risk · 연구 동기','보행자 예측에는 미래 위치뿐 아니라 불확실성도 고려해야 한다.','횡단보도에서는 지금 관측한 위치의 오차가 몇 초 뒤의 위치와 출구 도착 판단에 모두 영향을 준다.'],
+ ['View2Risk · 연구 동기','보행자 예측에는 미래 위치뿐 아니라 불확실성도 고려해야 한다.','최종 목표는 보행자에 맞춘 보행 신호 시간이며, 이번 학기에는 그 전제인 횡단 완료확률을 만들고 신뢰도를 검증했다.'],
  ['연구 설계','관측 불확실성과 미래 이동 불확실성을 구분하여 분석한다.','SPD에서 관측오차를 추정하고, IMPTC에서 미래 위치와 횡단 완료를 평가했다. inD는 위치 평가를 보완한다.'],
  ['관측오차 모형','보행자 위치 주석의 차이로부터 관측오차 분포를 추정했다.','같은 사람에 대한 두 위치 주석의 차이를 이용해, 기록된 보행에 어느 정도의 측정 오차를 더할지 정했다.'],
  ['공간·시간 예측 구조','확률적 미래 경로와 직접 시간 예측을 통해 공간·시간 UQ를 구성했다.','경로 기반 방법은 어디로, 언제 건너는지를 함께 추정한다. 직접 시간 모형은 출구까지 얼마나 남았는지에 집중한다.'],
@@ -8,20 +8,22 @@ const slides=[
  ['실험 결과 · 예측영역','위치 예측 정확도의 회복이 불확실성의 신뢰성까지 보장하지는 않았다.',({noisy,corrected})=>'칼만 보정으로 95% 영역의 평균 면적은 '+PN(noisy.hdr95_area_m2,2)+' m²에서 '+PN(corrected.hdr95_area_m2,2)+' m²로 줄었지만, 실제 위치 포함률은 '+UQ.pct(corrected.coverage95)+'에 머물렀다.'],
  ['실험 결과 · 완료확률','미래 이동분포를 횡단 완료확률로 변환하고 실제 기록으로 평가했다.',({noisy,corrected})=>'IMPTC에서 4초 이내 완료확률의 Brier Score는 관측 보정 후 Noisy 대비 '+UQ.reduction(noisy.brier,corrected.brier)+' 감소했다.'],
  ['별도 실험 · XGBoost AFT','횡단 완료 직전의 학습 데이터를 보완해 시간 예측 성능을 개선했다.','경로 없이 잔여시간을 직접 예측하는 M1에서, Exit 부근의 학습 시점을 보강하자 특히 1초 완료확률의 오차가 줄었다.'],
+ ['원래 목표와의 연결','고정 보행속도 대신 실제 분포로 보행 신호 시간을 정할 수 있다.','현행 산정식의 1.0 m/s를 관측 기반 속도·완료시간 분포로 바꾸고, 날씨와 군집은 시나리오와 입력 변수로 다룬다.'],
  ['통합 3D 시연','관측부터 미래 예측과 횡단 완료까지 하나의 시스템으로 구현했다.','f2의 Entry → Exit 위치 추적을 재생한 뒤, 저장된 예측 시점에서 경로 분포와 완료확률을 실제 결과와 비교한다.'],
  ['결론','보행자의 공간·시간 불확실성을 정량화하고 검증하는 시스템을 구축했다.','위치와 완료확률의 오차는 줄었다. 실제 위치를 충분히 포함하는 예측영역을 만드는 일은 남아 있다.']
 ];
 const notes=[
- '그림의 파란 점에서 출발합니다. 같은 위치를 조금 다르게 관측할 수 있고, 같은 과거에서도 여러 미래가 가능합니다. 신호가 바뀌기 전에 건널 수 있는지는 그 경로가 출구에 언제 닿느냐에 달려 있습니다. 다음 장에서는 두 불확실성을 어느 자료로 다루었는지 구분합니다.',
- 'SPD는 관측오차 모형을 만드는 자료입니다. IMPTC에는 실제 궤적과 횡단 경계가 있어 위치와 완료를 함께 대조할 수 있습니다. inD는 보조 위치 평가에만 씁니다. 첫 단계인 R의 추정부터 보겠습니다.',
+ '횡단보도를 건너다 신호가 깜빡여서 뛰어 본 적 있으시죠. 지금 보행 신호 시간은 모든 사람이 초속 1미터로 걷는다고 가정하고 정해집니다. 하지만 실제로는 걷는 속도가 제각각이고, 카메라로 보행자를 본다면 그 위치에도 오차가 생깁니다. 저희의 최종 목표는 보행자에 맞춘 신호 시간입니다. 그런데 신호를 바꾸려면 먼저 이 사람이 몇 초 안에 다 건널지를 믿을 수 있게 예측해야 합니다. 그래서 이번 학기에는 횡단 완료확률을 만들고 얼마나 믿을 수 있는지 검증하는 것에 집중했습니다. 마지막에는 이 확률을 신호 시간으로 어떻게 연결할 수 있는지도 보여드리겠습니다.',
+ '처음에는 한 데이터셋에서 카메라 오차와 보행 움직임을 모두 얻으려 했지만, 두 가지를 동시에 제공하는 자료가 없었습니다. 그래서 카메라 위치 오차는 같은 보행자를 카메라와 LiDAR로 함께 기록한 V2X-SPD에서, 실제 보행 움직임은 횡단 경계까지 있는 IMPTC에서 가져왔습니다. 그리고 IMPTC의 실제 보행 기록 위에 SPD에서 추정한 오차를 입혀, 하나의 가상 횡단보도 공간에서 두 불확실성을 함께 다룰 수 있게 만들었습니다. inD는 보조 위치 평가에만 씁니다. 첫 단계인 R의 추정부터 보겠습니다.',
  'SPD 학습 주석 쌍의 좌표 차이에서 편향과 공분산 R을 구했습니다. f2 예시에서는 보행과 실제 미래를 고정하고 입력만 바꿉니다. 타원은 합성 관측오차의 95% 범위입니다. 다음 장의 미래 위치 영역과는 대상 시점도 의미도 다릅니다.',
  '왼쪽에서 기준 입력은 DD-MDN에 바로 들어갑니다. 합성 관측에는 선택적으로 칼만 보정을 적용합니다. DD-MDN은 사전학습 모형이고, 직접 시간 모형은 관측 특징과 잔여시간 정답으로 별도 학습했습니다. 먼저 입력 보정이 대표 경로의 오차를 얼마나 줄였는지 봅니다.',
  '각 화살표는 같은 시각의 예측과 실제 위치 사이 거리입니다. 두 데이터셋의 막대는 같은 미터 눈금을 씁니다. 비교 기준은 각 데이터셋의 Noisy입니다. 이 결과의 적용 범위는 조사한 합성 조건입니다. 다음에는 대표 경로와 별개로 예측 분포의 신뢰성을 봅니다.',
  '산점도에서 오른쪽은 넓은 영역, 점선은 목표 포함률입니다. Noisy는 매우 넓어도 실제 위치를 자주 놓칩니다. Corrected는 면적을 크게 줄였지만 여전히 목표 아래입니다. 위치 영역이 담는 확률과 출구 통과 사건의 확률을 구별해 다음 장으로 넘어갑니다.',
  '먼저 같은 기한까지 Exit에 닿은 경로 표본의 비율을 읽습니다. f2의 실제 통과는 예측 후 2.063초여서 2초에는 미완료, 3초에는 완료입니다. 오른쪽 Brier는 여러 시점의 확률 오차를 모읍니다. 이번에는 경로를 생성하지 않고 시간을 직접 학습한 결과를 보겠습니다.',
  'M1은 거리, 종방향 속도와 가속도로 남은 시간의 분포를 학습합니다. 완료 자료는 통과 구간, 우측 검열 자료는 관측 가능한 하한을 제공합니다. 학습량과 거리 구성이 함께 달라졌으므로 각각의 효과를 분리할 수 없습니다. 가장 큰 차이는 H1이고 H3의 차이는 작습니다. 다음은 이 결과를 개별 기록에서 읽는 시연입니다.',
+ '저희 프로젝트의 원래 목표는 보행 신호 시간이었습니다. 현재 신호 시간은 진입시간에 횡단거리를 초속 1미터로 나눈 값을 더해 정합니다. 저희는 이 고정 속도 대신 실제 기록에서 얻은 속도와 완료시간 분포를 넣을 수 있습니다. 16미터 횡단보도를 예로 들면, 맑은 날에는 현행 기준보다 짧은 시간으로도 대부분이 건너지만, 비로 속도가 25% 줄면 현행 기준보다 긴 시간이 필요합니다. 또 카메라 오차가 속도를 부풀리면 신호 시간을 너무 짧게 줄 수 있어, 앞에서 보인 관측오차 보정이 필요합니다. 주변 인원 정보도 입력에 넣어 보았지만 효과는 확인하지 못했습니다. 이 표의 수치는 계산 방법을 보여주는 예시입니다. 다음은 실제 기록 재생 시연입니다.',
  '전체 횡단 재생을 눌러 동일 보행의 세 관측을 비교합니다. Exit에서 전 구간 평균 관측오차를 읽습니다. 저장된 미래 예측 보기에서 미래 운동과 비교 시점으로를 선택해 경로와 HDR을 봅니다. 횡단 완료에서 같은 기한의 확률을 확인한 후 실제 정답을 공개합니다. 마지막 장은 이 한 사례와 별개인 집계 결과입니다.',
- '위 세 행은 합성 오차 입력 보정, 마지막 행은 직접 시간 모형의 학습 자료 개선입니다. 비교 기준과 평가 가능한 시점 수가 다릅니다. 관측부터 실제 기록 대조까지 연결한 것이 연구 기여입니다. 새로운 자료에서의 검증과 공간 포함률 회복이 다음 과제입니다.'
+ '위 세 행은 합성 오차 입력 보정, 마지막 행은 직접 시간 모형의 학습 자료 개선입니다. 비교 기준과 평가 가능한 시점 수가 다릅니다. 관측부터 실제 기록 대조까지 연결한 것이 연구 기여입니다. 새로운 자료에서의 검증과 공간 포함률 회복, 그리고 처음에 보여드린 최종 목표인 보행 신호 시간의 실제 검증이 다음 과제입니다.'
 ];
 const fig=(heading,graphic,caption)=>'<figure class="sci-figure"><h2>'+heading+'</h2>'+graphic+'<figcaption>'+caption+'</figcaption></figure>';
 const modeLabel=r=>'<b style="color:'+SC[r.mode]+'">'+UQ.names[r.mode]+'</b>';
@@ -33,8 +35,8 @@ function content(i,s,ind){
   const models=['M1__calibrated','EA_M1__calibrated'];
   const m1=models.map(model=>UQ.evidence.key_table.find(row=>row.model===model));
   switch(i){
-    case 0:return '<div class="lead-grid motivation"><article><h2>횡단을 설명하는 세 가지 질문</h2><ol class="questions"><li>현재 위치를 얼마나 정확히 관측했는가?</li><li>다음 몇 초 동안 어디로 움직일 수 있는가?</li><li>언제 건너편 출구에 도달하는가?</li></ol><p>자율주행의 보행자 상황 인지와 지능형 교통 신호 운영에서 제기되는 질문이다.</p></article>'+fig('한 사람에게 가능한 여러 미래',figQuestions(),'개념도 · 파랑은 관측한 과거, 보라는 가능한 미래다. 같은 기한에도 일부 경로만 Exit를 지난다.')+'</div>';
-    case 1:return '<div class="pair">'+fig('입력 위치의 흔들림과 미래 경로의 갈라짐',figSources(),'개념도 · 왼쪽은 한 시각의 관측 차이, 오른쪽은 같은 과거에서 가능한 미래다.')+'<dl class="data-roles"><dt>SPD</dt><dd>같은 보행자의 카메라·가상 LiDAR 주석 차이로 관측오차를 추정</dd><dt>IMPTC</dt><dd>보행 기록과 횡단 경계로 미래 위치 및 실제 Exit 통과를 평가</dd><dt>inD</dt><dd>다른 교통 장면의 보행 기록으로 궤적 예측의 강건성을 보조 평가</dd></dl></div><ol class="study-roadmap" aria-label="연구 순서">'+['관측오차 모형화','확률 경로 예측','관측 보정 비교','공간 UQ 평가','완료시간 UQ','3D 통합 시연'].map(t=>'<li>'+t+'</li>').join('')+'</ol>';
+    case 0:return '<div class="lead-grid motivation"><article><h2>횡단을 설명하는 세 가지 질문</h2><ol class="questions"><li>현재 위치를 얼마나 정확히 관측했는가?</li><li>다음 몇 초 동안 어디로 움직일 수 있는가?</li><li>언제 건너편 출구에 도달하는가?</li></ol><ol class="scope-ladder" aria-label="연구 범위"><li><b>최종 목표</b><span>보행자에 맞춘 보행 신호 시간</span><em>다음 단계</em></li><li class="now"><b>이번 학기</b><span>횡단 완료확률을 믿을 수 있게 만들기</span><em>오늘 발표</em></li><li><b>출발점</b><span>신호 시간 = 진입시간 + 거리 ÷ 1.0 m/s</span><em>모두 같은 속도로 가정</em></li></ol></article>'+fig('한 사람에게 가능한 여러 미래',figQuestions(),'개념도 · 파랑은 관측한 과거, 보라는 가능한 미래다. 같은 기한에도 일부 경로만 Exit를 지난다.')+'</div>';
+    case 1:return '<div class="pair">'+fig('입력 위치의 흔들림과 미래 경로의 갈라짐',figSources(),'개념도 · 왼쪽은 한 시각의 관측 차이, 오른쪽은 같은 과거에서 가능한 미래다.')+'<dl class="data-roles"><dt>SPD</dt><dd>같은 보행자의 카메라·가상 LiDAR 주석 차이로 관측오차를 추정</dd><dt>IMPTC</dt><dd>보행 기록과 횡단 경계로 미래 위치 및 실제 Exit 통과를 평가</dd><dt>inD</dt><dd>다른 교통 장면의 보행 기록으로 궤적 예측의 강건성을 보조 평가</dd></dl></div><ol class="semester-steps" aria-label="한 학기 과정">'+['주제 선정 · 변수 축소','두 불확실성을 함께 담은 자료 부족','R은 V2X-SPD, 보행 기록은 IMPTC','한 가상 횡단보도에서 결합','실제 기록으로 평가'].map(t=>'<li>'+t+'</li>').join('')+'</ol><ol class="study-roadmap" aria-label="연구 순서">'+['관측오차 모형화','확률 경로 예측','관측 보정 비교','공간 UQ 평가','완료시간 UQ','3D 통합 시연'].map(t=>'<li>'+t+'</li>').join('')+'</ol>';
     case 2:return '<div class="lead-grid obs-layout">'+fig('같은 보행의 세 관측',figObservation(s),'IMPTC f2 한 사례 · IID 1× · 0.1초 간격의 과거 10점. 타원은 마지막 합성 관측을 중심으로 한 95% 측정오차 범위다. '+UQ.source('data/public/r/o0008.json','저장 좌표'))+
       '<article><h2>SPD 학습 주석 '+train.n.toLocaleString('en-US')+'쌍</h2>'+pTable(['주석 위치 차이','크기'],[['X축 표준편차',PN(100*Math.sqrt(train.covariance_m2[0][0]),1)+' cm'],['Y축 표준편차',PN(100*Math.sqrt(train.covariance_m2[1][1]),1)+' cm'],['위치 불일치 RMSE',PN(100*train.RMSE_m,1)+' cm']])+
       '<p><b>R</b>은 두 주석의 좌표 차이에서 얻은 공분산이다. IMPTC에는 이 분포를 합성 오차로 적용했다.</p><p class="caption">RMSE는 두 위치 간 거리를 제곱하여 평균한 뒤 제곱근을 취한 값이다. IMPTC 검출기의 실측오차는 별도 검증이 필요하다. '+UQ.source('data/public/demo-evidence.json','SPD 추정값')+'</p></article></div>';
@@ -58,8 +60,12 @@ function content(i,s,ind){
         fig('학습 시점은 Exit에서 얼마나 떨어져 있었나',figTraining(),'IMPTC Train · 목표값은 실제 남은 통과시간의 구간 또는 우측검열 하한이다. 1 m 이내 시점이 0개에서 393개로 늘었고, 학습량과 거리 구성이 함께 달라졌다.')+
         fig('같은 M1에서 바뀐 기한별 확률 오차',chart,'IMPTC 매칭 Test · 120건·236시점. H1~H4 유효 수 236 / 224 / 222 / 217. 네 기한 평균 Brier는 기존 '+PN(m1[0].mean_brier,5)+'에서 '+PN(m1[1].mean_brier,5)+'로 약 71% 감소했다. '+aftSource)+'</div>';
     }
-    case 8:return '<div id="slideReplay"></div>';
-    case 9:return '<div class="final-results"><h2>두 실험의 보정 전후</h2>'+pTable(['비교 조건','평가 지표','이전','이후'],[
+    case 8:return '<div class="pair signal-slide"><article><h2>보행 신호 시간 산정식</h2><p class="formula">신호 시간 = 진입시간 + 횡단거리 ÷ 설계 보행속도</p><p>현행 일반 기준은 설계 보행속도 1.0 m/s다. 이 값 대신 관측 기반 속도 분포의 하위 백분위나, 완료확률이 95%에 이르는 시간을 쓸 수 있다.</p>'+
+      pTable(['조건 · 16 m 예시','설계 속도','신호 시간'],[['현행 기준','1.0 m/s','7 + 16.0 = 23.0초'],['IMPTC 하위 10% 속도 · 맑음','1.22 m/s','7 + 13.1 = 20.1초'],['강한 비 시나리오 (−25%)','0.92 m/s','7 + 17.4 = 24.4초']])+
+      '<p class="caption">계산 방법을 보여주는 예시다. 1.22 m/s는 IMPTC Test 거리 구간별 종방향 속도 하위 10%(1.22~1.26 m/s)에서 취했다. IMPTC는 독일 자료라 국내 보행자에 그대로 적용할 수 없고, 실제 횡단보도에서 검증하지 않았다.</p></article>'+
+      '<article><h2>보조 변수의 반영</h2><dl class="data-roles"><dt>카메라 오차</dt><dd>속도가 부풀려지면 신호 시간을 짧게 줄 위험 → 관측오차 보정이 필요</dd><dt>군집</dt><dd>3 m 이내 주변 인원을 XGBoost 입력(M2)에 추가했으나 성능 향상은 확인하지 못함</dd><dt>날씨</dt><dd>자료에 강우 라벨이 없어 학습하지 않음 → 문헌의 강우 시 속도 감소(약 25%)를 시나리오로 적용</dd></dl><p class="caption">강우 감소율: Deng 외(2017), J. Eastern Asia Society for Transportation Studies 12, 통제 실험 자유흐름 속도 73.6 → 55.5 m/min(0.1 → 15 mm/h).</p></article></div>';
+    case 9:return '<div id="slideReplay"></div>';
+    case 10:return '<div class="final-results"><h2>두 실험의 보정 전후</h2>'+pTable(['비교 조건','평가 지표','이전','이후'],[
       ['Noisy → Kalman','IMPTC ADE ↓',PN(noisy.ade_m)+' m',PN(corrected.ade_m)+' m'],
       ['Noisy → Kalman','IMPTC Coverage95 · 목표 95%',UQ.pct(noisy.coverage95),UQ.pct(corrected.coverage95)],
       ['Noisy → Kalman','IMPTC H4 Brier ↓',PN(noisy.brier,5),PN(corrected.brier,5)],
@@ -76,13 +82,13 @@ function content(i,s,ind){
   const [,noisy,corrected]=uqRobustRows();
   let index=0,release=null;
   function show(){
-    const matched=/^#scene-([1-9]|10)$/.exec(location.hash);
+    const matched=/^#scene-([1-9]|1[01])$/.exec(location.hash);
     index=matched?Number(matched[1])-1:0;
     const [section,title,sub]=slides[index];
     PS('pEyebrow').textContent=section;PS('pTitle').textContent=title;PS('pSubtitle').textContent=typeof sub==='function'?sub({noisy,corrected,ind}):sub;
-    release?.();release=null;document.body.classList.toggle('on-guided-slide',index===8);
+    release?.();release=null;document.body.classList.toggle('on-guided-slide',index===9);
     PS('pScene').innerHTML=content(index,s,ind);
-    if(index===8)release=mountDemonstration(PS('slideReplay'),s);
+    if(index===9)release=mountDemonstration(PS('slideReplay'),s);
     PS('pNotes').textContent=notes[index];PS('pProgressText').textContent=(index+1)+' / '+slides.length;
     PS('pPrev').disabled=index===0;PS('pNext').disabled=index===slides.length-1;
     PS('pProgress').innerHTML=slides.map(([section,title],i)=>'<a href="#scene-'+(i+1)+'" aria-label="'+(i+1)+'. '+title+'" title="'+section+'" '+(index===i?'aria-current="step"':'')+'>'+(i+1)+'</a>').join('');
