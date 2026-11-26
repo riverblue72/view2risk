@@ -68,13 +68,19 @@ function figFramework(){
   const arrow=(x,y,u,v)=>'<path d="M'+x+' '+y+'L'+u+' '+v+'" stroke="'+linked+'" stroke-width="2" fill="none" marker-end="url(#flow-tip)"/>';
   const box=(x,y,w,label,color)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="38" rx="3" fill="white" stroke="'+color+'"/>'+ink(x+w/2,y+25,label,color,'middle',18);
   let b='<defs><marker id="flow-tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="'+linked+'"/></marker></defs>';
-  b+=box(22,12,190,'기준 관측',SC.clean)+box(277,12,240,'합성 오차 관측 (R)',SC.noisy)+
-    arrow(117,50,117,110)+arrow(342,50,342,65)+box(257,67,168,'선택적 Kalman 보정',SC.filtered_mean)+
-    arrow(342,105,342,112)+arrow(480,50,480,111)+box(22,114,495,'사전학습 DD-MDN · 미래 경로 분포',SC.future)+
-    arrow(140,152,140,176)+arrow(389,152,389,176)+box(22,178,230,'공간 · 시점별 위치 영역',SC.future)+
-    box(269,178,248,'시간 · 기한별 Exit 통과율',SC.future)+arrow(140,216,140,239)+arrow(389,216,389,239)+
-    box(22,241,495,'실제 위치 및 횡단 완료 기록과 대조',dark);
-  return svgFrame('기준 및 합성 관측에서 공간·시간 예측과 정답 평가까지',b,540,291);
+  b+=ink(10,23,'경로 기반',SC.future)+ink(384,23,'시간 직접 추정','#355966')+
+    box(10,37,331,'보행 위치 관측',SC.clean)+box(378,37,222,'거리 · 속도 · 가속도',dark)+
+    arrow(60,75,60,150)+arrow(238,75,238,88)+box(123,90,218,'선택적 Kalman 보정',SC.filtered_mean)+
+    arrow(238,128,238,150)+box(10,152,331,'사전학습 DD-MDN',SC.future)+
+    arrow(175,190,175,205)+box(10,207,331,'확률적 미래 경로',SC.future)+
+    arrow(90,245,90,266)+arrow(257,245,257,266)+box(10,268,159,'시점별 위치 영역',SC.future)+
+    box(179,268,162,'Exit 통과확률',SC.future)+
+    arrow(489,75,489,150)+box(378,152,222,'별도 학습 XGBoost AFT',dark)+
+    arrow(489,190,489,205)+box(378,207,222,'잔여시간 분포',dark)+
+    arrow(489,245,489,266)+box(378,268,222,'기한별 완료확률',dark)+
+    arrow(90,306,90,327)+arrow(257,306,257,327)+arrow(489,306,489,327)+
+    box(10,329,590,'실제 미래 위치 · 실제 Exit 통과와 대조',dark);
+  return svgFrame('보행 기록에서 출발하는 두 예측 방법과 공통 정답 평가',b,610,376);
 }
 function figDistances(s){
   const r=s.r.results.iid_1__noisy, path=r.hypotheses_xy[r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores))],gt=s.r.future_GT_xy;
@@ -102,7 +108,12 @@ function figCoverage(rows){
   }
   for(const a of [5,10,100,1000])b+=segment(x(a),209,x(a),215,'#657980')+ink(x(a),235,a,'#526772','middle',15);
   b+=ink(316,262,'95% 영역 면적 (m², 로그 눈금)','#344854','middle')+ink(540,y(.95)-6,'목표 95%','#705a85','end',15);
-  for(const r of rows){const pt=[x(r.hdr95_area_m2),y(r.coverage95)],right=r.mode==='noisy';b+=dot(pt,6.5,SC[r.mode])+ink(pt[0]+(right?-11:10),pt[1]+(r.mode==='clean'?-8:0),UQ.names[r.mode],SC[r.mode],right?'end':'start');}
+  for(const r of rows){
+    const pt=[x(r.hdr95_area_m2),y(r.coverage95)],right=r.mode==='noisy';
+    const dx=right?-10:10,anchor=right?'end':'start';
+    b+=dot(pt,6.5,SC[r.mode])+ink(pt[0]+dx,pt[1]-5,UQ.names[r.mode],SC[r.mode],anchor,16)+
+      ink(pt[0]+dx,pt[1]+13,UQ.pct(r.coverage95)+' · '+PN(r.hdr95_area_m2,2)+' m²',SC[r.mode],anchor,15);
+  }
   return svgFrame('4초 후 Coverage95와 HDR95 면적의 관계',b,580,270);
 }
 function figCrossing(){
@@ -151,4 +162,43 @@ function figSources(){
   const start=[353,126];let right=ink(339,34,'같은 과거 이후','#35535e')+segment(323,128,...start,SC.clean,4);
   for(const [x,y] of [[552,64],[566,119],[551,164]])right+='<path d="M353 126Q453 124 '+x+' '+y+'" fill="none" stroke="'+SC.future+'" stroke-width="2"/>';
   return svgFrame('개념도. 관측 위치의 흔들림과 미래 경로의 퍼짐',left+segment(300,36,300,183,'#d9e2e1')+right+dot(start,6,SC.clean)+ink(363,194,'움직임에 따라 갈라지는 미래',SC.future),610,217);
+}
+
+// Both comparisons use linear bars from zero. Direct labels carry the saved precision.
+function figGroupedBars({title,groups,series,maximum,ticks,axis,decimals}){
+  const left=90,right=533,top=67,barHeight=13,step=25;
+  const groupHeight=series.length*step+15;
+  const bottom=top+groups.length*groupHeight-14;
+  const x=v=>left+(right-left)*v/maximum;
+  let body=ink(left,22,axis,'#344954','start',16);
+  series.forEach(({label,color},i)=>{
+    const xpos=left+i*137;
+    body+=segment(xpos,45,xpos+17,45,color,6)+ink(xpos+23,50,label,color,'start',16);
+  });
+  for(const t of ticks){
+    body+=segment(x(t),top-5,x(t),bottom,'#d7e0df')+ink(x(t),bottom+22,t,'#526772','middle',15);
+  }
+  for(const [i,g] of groups.entries()){
+    const y=top+i*groupHeight;
+    body+=ink(left-14,y+(series.length-1)*step/2+10,g.label,'#273f48','end',18);
+    for(const [j,v] of g.values.entries()){
+      const by=y+j*step;
+      body+='<rect x="'+left+'" y="'+by+'" width="'+(x(v)-left)+'" height="'+barHeight+'" fill="'+series[j].color+'"/>'+
+        ink(x(v)+7,by+12,PN(v,decimals),series[j].color,'start',16);
+    }
+  }
+  return svgFrame(title,body,620,bottom+32);
+}
+
+function figCompletionBars(s){
+  const p=s.clean.exit.probabilities,exit=s.e.GT.exit_s-s.r.origin_s;
+  const left=68,width=267;
+  let body=ink(left,20,'기한 안에 완료할 확률','#405761','start',16)+ink(461,20,'실제 결과',SC.gt,'middle',16);
+  for(const [i,h] of UQ.horizons.entries()){
+    const y=41+30*i;
+    body+=ink(52,y+10,'H'+h,'#344954','end',16)+segment(left,y+5,left+width,y+5,'#e7e3ef',9)+
+      segment(left,y+5,left+width*p[h],y+5,SC.future,9)+ink(394,y+10,UQ.pct(p[h]),SC.future,'end',16)+
+      ink(461,y+10,exit<=h?'완료':'미완료',SC.gt,'middle',16);
+  }
+  return svgFrame('IMPTC f2의 네 기한별 완료확률과 실제 완료 여부',body,510,158);
 }

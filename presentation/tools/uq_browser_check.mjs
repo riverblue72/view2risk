@@ -65,8 +65,14 @@ try {
         [...document.querySelectorAll('.guided button:not(:disabled),.guided select:not(:disabled),#gTime:not(:disabled)')].filter(el=>el.offsetWidth).every(el=>{
           const r=el.getBoundingClientRect(), hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})};
   })()`);
-  for(const [width,height] of [[1920,1080],[1366,768],[1440,900]]){
+  for(const [width,height,fullscreen] of [[1920,1080],[1366,768],[1440,900],[1440,900,true]]){
     await viewport(width,height);
+    if(fullscreen){
+      await call('Page.bringToFront');
+      const {x,y}=await ev('(()=>{pFullscreen.scrollIntoView({block:"nearest"});const r=pFullscreen.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()');
+      for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
+      await until('!!document.fullscreenElement');
+    }
     for(let n=1;n<=10;n++){
     await ev('location.hash="#scene-'+n+'"');await until('document.querySelector("#pProgress a[aria-current]").textContent==="'+n+'"');
     if(n===9){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
@@ -74,8 +80,17 @@ try {
       return {slide:${n},w:innerWidth,bottom:scene.getBoundingClientRect().bottom,footer:f.top,overflow:document.documentElement.scrollWidth>innerWidth};})()`);
     if(geom.overflow||geom.bottom>geom.footer+1)console.log('slide layout',geom);
     assert(!geom.overflow && geom.bottom<=geom.footer+1,JSON.stringify(geom));
-    if(width===1440)await capture('scene-'+n);
+    const expected={3:['2,465','15.7 cm','17.8 cm','23.8 cm'],
+      5:['0.283','3.925','0.742','0.418','4.569','0.871','81.1%','80.9%'],
+      6:['96.05%','74.12%','78.51%','7.37 m²','748.20 m²','10.27 m²'],
+      7:['0.00%','2.53%','66.25%','66.97%','2.063','0.03472','0.33527','0.08594','74.4%'],
+      8:['0.10827','0.04634','0.02714','0.04410','0.00618','0.01021','0.02503','0.02396'],
+      10:['0.05646','0.01635','74.12%','78.51%']}[n]||[];
+    const visible=await ev('PS("deck").textContent');
+    for(const value of expected)assert(visible.includes(value),'Scene '+n+' missing '+value);
+    await capture((fullscreen?'fullscreen-':width===1440?'':width+'-')+'scene-'+n);
     }
+    if(fullscreen){await click('pFullscreen');await until('!document.fullscreenElement');}
   }
   await ev('location.hash="#scene-9"');await ready3();
   assert(await ev('gClock.textContent==="0.00 s / 10.08 s"'));
@@ -99,6 +114,7 @@ try {
     document.querySelector('[data-track-mode="all"]').click();return t.elapsed_s.length;
   })()`);
   assert.equal(verifyTracking,254);
+  assert(await ev('!trackSummary.hidden&&["21.16 cm","8.79 cm","58.4%"].every(v=>trackSummary.textContent.includes(v))'));
   await capture('full-track-exit');
   await click('gReset');await click('gPlay');await until('+gTime.value>.25');
   await click('gPlay');assert(await ev('gPlay.textContent.includes("재생")'));

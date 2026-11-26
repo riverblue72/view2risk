@@ -1,64 +1,87 @@
 'use strict';
 const slides=[
- ['Motivation','한 줄의 예상 경로만으로 횡단을 설명할 수 있을까?','View2Risk · 보행자의 관측과 움직임에서 횡단 완료확률까지'],
- ['Data','현재 위치와 미래 움직임은 왜 서로 다르게 불확실할까?','같은 사람을 보는 두 관측의 차이와, 같은 과거에서 가능한 여러 미래를 구분합니다.'],
- ['Observation model','보행자 위치의 흔들림을 어떻게 모형화할까?','관측오차 공분산 R은 두 주석의 위치 차이가 어느 방향으로 얼마나 퍼지는지 요약합니다.'],
- ['Trajectory model','과거 0.9초에서 다음 4초의 위치 분포를 어떻게 얻을까?','공식 사전학습 DD-MDN은 과거 위치와 장면 정보를 받아 여러 미래 경로와 시점별 위치 분포를 출력합니다.'],
- ['Trajectory accuracy','관측을 보정하면 미래 위치가 실제 기록에 가까워질까?','예측과 실제 위치를 같은 시각끼리 짝지어 미터 단위로 거리를 잽니다.'],
- ['Spatial uncertainty','95% 예측영역은 실제 위치를 얼마나 자주 포함할까?','한 시각에 예측한 위치 분포의 확률 질량과, 여러 사례에서 측정한 실제 포함률을 구분합니다.'],
- ['Crossing completion','앞으로 H초 안에 횡단을 마칠 가능성은 얼마일까?','경로의 첫 Exit 통과를 시간별 확률로 바꾸고, 각 기한의 실제 완료 여부와 비교합니다.'],
- ['Exit-aware training','출구 직전의 기록을 학습하면 시간 예측이 달라질까?','별도 실험 · XGBoost AFT는 현재 거리와 속도 등의 특징으로 남은 횡단 시간을 직접 예측합니다.'],
- ['Interactive demonstration','같은 보행자의 관측을 바꾸면 무엇이 달라질까?','f2 보행자가 Entry에서 Exit까지 걷는 동안 기준 위치, 합성 관측, 칼만 보정을 같은 시계로 비교합니다.'],
- ['Contributions & limitations','어디까지 검증했고, 무엇이 남았을까?','View2Risk는 관측오차가 미래 움직임과 횡단 완료확률에 미치는 영향을 실제 기록으로 평가했습니다.']
+ ['View2Risk · 연구 동기','보행자 예측에는 미래 위치뿐 아니라 불확실성도 고려해야 한다.','횡단보도에서는 지금 관측한 위치의 오차가 몇 초 뒤의 위치와 출구 도착 판단에 모두 영향을 준다.'],
+ ['연구 설계','관측 불확실성과 미래 이동 불확실성을 구분하여 분석한다.','SPD에서 관측오차를 추정하고, IMPTC에서 미래 위치와 횡단 완료를 평가했다. inD는 위치 평가를 보완한다.'],
+ ['관측오차 모형','보행자 위치 주석의 차이로부터 관측오차 분포를 추정했다.','같은 사람에 대한 두 위치 주석의 차이를 이용해, 기록된 보행에 어느 정도의 측정 오차를 더할지 정했다.'],
+ ['공간·시간 예측 구조','확률적 미래 경로와 직접 시간 예측을 통해 공간·시간 UQ를 구성했다.','경로 기반 방법은 어디로, 언제 건너는지를 함께 추정한다. 직접 시간 모형은 출구까지 얼마나 남았는지에 집중한다.'],
+ ['실험 결과 · 위치 오차','관측오차 보정으로 미래 위치 예측오차를 약 81% 감소시켰다.',({noisy,corrected,ind})=>'SPD 기반 독립 합성 오차(IID 1×)에서 Noisy 대비 4초 ADE 감소율은 IMPTC '+UQ.reduction(noisy.ade_m,corrected.ade_m)+', inD '+UQ.reduction(ind[1].ade_m,ind[2].ade_m)+'였다.'],
+ ['실험 결과 · 예측영역','위치 예측 정확도의 회복이 불확실성의 신뢰성까지 보장하지는 않았다.',({noisy,corrected})=>'칼만 보정으로 95% 영역의 평균 면적은 '+PN(noisy.hdr95_area_m2,2)+' m²에서 '+PN(corrected.hdr95_area_m2,2)+' m²로 줄었지만, 실제 위치 포함률은 '+UQ.pct(corrected.coverage95)+'에 머물렀다.'],
+ ['실험 결과 · 완료확률','미래 이동분포를 횡단 완료확률로 변환하고 실제 기록으로 평가했다.',({noisy,corrected})=>'IMPTC에서 4초 이내 완료확률의 Brier Score는 관측 보정 후 Noisy 대비 '+UQ.reduction(noisy.brier,corrected.brier)+' 감소했다.'],
+ ['별도 실험 · XGBoost AFT','횡단 완료 직전의 학습 데이터를 보완해 시간 예측 성능을 개선했다.','경로 없이 잔여시간을 직접 예측하는 M1에서, Exit 부근의 학습 시점을 보강하자 특히 1초 완료확률의 오차가 줄었다.'],
+ ['통합 3D 시연','관측부터 미래 예측과 횡단 완료까지 하나의 시스템으로 구현했다.','f2의 Entry → Exit 위치 추적을 재생한 뒤, 저장된 예측 시점에서 경로 분포와 완료확률을 실제 결과와 비교한다.'],
+ ['결론','보행자의 공간·시간 불확실성을 정량화하고 검증하는 시스템을 구축했다.','위치와 완료확률의 오차는 줄었다. 실제 위치를 충분히 포함하는 예측영역을 만드는 일은 남아 있다.']
 ];
 const notes=[
- '현재 위치의 관측오차, 가능한 미래 위치의 퍼짐, 특정 시간 안에 횡단할 가능성은 서로 다른 질문입니다. 자율주행 및 신호 운영에서 의미 있는 질문이지만 현장 안전 효과는 평가하지 않았습니다.',
- 'SPD는 관측오차 대리 모형 추정에, IMPTC는 궤적·횡단 경계·실제 완료 구성에 사용했습니다. inD는 위치 평가를 보완하며 검증된 Exit 정답이 없습니다.',
- '점은 각 시각의 위치입니다. 주황 점선은 합성 오차를 더한 관측, 초록 선은 이 시점까지의 관측으로 보정한 과거입니다. 타원은 마지막 유효 합성 측정에 표시한 Gaussian 측정오차 범위입니다.',
- '기준 과거는 그대로 입력합니다. 합성 관측은 보정 전후를 비교합니다. 위치 영역은 시점별 혼합분포의 고밀도 윤곽, 완료확률은 별도의 joint 경로 표본 통과율입니다.',
- '미래 0.5초부터 4초까지 대표 예측의 8개 위치를 실제 기록과 대조합니다. ADE는 8개 거리를 평균하고 FDE는 마지막 거리를 취합니다. 사례 그림과 전체 평가 표의 분모를 구분합니다.',
- 'HDR의 질량은 모델이 배정한 확률입니다. 95% Coverage라면 평가 가능한 실제 위치 100개 중 약 95개를 포함합니다. 영역을 크게 만드는 것만으로 정확하고 유용한 분포가 되지는 않습니다.',
- '예측영역은 특정 시각의 위치를 묻습니다. 경로 전체의 통로나 충돌 위험은 별도 문제입니다. 실제 첫 통과를 보간하고 이후 최소 0.12초 관측을 확인했습니다. H에서 완료 여부가 불명확하면 해당 점수에서 제외했습니다. Brier는 예측확률과 0·1 결과 간 차이의 제곱을 평균합니다.',
- '학습 시점의 양과 구성이 함께 바뀌었습니다. 같은 M1 두 설정을 같은 Test에서 비교한 결과입니다. 기존 단순 기준선과 Conditional AFT의 전체 결과는 부록에 있습니다.',
- '전체 추적에서 세 위치의 차이를 보세요. 저장된 미래 예측을 열면 기존 실험으로 전환합니다. 전체 영역과 횡단부를 비교하고, 4단계에서 정답을 공개하세요. 한 사례의 오차는 집계 점수와 구분해서 읽습니다.',
- '정지·재출발, 실제 센서 오차 전이, 새로운 날짜에서의 보정 및 배포 환경 검증은 남아 있습니다.'
+ '그림의 파란 점에서 출발합니다. 같은 위치를 조금 다르게 관측할 수 있고, 같은 과거에서도 여러 미래가 가능합니다. 신호가 바뀌기 전에 건널 수 있는지는 그 경로가 출구에 언제 닿느냐에 달려 있습니다. 다음 장에서는 두 불확실성을 어느 자료로 다루었는지 구분합니다.',
+ 'SPD는 관측오차 모형을 만드는 자료입니다. IMPTC에는 실제 궤적과 횡단 경계가 있어 위치와 완료를 함께 대조할 수 있습니다. inD는 보조 위치 평가에만 씁니다. 첫 단계인 R의 추정부터 보겠습니다.',
+ 'SPD 학습 주석 쌍의 좌표 차이에서 편향과 공분산 R을 구했습니다. f2 예시에서는 보행과 실제 미래를 고정하고 입력만 바꿉니다. 타원은 합성 관측오차의 95% 범위입니다. 다음 장의 미래 위치 영역과는 대상 시점도 의미도 다릅니다.',
+ '왼쪽에서 기준 입력은 DD-MDN에 바로 들어갑니다. 합성 관측에는 선택적으로 칼만 보정을 적용합니다. DD-MDN은 사전학습 모형이고, 직접 시간 모형은 관측 특징과 잔여시간 정답으로 별도 학습했습니다. 먼저 입력 보정이 대표 경로의 오차를 얼마나 줄였는지 봅니다.',
+ '각 화살표는 같은 시각의 예측과 실제 위치 사이 거리입니다. 두 데이터셋의 막대는 같은 미터 눈금을 씁니다. 비교 기준은 각 데이터셋의 Noisy입니다. 이 결과의 적용 범위는 조사한 합성 조건입니다. 다음에는 대표 경로와 별개로 예측 분포의 신뢰성을 봅니다.',
+ '산점도에서 오른쪽은 넓은 영역, 점선은 목표 포함률입니다. Noisy는 매우 넓어도 실제 위치를 자주 놓칩니다. Corrected는 면적을 크게 줄였지만 여전히 목표 아래입니다. 위치 영역이 담는 확률과 출구 통과 사건의 확률을 구별해 다음 장으로 넘어갑니다.',
+ '먼저 같은 기한까지 Exit에 닿은 경로 표본의 비율을 읽습니다. f2의 실제 통과는 예측 후 2.063초여서 2초에는 미완료, 3초에는 완료입니다. 오른쪽 Brier는 여러 시점의 확률 오차를 모읍니다. 이번에는 경로를 생성하지 않고 시간을 직접 학습한 결과를 보겠습니다.',
+ 'M1은 거리, 종방향 속도와 가속도로 남은 시간의 분포를 학습합니다. 완료 자료는 통과 구간, 우측 검열 자료는 관측 가능한 하한을 제공합니다. 학습량과 거리 구성이 함께 달라졌으므로 각각의 효과를 분리할 수 없습니다. 가장 큰 차이는 H1이고 H3의 차이는 작습니다. 다음은 이 결과를 개별 기록에서 읽는 시연입니다.',
+ '전체 횡단 재생을 눌러 동일 보행의 세 관측을 비교합니다. Exit에서 전 구간 평균 관측오차를 읽습니다. 저장된 미래 예측 보기에서 미래 운동과 비교 시점으로를 선택해 경로와 HDR을 봅니다. 횡단 완료에서 같은 기한의 확률을 확인한 후 실제 정답을 공개합니다. 마지막 장은 이 한 사례와 별개인 집계 결과입니다.',
+ '위 세 행은 합성 오차 입력 보정, 마지막 행은 직접 시간 모형의 학습 자료 개선입니다. 비교 기준과 평가 가능한 시점 수가 다릅니다. 관측부터 실제 기록 대조까지 연결한 것이 연구 기여입니다. 새로운 자료에서의 검증과 공간 포함률 회복이 다음 과제입니다.'
 ];
 const fig=(heading,graphic,caption)=>'<figure class="sci-figure"><h2>'+heading+'</h2>'+graphic+'<figcaption>'+caption+'</figcaption></figure>';
-const takeaway=text=>'<p class="sci-conclusion">'+text+'</p>';
 const modeLabel=r=>'<b style="color:'+SC[r.mode]+'">'+UQ.names[r.mode]+'</b>';
-function content(i,s){
-  const rows=uqRobustRows(),[clean,noisy,corrected]=rows;
-  const base='IMPTC Test · IID 1× · 같은 237개 시점 / 120건';
-  const source=UQ.source('r_robustness/r_robustness_metrics.csv','원본 집계표');
-  const train=V2R.evidence.r_proxy.train_fit;
+const metricSource=UQ.source('r_robustness/r_robustness_metrics.csv','원본 집계표');
+const aftSource=UQ.source('exit_aware/exit_aware_matched_metrics.csv','M1 평가표');
+
+function content(i,s,ind){
+  const rows=uqRobustRows(),[clean,noisy,corrected]=rows,train=V2R.evidence.r_proxy.train_fit;
+  const models=['M1__calibrated','EA_M1__calibrated'];
+  const m1=models.map(model=>UQ.evidence.key_table.find(row=>row.model===model));
   switch(i){
-    case 0:return '<div class="lead-grid"><article><p class="lede">보행자가 어디에 있는지, 어디로 갈지, 언제 횡단을 마칠지는 각각 다른 질문입니다.</p><ol class="questions"><li>지금 관측한 위치는 얼마나 정확한가?</li><li>다음 몇 초 동안 어디에 있을 수 있는가?</li><li>그중 몇 경로가 기한 안에 Exit를 지나는가?</li></ol><p>자율주행 상황 인지와 지능형 교통 신호 운영에서 제기되는 질문입니다.</p></article>'+fig('현재에서 Exit까지',figQuestions(),'<b>개념도</b> · Entry는 보행자가 들어오는 경계, Exit는 건너편 도착 경계입니다. 파란 선은 관측한 과거, 보라색은 가능한 미래입니다. 선택한 기한까지 출구에 이르지 못하는 경로도 있습니다.')+'</div>'+takeaway('위치 하나를 고르는 것만으로는 완료 시각의 불확실성을 설명할 수 없습니다.');
-    case 1:return '<div class="pair">'+fig('두 종류의 불확실성',figSources(),'<b>개념도</b> · 왼쪽 타원은 측정 위치의 흔들림, 오른쪽 선들은 같은 과거에서 가능한 미래 방향입니다.')+'<article class="research-flow"><h2>어떤 기록으로 확인했나?</h2><p><b>SPD · 관측오차 추정</b>카메라와 가상 LiDAR가 같은 보행자에 남긴 위치 주석의 차이를 측정합니다.</p><p><b>IMPTC · 미래와 정답</b>보행 궤적과 횡단 지도로 미래 위치와 실제 출구 통과를 확인합니다.</p><p><b>inD · 보조 궤적 평가</b>다른 장면에서 위치 예측을 비교합니다. 공개 화면에는 집계 결과만 사용합니다.</p></article></div>'+takeaway('관측오차는 입력 위치에, 미래 운동의 불확실성은 예측 분포에 나타납니다.');
-    case 2:return '<div class="pair">'+fig('A　같은 과거의 기준·합성·보정 위치',figObservation(s),'실제 f2 과거 + IID 1× 합성 오차 · 점은 0.1초 간격. 타원은 마지막 합성 관측 위치에 그린 R의 95% 범위입니다. '+UQ.source('data/public/r/o0008.json','f2 저장 자료')+'')+'<article><h2>SPD 주석에서 얻은 오차의 크기</h2>'+pTable(['Train 주석 쌍','X 표준편차','Y 표준편차','위치 RMSE'],[[train.n.toLocaleString('en-US'),PN(100*Math.sqrt(train.covariance_m2[0][0]),1)+' cm',PN(100*Math.sqrt(train.covariance_m2[1][1]),1)+' cm',PN(train.RMSE_m*100,1)+' cm']])+'<p>R은 주석 위치 차이의 공분산입니다. RMSE는 두 위치 사이 거리의 제곱평균에 제곱근을 취한 값입니다.</p><p>이 대리 모형으로 과거 관측에 오차를 더하고, 칼만 필터로 그 위치를 보정했습니다. IMPTC 검출기의 실측 오차는 별도 검증이 필요합니다.</p></article></div>'+takeaway('실제 보행은 그대로 두고 관측만 교란해, 입력 오차의 영향을 비교했습니다.');
-    case 3:return '<div class="pair">'+fig('B　입력 10점 → 미래의 8개 예측 시각',figForecast(s),'IMPTC f2 · 기준 입력. 보라색 점은 +0.5초부터 +4초까지 0.5초 간격의 대표 위치입니다. 진한 안쪽 영역은 +4초 위치의 68%, 옅은 바깥 영역은 95% 확률 질량을 담습니다.')+'<article class="framework-figure"><h2>관측에서 실제 기록 대조까지</h2>'+figFramework()+'<p class="caption">View2Risk는 관측 보정 실험, 위치 영역·완료확률 계산 및 평가를 구현했습니다. DD-MDN의 분포에서 물리적 과정잡음 공분산 Q를 별도로 식별하지 않았습니다. Conditional AFT와 XGBoost AFT는 완료 시간을 직접 추정하는 별도 경로입니다.</p></article></div>'+takeaway('같은 예측 분포로 미래의 위치와 횡단 완료 시각에 관한 두 질문에 답합니다.');
-    case 4:return '<div class="pair">'+fig('C　같은 시각의 예측과 실제 위치를 연결',figDistances(s),'IMPTC f2 · Noisy 단일 사례. 회색 화살표 하나가 한 시각의 거리 오차 dₜ입니다.')+'<article><h2>위치 오차가 작을수록 실제 위치에 가깝습니다</h2><p><b>ADE</b> (Average Displacement Error)는 미래 전체의 평균 거리, <b>FDE</b> (Final Displacement Error)는 마지막 시각의 거리입니다.</p><p class="formula">ADE = (d₁ + … + d₈) / 8　·　FDE = d₈</p>'+pTable(['집계 조건','ADE (m)','FDE (m)'],rows.map(r=>[modeLabel(r),PN(r.ade_m),PN(r.fde_m)]))+'<p class="caption">'+base+' · ADE 유효 215개, 4초 FDE 유효 228개. '+source+'</p></article></div>'+takeaway('합성 오차 입력을 보정하자 ADE가 '+PN(noisy.ade_m)+' m에서 '+PN(corrected.ade_m)+' m로 줄었습니다. Noisy 대비 '+UQ.reduction(noisy.ade_m,corrected.ade_m)+' 감소입니다.');
-    case 5:{
-      const table=pTable(['집계 조건','Coverage95','HDR95 면적'],rows.map(r=>[modeLabel(r),UQ.pct(r.coverage95),PN(r.hdr95_area_m2,2)+' m²']));
-      return '<div class="pair coverage-slide"><article>'+fig('D　한 시각의 위치 예측영역',figHdr(),'<b>개념도</b> · 분홍 점은 가능한 두 실제 위치입니다. HDR(최고밀도영역)은 예측 확률 질량의 68% 또는 95%를 담습니다.')+table+'</article><article>'+fig('면적이 넓어도 정답을 놓칠 수 있습니다',figCoverage(rows),base+' · 4초 실제 위치 n=228, 면적 n=237. '+source)+'<p><b>Coverage95</b>는 95% 영역 안에 든 실제 위치의 비율입니다. <b>HDR95 Area</b>는 그 영역의 넓이(m²)입니다.</p></article></div>'+takeaway('보정은 과도한 면적을 줄였지만 실제 포함률은 '+UQ.pct(corrected.coverage95)+'로 목표 95%에 미달했습니다. 영역이 나타내는 대상은 특정 시각의 보행자 위치입니다.');
+    case 0:return '<div class="lead-grid motivation"><article><h2>횡단을 설명하는 세 가지 질문</h2><ol class="questions"><li>현재 위치를 얼마나 정확히 관측했는가?</li><li>다음 몇 초 동안 어디로 움직일 수 있는가?</li><li>언제 건너편 출구에 도달하는가?</li></ol><p>자율주행의 보행자 상황 인지와 지능형 교통 신호 운영에서 제기되는 질문이다.</p></article>'+fig('한 사람에게 가능한 여러 미래',figQuestions(),'개념도 · 파랑은 관측한 과거, 보라는 가능한 미래다. 같은 기한에도 일부 경로만 Exit를 지난다.')+'</div>';
+    case 1:return '<div class="pair">'+fig('입력 위치의 흔들림과 미래 경로의 갈라짐',figSources(),'개념도 · 왼쪽은 한 시각의 관측 차이, 오른쪽은 같은 과거에서 가능한 미래다.')+'<dl class="data-roles"><dt>SPD</dt><dd>같은 보행자의 카메라·가상 LiDAR 주석 차이로 관측오차를 추정</dd><dt>IMPTC</dt><dd>보행 기록과 횡단 경계로 미래 위치 및 실제 Exit 통과를 평가</dd><dt>inD</dt><dd>다른 교통 장면의 보행 기록으로 궤적 예측의 강건성을 보조 평가</dd></dl></div><ol class="study-roadmap" aria-label="연구 순서">'+['관측오차 모형화','확률 경로 예측','관측 보정 비교','공간 UQ 평가','완료시간 UQ','3D 통합 시연'].map(t=>'<li>'+t+'</li>').join('')+'</ol>';
+    case 2:return '<div class="lead-grid obs-layout">'+fig('같은 보행의 세 관측',figObservation(s),'IMPTC f2 한 사례 · IID 1× · 0.1초 간격의 과거 10점. 타원은 마지막 합성 관측을 중심으로 한 95% 측정오차 범위다. '+UQ.source('data/public/r/o0008.json','저장 좌표'))+
+      '<article><h2>SPD 학습 주석 '+train.n.toLocaleString('en-US')+'쌍</h2>'+pTable(['주석 위치 차이','크기'],[['X축 표준편차',PN(100*Math.sqrt(train.covariance_m2[0][0]),1)+' cm'],['Y축 표준편차',PN(100*Math.sqrt(train.covariance_m2[1][1]),1)+' cm'],['위치 불일치 RMSE',PN(100*train.RMSE_m,1)+' cm']])+
+      '<p><b>R</b>은 두 주석의 좌표 차이에서 얻은 공분산이다. IMPTC에는 이 분포를 합성 오차로 적용했다.</p><p class="caption">RMSE는 두 위치 간 거리를 제곱하여 평균한 뒤 제곱근을 취한 값이다. IMPTC 검출기의 실측오차는 별도 검증이 필요하다. '+UQ.source('data/public/demo-evidence.json','SPD 추정값')+'</p></article></div>';
+    case 3:return '<div class="pair framework-layout">'+fig('동일한 보행 기록, 두 가지 예측 방법',figFramework(),'기존 기법은 Kalman 필터, 사전학습 DD-MDN, AFT 알고리즘이다. View2Risk는 관측오차 실험, AFT 학습, 횡단 경계·완료확률 계산, 실제 기록 평가와 시각화를 구현했다.')+
+      fig('DD-MDN의 입력과 출력',figForecast(s),'IMPTC f2 · Clean 한 사례. 과거 0.9초의 10점으로 +0.5~4초의 8개 시각을 예측한다. 영역은 +4초 위치 분포다. 이 예측으로 물리적 과정잡음 공분산 Q를 별도 식별하지 않았다.')+'</div>';
+    case 4:{
+      const series=rows.map(r=>({label:UQ.names[r.mode],color:SC[r.mode]}));
+      const chart=figGroupedBars({title:'데이터셋별 4초 ADE',series,groups:[rows,ind].map(a=>({label:a[0].dataset,values:a.map(r=>r.ade_m)})),maximum:5,ticks:[0,1,2,3,4,5],axis:'4초 ADE (m)  ·  낮을수록 정확',decimals:3});
+      return '<div class="pair">'+fig('예측 위치와 실제 위치의 거리',figDistances(s),'IMPTC f2 · IID 1× Noisy 한 사례. 화살표는 같은 시각의 거리 오차다. ADE = (d₁ + … + d₈) / 8, FDE = d₈. 둘 다 m 단위이며 작을수록 정확하다.')+
+        fig('같은 합성 오차에서의 데이터셋별 비교',chart,'SPD 기반 IID 1× · Test · 0.5~4초. IMPTC 120건·237시점 중 ADE 유효 215개, inD 11개 궤적·99시점 모두 유효. '+metricSource)+'</div><p class="study-footnote">IMPTC의 다른 오차 강도, 시간 상관 오차, 관측 누락에서도 보정 후 ADE가 감소했다. '+UQ.source('r_robustness/FINAL_R_ROBUSTNESS_REPORT.md','전체 오차 조건 비교')+'</p>';
     }
-    case 6:return '<div class="pair completion-slide"><article><h2>E　경로에서 완료확률로</h2>'+figCrossing()+'<p><b>개념 예시</b> · 같은 H초에 10개 중 6개가 Exit를 지나면 P(T<sub>exit</sub> ≤ H) = 60%입니다.</p>'+pTable(['실제 f2 · Clean',...UQ.horizons.map(h=>h+'초')],[['누적 완료확률',...UQ.horizons.map(h=>UQ.pct(s.clean.exit.probabilities[h]))]])+'<p class="case-note">남은 거리 '+PN(s.features.distance_m,2)+' m · 종방향 속도 '+PN(s.features.v_long_mps,2)+' m/s. 실제 통과는 +'+PN(s.e.GT.exit_s-s.r.origin_s,3)+'초이므로 H2는 미완료(0), H3는 완료(1)입니다.</p><p class="caption">실제 확률은 저장된 joint 표본 통과율입니다. 화면에 그린 후보 20개의 개수와 구분합니다.</p></article><article><h2>F　Brier Score로 확률 오차 평가</h2>'+figBrier()+'<p><b>개념 예시</b> · 완료를 80%로 예측하고 실제로 완료했다면 (0.8 − 1)² = 0.04입니다.</p><p class="formula">Brier = 평균[(예측확률 p − 실제 결과 y)²]</p>'+pTable(['집계 조건','H4 Brier'],rows.map(r=>[modeLabel(r),PN(r.brier,5)]))+'<p class="caption">'+base+' · H4 정답 확인 218개. Brier는 분류 정확도와 다른 확률 예측 오차이며 작을수록 좋습니다. '+source+'</p></article></div>'+takeaway('보정 후 H4 Brier가 Noisy 대비 '+UQ.reduction(noisy.brier,corrected.brier)+' 감소했습니다. f2 한 사례로 집단 전체의 확률 보정 수준을 판단할 수는 없습니다.');
-    case 7:return '<div class="pair">'+fig('G　Exit까지 남은 거리별 학습 분포',figTraining(),'IMPTC Train · 원래 시점과 Exit-aware 시점. 막대 길이는 같은 개수 축척이며 왼쪽부터 세 거리 구간을 누적했습니다.').replace('</figure>','<p>가장 가까운 학습 위치가 Exit 전방 2.19 m에서 0.059 m로 바뀌었습니다.</p></figure>')+'<article><h2>같은 평가 집단에서 본 M1의 변화</h2>'+uqM1()+'<p>Exit 1 m 이내의 학습 시점이 0개에서 393개로 늘었습니다. 학습량과 표본 구성이 함께 달라졌습니다.</p></article></div>'+takeaway('기존 XGBoost AFT 설정 대비 평균 Brier가 약 71.0%, H1이 94.3% 감소했습니다. 전체 기준선에 대한 일관된 우위는 확인되지 않았습니다.');
+    case 5:return '<div class="pair spatial-layout">'+fig('한 시각의 예측 분포와 실제 위치',figHdr(),'개념도 · HDR68과 HDR95는 각각 예측 질량의 68%, 95%를 담는 최고밀도영역이다. 분홍 점은 실제 위치가 영역 안이나 밖에 있는 두 예다.')+
+      fig('포함률과 면적을 함께 본 4초 위치 예측',figCoverage(rows),'IMPTC Test · IID 1× · 120건. Coverage95는 실제 위치가 95% 영역에 든 비율(n=228), HDR95 Area는 평균 영역 면적(n=237)이다. 점선 95%에 가까운지, 그때 영역이 얼마나 넓은지를 함께 읽는다. '+metricSource)+'</div>';
+    case 6:return '<div class="pair completion-slide"><article><h2>경로가 기한 안에 Exit를 지날 확률</h2>'+figCrossing()+'<p class="caption">개념도 · 공동 경로 표본 중 H초 안에 Exit를 지난 비율이 P(T<sub>exit</sub> ≤ H)다. 예시에서는 6/10 = 60%다.</p>'+
+      figCompletionBars(s)+'<p class="caption">IMPTC f2 한 사례 · Clean · 예측 시점 +8초. 실제 잔여시간 '+PN(s.e.GT.exit_s-s.r.origin_s,3)+'초. 막대는 H=1~4초의 저장된 joint 표본 통과율이다. '+UQ.source('data/public/r/o0008.json','f2 예측')+'</p></article>'+
+      '<article><h2>집계 평가 · 4초 완료확률의 오차</h2>'+figBrier()+'<p class="formula">Brier = 평균[(예측확률 − 실제 완료 여부)²]</p>'+pTable(['관측 조건','H4 Brier ↓'],rows.map(r=>[modeLabel(r),PN(r.brier,5)]))+'<p class="caption">IMPTC Test · IID 1× · 237시점 중 H4 완료 여부를 확인한 218개. Brier는 확률 예측의 제곱오차(무단위)다. 작을수록 좋으며 분류 정확도나 보정 수준만을 뜻하지 않는다. '+metricSource+'</p></article></div>';
+    case 7:{
+      const groups=UQ.horizons.map(h=>({label:'H'+h,values:models.map(model=>UQ.evidence.audit.matched.find(r=>r.cohort==='dd_matched'&&r.split==='test'&&r.horizon_s===h&&r.model===model).event_weighted_brier)}));
+      const chart=figGroupedBars({title:'M1 학습 구성별 기한별 Brier',groups,series:[{label:'Original M1',color:'#526873'},{label:'Exit-aware M1',color:'#245d59'}],maximum:.12,ticks:[0,.03,.06,.09,.12],axis:'사건별 가중 Brier (무단위)  ·  낮을수록 정확',decimals:5});
+      return '<p class="aft-flow">Exit까지 거리 · 종방향 속도 · 가속도 <span>→</span> XGBoost AFT <span>→</span> 잔여시간 분포 <span>→</span> 기한별 완료확률</p><div class="pair">'+
+        fig('학습 시점은 Exit에서 얼마나 떨어져 있었나',figTraining(),'IMPTC Train · 목표값은 실제 남은 통과시간의 구간 또는 우측검열 하한이다. 1 m 이내 시점이 0개에서 393개로 늘었고, 학습량과 거리 구성이 함께 달라졌다.')+
+        fig('같은 M1에서 바뀐 기한별 확률 오차',chart,'IMPTC 매칭 Test · 120건·236시점. H1~H4 유효 수 236 / 224 / 222 / 217. 네 기한 평균 Brier는 기존 '+PN(m1[0].mean_brier,5)+'에서 '+PN(m1[1].mean_brier,5)+'로 약 71% 감소했다. '+aftSource)+'</div>';
+    }
     case 8:return '<div id="slideReplay"></div>';
-    case 9:return '<div class="summary-grid"><article><h2>세 가지 기여</h2><ol class="contributions"><li><b>관측·운동 불확실성 모델링</b><span>주석 차이로 관측오차를 추정하고, 입력 보정이 미래 분포에 미치는 영향을 측정했습니다.</span></li><li><b>횡단 완료 불확실성 정량화</b><span>미래 경로의 Exit 통과를 시간별 확률로 변환했습니다.</span></li><li><b>예측과 실제 기록의 대화형 검증</b><span>동일 시점에서 공간영역, 완료확률, 실제 결과를 함께 조회할 수 있습니다.</span></li></ol></article>'+
-      '<article><h2>해석할 때 남는 한계</h2><ul class="limits"><li>미래 운동은 사전학습 DD-MDN에 의존하며, R은 SPD 주석 불일치의 대리값입니다.</li><li>필터링 후 예측영역의 포함률 회복은 불완전했고, FFBS 영역은 지나치게 넓었습니다.</li><li>정지·재출발 사례가 적고, 단순 기준선 대비 일관된 우위도 확인되지 않았습니다.</li><li>여러 번 사용한 과거 Test 자료에서 최대 4초까지 평가했습니다.</li><li>평가는 오프라인 기록 재생에 한정되며 현장 배포 성능은 검증되지 않았습니다.</li></ul><p><a href="results.html">전체 결과와 실험 부록 →</a>　<a href="DATA_POLICY.md">자료 이용 범위</a></p></article></div>';
+    case 9:return '<div class="final-results"><h2>두 실험의 보정 전후</h2>'+pTable(['비교 조건','평가 지표','이전','이후'],[
+      ['Noisy → Kalman','IMPTC ADE ↓',PN(noisy.ade_m)+' m',PN(corrected.ade_m)+' m'],
+      ['Noisy → Kalman','IMPTC Coverage95 · 목표 95%',UQ.pct(noisy.coverage95),UQ.pct(corrected.coverage95)],
+      ['Noisy → Kalman','IMPTC H4 Brier ↓',PN(noisy.brier,5),PN(corrected.brier,5)],
+      ['Original → Exit-aware','XGBoost M1 평균 Brier ↓',PN(m1[0].mean_brier,5),PN(m1[1].mean_brier,5)]])+
+      '<p class="caption">IMPTC Test · 위 세 행은 SPD IID 1×, 4초 평가(유효 n=215 / 228 / 218). 마지막 행은 같은 120건·236시점에서 사건별 가중 H1~H4 Brier를 평균했다. '+metricSource+' · '+aftSource+'</p></div>'+
+      '<div class="final-text"><section><h2>연구 기여</h2><ul><li>위치 주석 차이에 기반한 관측오차 모형</li><li>미래 위치 분포와 횡단 완료확률의 정량화</li><li>직접 완료시간 모형 학습과 출구 부근 자료 보강</li><li>3D 재생과 실제 기록 대조를 통합한 검증 시스템</li></ul></section>'+
+      '<section><h2>해석 범위</h2><ul><li>합성 관측오차와 사전학습 궤적 예측기에 의존</li><li>공간 포함률 회복은 불완전하며 단순 기준선 대비 일관된 우위도 없음</li><li>과거 Test 재사용, 독립 검증 및 정지·재출발 사례 제한</li><li>오프라인 기록 평가, 검증된 예측 기한은 최대 4초</li></ul></section></div><a class="appendix-link" href="results.html">전체 기준선·보정·행동 분석 부록 →</a>';
   }
 }
 (async()=>{
   PS('pHeader').innerHTML=pNav('presentation');
-  const s=await UQ.load();
+  const [s,robust]=await Promise.all([UQ.load(),V2R.json('r_robustness/r_robustness_summary.json')]);
+  const ind=uqRobustRows('inD',robust.metrics);
+  const [,noisy,corrected]=uqRobustRows();
   let index=0,release=null;
   function show(){
     const matched=/^#scene-([1-9]|10)$/.exec(location.hash);
     index=matched?Number(matched[1])-1:0;
     const [section,title,sub]=slides[index];
-    PS('pEyebrow').textContent=section;PS('pTitle').textContent=title;PS('pSubtitle').textContent=sub;
+    PS('pEyebrow').textContent=section;PS('pTitle').textContent=title;PS('pSubtitle').textContent=typeof sub==='function'?sub({noisy,corrected,ind}):sub;
     release?.();release=null;document.body.classList.toggle('on-guided-slide',index===8);
-    PS('pScene').innerHTML=content(index,s);
+    PS('pScene').innerHTML=content(index,s,ind);
     if(index===8)release=mountDemonstration(PS('slideReplay'),s);
     PS('pNotes').textContent=notes[index];PS('pProgressText').textContent=(index+1)+' / '+slides.length;
     PS('pPrev').disabled=index===0;PS('pNext').disabled=index===slides.length-1;

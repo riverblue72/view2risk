@@ -42,16 +42,20 @@ function mountTracking(root,data,track,openForecast){
     '<div class="g-grid"><section class="g-viewport"><div class="track-conditions" role="group" aria-label="표시할 관측"><button data-track-mode="all">세 조건 겹쳐 보기</button>'+buttons+'</div>'+
     '<div class="g-views"><canvas id="gCanvas" aria-label="같은 보행자의 Entry부터 Exit까지 위치 추적"></canvas><div id="gFallback" hidden></div>'+
     '<div class="g-map-tools"><button id="trackCross">횡단부</button><button id="trackTop">상단 보기</button></div></div></section>'+
-    '<aside class="g-info"><div class="g-meta">한 보행 기록 · 합성 독립 오차 1×</div><h2>지금 위치가 얼마나 다를까?</h2>'+
+    '<aside class="g-info"><div class="g-meta">한 보행 기록 · 합성 독립 오차 1×</div><h2>현재 관측 위치의 오차</h2>'+
     '<p>사람은 파란 기준 경로를 걷습니다. 주황 고리는 오차를 더한 관측, 청록 고리는 그때까지의 관측으로 보정한 위치입니다.</p>'+
     '<h3>기준 위치에서 본 차이</h3><svg id="trackDetail" viewBox="0 0 300 116" role="img" aria-label="지도 X/Y축에서 기준 위치를 중심으로 본 관측 위치 차이"></svg>'+
     '<div class="g-kpis"><div><small>합성 관측 오차</small><strong id="trackNoisy"></strong></div><div><small>보정 후 오차</small><strong id="trackCorrected"></strong></div></div>'+
-    '<small>이 시각의 기준 위치까지 직선거리입니다. 세 궤적은 Entry에서 같은 위치로 시작합니다.</small></aside></div>'+
+    '<small id="trackInstant">이 시각의 기준 위치까지 직선거리입니다. 세 궤적은 Entry에서 같은 위치로 시작합니다.</small><p id="trackSummary" class="caption" hidden></p></aside></div>'+
     '<div class="g-controls"><div class="g-time"><button id="gPlay"></button><button id="gReset">Entry로</button><label for="gTime">Entry → Exit</label><input id="gTime" type="range" min="0" step="any"><output for="gTime" id="gClock"></output></div></div>';
   const get=id=>root.querySelector('#'+id);
   get('showForecast').onclick=openForecast;
   const slider=get('gTime'), canvas=get('gCanvas'), fallback=get('gFallback');
   slider.max=end;
+  const meanCm=mode=>100*track[mode].reduce((sum,[x,y],i)=>
+    sum+Math.hypot(x-track.clean[i][0],y-track.clean[i][1]),0)/times.length;
+  const noisyMean=meanCm('noisy'),correctedMean=meanCm('filtered_mean');
+  get('trackSummary').textContent='f2 한 건 · '+times.length+'시점의 평균 관측 위치 오차: Noisy '+PN(noisyMean,2)+' cm → Corrected '+PN(correctedMean,2)+' cm ('+UQ.reduction(noisyMean,correctedMean)+' 감소).';
   const edges=(data.c.direction===1?['end_A','end_B']:['end_B','end_A']).map(k=>V2R.boundary(data.geometry,k));
   const project=p=>[data.geometry.axis,data.geometry.normal].map(a=>data.c.direction*(p[0]*a[0]+p[1]*a[1]));
   const plot=uqProjection([...edges.flat(),...modes.flatMap(m=>track[m])],680,270,project);
@@ -96,6 +100,9 @@ function mountTracking(root,data,track,openForecast){
     const next=times.findLastIndex(t=>t<=st.time+1e-9);
     if(next===index&&!force)return;
     index=next;root.dataset.index=index;
+    const complete=index===times.length-1;
+    get('trackInstant').hidden=complete;
+    get('trackSummary').hidden=!complete;
     slider.value=st.time;
     get('gClock').textContent=st.time.toFixed(2)+' s / '+end.toFixed(2)+' s';
     get('gPlay').textContent=st.running?'Ⅱ 일시정지':st.time>=end?'▶ 다시 재생':'▶ 전체 횡단 재생';

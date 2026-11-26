@@ -106,8 +106,8 @@ function uqBars(result,h) {
     return '<div class="prob-row '+(t===h?'chosen':'')+'" data-t="'+t+'" data-probability="'+p+'"><span>'+t+'초</span><div class="bar-track"><i style="width:'+(100*p)+'%"></i></div><strong>'+UQ.pct(p)+'</strong></div>';
   }).join('')+'</div>';
 }
-function uqRobustRows() {
-  return Object.keys(UQ.names).map(mode=>UQ.evidence.r.find(r=>r.dataset==='IMPTC'&&r.split==='test'&&r.horizon_s===4&&r.condition==='overall'&&r.group==='All'&&r.location==='pooled'&&r.mode===mode&&(mode==='clean'?r.noise_type==='clean':r.noise_type==='iid'&&r.noise_scale===1)));
+function uqRobustRows(dataset="IMPTC",records=UQ.evidence.r) {
+  return Object.keys(UQ.names).map(mode=>records.find(r=>r.dataset===dataset&&r.split==='test'&&r.horizon_s===4&&r.condition==='overall'&&r.group==='All'&&r.location==='pooled'&&r.mode===mode&&(mode==='clean'?r.noise_type==='clean':r.noise_type==='iid'&&r.noise_scale===1)));
 }
 function uqRobustness(part="both") {
   const rows=uqRobustRows();

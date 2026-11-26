@@ -230,3 +230,33 @@
 .uq .full-tracking .g-head strong{font-size:18px}
 .uq .full-tracking #trackDetail{width:100%;height:clamp(78px,13vh,130px);display:block}
 .uq #trackNoisy{color:#a64b17}.uq #trackCorrected{color:#006e5f}
+
+/* Research deck: one finding in the header, evidence and provenance beneath it. */
+.uq #deck .slide-heading h1{font-size:clamp(27px,2.45vw,41px);line-height:1.25;text-wrap:balance}
+.uq #pSubtitle{font-size:clamp(15px,1.24vw,20px);max-width:94ch}
+.uq #deck .sci-figure figcaption,.uq #deck .caption{font-size:clamp(13px,1.02vw,16px);line-height:1.45;overflow-wrap:normal}
+.uq #deck .science-svg{border:0}
+.uq .obs-layout{grid-template-columns:1.2fr .8fr}
+.uq .data-roles{margin:0;display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:0 22px}
+.uq .data-roles dt,.uq .data-roles dd{margin:0;padding:14px 0;border-bottom:1px solid var(--rule)}
+.uq .data-roles dt{font-size:1.18em;color:var(--accent);font-weight:750}
+.uq .study-roadmap{display:flex;flex-wrap:wrap;list-style:none;gap:.5em 0;padding:14px 0;border-block:1px solid var(--rule);margin:24px 0 0;font-weight:650}
+.uq .study-roadmap li:not(:last-child)::after,.uq .aft-flow span{content:'→';color:#72858a;margin:0 .7em}
+.uq .study-footnote,.uq .aft-flow{border-top:1px solid var(--rule);padding-top:12px;margin:20px 0 0}
+.uq .aft-flow{border:0;padding:0 0 11px;margin:0 0 10px;border-bottom:1px solid var(--rule);font-weight:650}
+.uq #deck .spatial-layout{grid-template-columns:.8fr 1.2fr}
+.uq .final-results .p-table th,.uq .final-results .p-table td{padding:5px 11px}
+.uq .final-results .p-table :is(th,td):nth-child(2){text-align:left}
+.uq .final-text{display:grid;grid-template-columns:.9fr 1.1fr;gap:3vw;margin:18px 0 8px}
+.uq .final-text h2{margin-bottom:5px}.uq .final-text ul{margin:0;padding-left:1.15em}
+.uq .final-text li{font-size:clamp(15px,1.15vw,18px);line-height:1.55}
+.uq .appendix-link{font-size:.86em}
+.uq #trackSummary{font-weight:650;color:#244f4d;margin:4px 0}
+@media(min-width:851px) and (max-height:800px){
+ .uq #deck .sci-figure .science-svg{max-height:300px}
+ .uq #deck .completion-slide .science-svg{max-height:137px}
+ .uq .final-text{margin-top:10px}.uq .final-results h2{margin-bottom:5px}
+}
+@media(max-width:850px){
+ .uq #deck .obs-layout,.uq #deck .spatial-layout,.uq .final-text{grid-template-columns:1fr}
+}
