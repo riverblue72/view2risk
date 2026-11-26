@@ -16,7 +16,7 @@ function recordFromEntry(data){
   return {elapsed_s:[t,...raw.elapsed_s.slice(next)],xy:[entry,...raw.xy.slice(next)],sourceOffset:i};
 }
 function mountGuided(root,initial) {
-  const st={data:initial,stage:0,h:4,mode:'clean',compare:false,view:'crossing',scenario:'iid_1',truth:false,running:false,time:0};
+  const st={data:initial,stage:0,h:4,single:false,mode:'clean',compare:false,view:'crossing',scenario:'iid_1',truth:false,running:false,time:0};
   let world,disposed=false,revision=0,lastStamp=0,lastFrame=-2,fallbackFrame=0,overlayKey,journeyKey;
   const $g=id=>root.querySelector('#g'+id);
   const origin=()=>st.data.r.elapsed_s;
@@ -25,41 +25,39 @@ function mountGuided(root,initial) {
   const waitingForInput=()=>st.stage>=2&&st.time<(st.stage===2?origin()+st.data.clean.input.history_times_s[0]-st.data.clean.input.origin_s:origin())-1e-6;
   const end=()=>st.stage===0?st.data.c.actual_observations.elapsed_s.at(-1):st.stage<3?origin():st.truth?Math.min(origin()+st.h,st.data.c.actual_observations.elapsed_s.at(-1)):origin()+st.h;
   const playLabel=()=>st.running?'Ⅱ 일시정지':st.stage===0?'▶ 전체 횡단 재생':'▶ '+['기록 재생','관측 재생','예측 재생',st.truth?'예측·실제 재생':'예측 재생'][st.stage-1];
-  const result=()=>st.data.r.results[st.mode==='clean'?'clean':st.scenario+'__'+st.mode];
+  const modes=Object.keys(UQ.names);
+  const result=(mode=st.mode)=>st.data.r.results[mode==='clean'?'clean':st.scenario+'__'+mode];
   st.time=start();
   root.classList.add('guided');
+  const selectors='<div class="g-segments" role="group" aria-label="관측 조건">'+modes.map(mode=>'<button data-condition="'+mode+'" style="--condition:'+UQ.colors[mode]+'"><b>'+UQ.names[mode]+'</b><span class="g-history-mini"></span></button>').join('')+'</div>';
   root.innerHTML='<div class="g-head"><nav aria-label="3D 시연 단계"><button id="gJourney">전체 횡단</button>'+GUIDE_STAGES.map(([name],i)=>'<button data-stage="'+(i+1)+'">'+(i+1)+'　'+name+'</button>').join('')+'</nav>'+
     uqSelect('gCase','기록',V2R.ri.map(r=>[r.uid,r.location+' · '+r.event_id.slice(-2)]),initial.r.uid)+'</div>'+
-    '<div class="g-conditionbar"><div class="g-segments" role="group" aria-label="관측 조건">'+Object.keys(UQ.names).map(mode=>'<button data-condition="'+mode+'" style="--condition:'+UQ.colors[mode]+'">'+UQ.names[mode]+'</button>').join('')+'</div><span id="gHint"></span><label id="gCompareWrap" hidden><input id="gCompare" type="checkbox"> 세 조건 겹쳐 보기</label></div>'+
-    '<div class="g-grid"><section class="g-viewport"><canvas id="gCanvas" aria-label="IMPTC 기록의 3D 횡단보도와 보행자"></canvas><div id="gFallback" hidden></div><div class="g-map-tools"><button id="gCross">횡단부</button><button id="gTop">상단 비교</button><button id="gFull">전체 영역</button></div><div id="gInset" hidden></div><div id="gLegend"></div></section>'+
-    '<aside class="g-info"><div class="g-meta" id="gMeta"></div><h2 id="gStageTitle"></h2><p id="gText"></p><div class="g-kpis"><div><small id="gDistanceLabel">Exit까지 거리</small><strong id="gDistance"></strong></div><div><small id="gSpeedLabel">종방향 속도</small><strong id="gSpeed"></strong></div></div><div id="gProb"></div><div id="gOutcome"></div><div id="gCaseMetrics"></div></aside></div>'+
+    '<div class="g-conditionbar"><span id="gHint"></span><label id="gCompareWrap" hidden><input id="gCompare" type="checkbox"> 세 조건 겹쳐 보기</label></div>'+
+    '<div class="g-grid"><section class="g-viewport">'+selectors+'<div class="g-views"><canvas id="gCanvas" aria-label="IMPTC 기록의 3D 횡단보도와 보행자"></canvas><div id="gFallback" hidden></div><div class="g-map-tools"><button id="gSingle">선택 조건 확대</button><button id="gCross">횡단부</button><button id="gTop">상단 비교</button><button id="gFull">전체 영역</button></div><div id="gInset" hidden></div><div id="gLegend"></div></div></section>'+
+    '<aside class="g-info"><div class="g-meta" id="gMeta"></div><h2 id="gStageTitle"></h2><p id="gText"></p><div class="g-kpis"><div><small id="gDistanceLabel">Exit까지 거리</small><strong id="gDistance"></strong></div><div><small id="gSpeedLabel">종방향 속도</small><strong id="gSpeed"></strong></div></div><div id="gInputDetail"></div><div id="gProb"></div><div id="gOutcome"></div><div id="gCaseMetrics"></div></aside></div>'+
     '<div class="g-controls"><div class="g-time"><button id="gPlay">▶ 재생</button><button id="gReset">처음부터</button><label for="gTime" id="gTimeLabel">기록 시간</label><input id="gTime" type="range" step="any"><output for="gTime" id="gClock"></output></div>'+
     '<div class="g-settings">'+uqSelect('gNoise','오차',UQ_SCENARIOS,'iid_1')+
     uqSelect('gH','예측 시간',UQ.horizons.map(h=>[h,h+'초']),3)+'<button id="gReveal">실제 정답 공개</button><button id="gCamera">카메라 초기화</button><button id="gJump" hidden>비교 시점으로</button><button id="gNext">다음 단계 →</button></div></div>';
   const canvas=$g('Canvas'),fallback=$g('Fallback');
   const status=()=>{root.dataset.stage=st.stage;root.dataset.uid=st.data.r.uid;root.dataset.truth=st.truth;root.dataset.mode=st.mode;root.dataset.h=st.h;};
-  function fallbackPlot(idx) {
-    if(st.stage===1||st.leadIn){
-      const r=st.record, lim=Math.max(0,idx),g=st.data.geometry;
-      const edges=['end_A','end_B'].map(e=>V2R.boundary(g,e));
-      const past=r.xy.slice(Math.max(0,lim-78),lim+1);
-      const plot=uqProjection([...edges.flat(),...past],640,290);
-      fallback.innerHTML='<svg class="field" viewBox="0 0 640 290" aria-label="실제 과거 관측">'+edges.map((xy,i)=>uqLine(plot,xy,(i===1)===(st.data.c.direction===1)?'#b87508':'#506975',3)).join('')+uqLine(plot,past,UQ.colors.clean,4)+dot(plot.xy(past.at(-1)),6,UQ.colors.clean)+uqScale(plot.scale,1,290)+'</svg>';
-    }else fallback.innerHTML=st.stage===2?uqReplayInset(st):uqMap(st.data,st.result,st.mode,st.h,st.truth,true);
+  function fallbackPanels(draw){
+    const shown=st.single?[st.mode]:modes;
+    fallback.innerHTML=shown.map(m=>'<div class="fallback-panel" data-panel="'+m+'">'+draw(m)+'</div>').join('');
   }
   // Select only forecasts already issued by this point in the recorded crossing.
-  function journeyForecast(){
-    const {data,mode,time,h}=st,gt=data.e.GT;
+  function journeyForecast(mode){
+    const {data,time,h}=st,gt=data.e.GT;
     if(time>=gt.confirmation_s && Number.isFinite(gt.confirmation_s))return null;
     const f=mode==='clean'?data.c.forecasts.findLast(f=>f.elapsed_s<=time):data.f;
     if(!f||time<f.elapsed_s||time>f.elapsed_s+h)return null;
-    return {at:f.elapsed_s,result:mode==='clean'?f.conditions.clean:result()};
+    return {at:f.elapsed_s,result:mode==='clean'?f.conditions.clean:result(mode)};
   }
   function journeyLayers(){
-    const {data,time,mode,h}=st,gt=data.e.GT,forecast=journeyForecast();
+    const {data,time,mode,h}=st,gt=data.e.GT;
+    const forecasts=modes.map(journeyForecast),forecast=forecasts[modes.indexOf(mode)];
     const complete=Number.isFinite(gt.confirmation_s)&&time>=gt.confirmation_s;
     const phase=complete?'Exit 통과 확인':time>=gt.entry_s?'횡단 중':'Entry 접근';
-    const key=[data.r.uid,mode,st.scenario,h,forecast?.at,phase].join('|');
+    const key=[data.r.uid,mode,st.scenario,h,...forecasts.map(f=>f?.at),phase,st.single].join('|');
     if(key===journeyKey)return;
     journeyKey=key;
     root.dataset.forecastOrigin=forecast?.at??'';
@@ -68,26 +66,34 @@ function mountGuided(root,initial) {
     $g('Text').textContent=forecast?'재생 '+PN(forecast.at-start(),2)+'초에 저장된 예측입니다. 보라색 영역은 그 시점에서 '+h+'초 뒤의 위치입니다.':
       complete?'기록에서 Exit 통과를 확인했습니다. 이후 보행도 이어서 재생합니다.':
       mode==='clean'?'첫 저장 예측에 도달하면 경로와 위치 영역이 나타납니다.':'이 조건의 예측은 재생 '+PN(origin()-start(),2)+'초 한 시점에 저장되어 있습니다.';
+    $g('InputDetail').hidden=!!forecast||complete;
     $g('Outcome').textContent=complete?'실제 Entry → Exit　'+PN(gt.exit_s-gt.entry_s,2)+'초':'';
     $g('Prob').innerHTML=forecast?'<h3>이 예측 시점부터의 완료확률</h3>'+uqBars(forecast.result,h):'';
-    if(world)world.overlay({...st,stage:forecast?3:1,result:forecast?.result,truth:false});
-    if(!fallback.hidden)drawJourneyMap(forecast);
+    if(world)world.overlay(st,modes.map((m,i)=>({...st,mode:m,stage:forecasts[i]?3:1,result:forecasts[i]?.result||result(m),truth:false})));
+    if(!fallback.hidden)drawJourneyMap(forecasts);
   }
   let journeyPlot=null;
-  function drawJourneyMap(forecast){
+  function drawJourneyMap(forecasts=[]){
     const {data,h}=st;
     const edges=['end_A','end_B'].map(end=>V2R.boundary(data.geometry,end));
-    const r=forecast?.result,i=r?.future_times_s.indexOf(h);
     const points=[...edges.flat(),...data.c.actual_observations.xy];
-    if(r)points.push(...r.regions[i]['0.95'].flat(),...r.hypotheses_xy.flatMap(path=>path.slice(0,i+1)));
-    journeyPlot=uqProjection(points,640,290,crossingAxes(data));
-    let svg=edges.map((line,j)=>uqLine(journeyPlot,line,(j===1)===(data.c.direction===1)?'#b87508':'#506975',3)).join('');
-    if(r){
-      for(const level of ['0.95','0.68'])svg+=polygon(journeyPlot,r.regions[i][level],level);
-      const best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
-      r.hypotheses_xy.forEach((path,j)=>{svg+=uqLine(journeyPlot,[r.input.observed_xy.at(-1),...path.slice(0,i+1)],UQ.colors.future,j===best?3:1);});
+    for(const f of forecasts.filter(Boolean)){
+      const r=f.result,i=r.future_times_s.indexOf(h);
+      points.push(...r.regions[i]['0.95'].flat(),...r.hypotheses_xy.flatMap(path=>path.slice(0,i+1)));
     }
-    fallback.innerHTML=svgFrame('전체 보행 기록과 해당 시점의 저장 예측',svg+'<polyline data-trail="" fill="none" stroke="'+UQ.colors.clean+'" stroke-width="3"/>'+uqReplayDot(UQ.colors.clean)+uqScale(journeyPlot.scale,1,290),640,290);
+    journeyPlot=uqProjection(points,640,290,crossingAxes(data));
+    fallbackPanels(m=>{
+      const r=forecasts[modes.indexOf(m)]?.result,i=r?.future_times_s.indexOf(h);
+      let svg=edges.map((line,j)=>uqLine(journeyPlot,line,(j===1)===(data.c.direction===1)?'#b87508':'#506975',3)).join('');
+      const input=(r||result(m)).input.observed_xy;
+      svg+=uqLine(journeyPlot,input,UQ.colors[m],4)+dot(journeyPlot.xy(input.at(-1)),5,UQ.colors[m]);
+      if(r){
+        for(const level of ['0.95','0.68'])svg+=polygon(journeyPlot,r.regions[i][level],level);
+        const best=r.hypothesis_confidence_scores.indexOf(Math.max(...r.hypothesis_confidence_scores));
+        r.hypotheses_xy.forEach((path,j)=>{svg+=uqLine(journeyPlot,[r.input.observed_xy.at(-1),...path.slice(0,i+1)],UQ.colors.future,j===best?3:1);});
+      }
+      return svgFrame('전체 보행 기록과 해당 시점의 저장 예측',svg+'<polyline data-trail="" fill="none" stroke="'+UQ.colors.clean+'" stroke-width="3"/>'+uqReplayDot(UQ.colors.clean)+uqScale(journeyPlot.scale,1,290),640,290);
+    });
   }
   function frame(force=false){
     if(disposed||(!st.running&&!force))return;
@@ -116,16 +122,19 @@ function mountGuided(root,initial) {
     if(world)world.cursor(st,cursor);
     if(force||idx!==lastFrame){
       if(world)world.pose(st,idx,visible);
-      else if(st.stage===0&&journeyPlot){
-        const marker=fallback.querySelector('[data-replay-cursor]');
-        marker.setAttribute('visibility',visible?'visible':'hidden');
-        if(visible){
-          const [x,y]=journeyPlot.xy(rec.xy[idx]);marker.setAttribute('cx',x);marker.setAttribute('cy',y);
-          let first=idx;
-          while(first>0&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
-          fallback.querySelector('[data-trail]').setAttribute('points',journeyPlot.points(rec.xy.slice(first,idx+1)));
+      else if((st.stage<=1||st.leadIn)&&journeyPlot){
+        let first=idx;
+        while(first>0&&rec.elapsed_s[first]-rec.elapsed_s[first-1]<.061)first--;
+        const points=visible?journeyPlot.points(rec.xy.slice(first,idx+1)):'';
+        for(const panel of fallback.children){
+          const marker=panel.querySelector('[data-replay-cursor]');
+          marker.setAttribute('visibility',visible?'visible':'hidden');
+          if(visible){
+            const [x,y]=journeyPlot.xy(rec.xy[idx]);marker.setAttribute('cx',x);marker.setAttribute('cy',y);
+            panel.querySelector('[data-trail]').setAttribute('points',points);
+          }
         }
-      }else if(!fallback.hidden&&(st.stage===1||st.leadIn||force))fallbackPlot(idx);
+      }
       const atOrigin=st.stage>=2&&st.time>=origin()||Math.abs(st.time-origin())<.00001;
       let d=null,v=null;
       if(atOrigin){d=st.data.features.distance_m;v=st.data.features.v_long_mps;}
@@ -142,8 +151,7 @@ function mountGuided(root,initial) {
       $g('Speed').textContent=v==null?'—':PN(v,2)+' m/s';
       lastFrame=idx;
     }
-    if(cursor){
-      const host=world?$g('Inset'):fallback;
+    if(cursor)for(const host of world?[$g('Inset')]:fallback.children){
       const path=host.querySelector('[data-replay-path]')||host.querySelector('[data-path="representative"]');
       const marker=host.querySelector('[data-replay-cursor]');
       const point=path?.points[cursor.index];
@@ -171,16 +179,15 @@ function mountGuided(root,initial) {
     $g('Play').textContent=playLabel();
     $g('TimeLabel').textContent='Entry부터';
     $g('Journey').setAttribute('aria-pressed',stage===0);
-    root.querySelectorAll('[data-condition]').forEach(btn=>{btn.disabled=stage===1;btn.setAttribute('aria-pressed',btn.dataset.condition===mode);});
-    $g('Hint').textContent=stage===0?'Entry에서 출발해 통과 이후까지 재생합니다. 각 예측의 범위는 최대 4초입니다.':stage===1?'기록 재생 중에는 기준 위치만 표시합니다. 2단계부터 조건을 선택하세요.':stage===2?'저장된 입력 10점(0.9초)에서 기준·합성·보정 위치를 비교합니다.':truth?'보라색 사람 = 대표 예측 · 파란 사람 = 실제 보행':'예측 재생 · 보라색 사람이 0.5초 간격의 대표 예측 위치를 따라갑니다.';
+    root.querySelectorAll('[data-condition]').forEach(btn=>{btn.setAttribute('aria-pressed',btn.dataset.condition===mode);});
     $g('CompareWrap').hidden=stage!==2||st.leadIn;$g('Compare').checked=st.compare;
-    $g('Noise').disabled=stage===1||(stage===0&&mode==='clean');$g('Noise').value=st.scenario;
-    $g('H').disabled=stage===1||stage===2;$g('H').value=h;
-    $g('Jump').hidden=stage<2;
+    $g('Noise').value=st.scenario;
+    $g('H').value=h;
+    $g('Jump').hidden=stage===0;
     $g('Reveal').disabled=stage!==4||st.leadIn;$g('Reveal').textContent=truth?'정답 숨기기':'실제 정답 공개';$g('Reveal').setAttribute('aria-pressed',truth);
     $g('Next').disabled=stage===4;$g('Next').textContent=stage===0?'비교 시점으로':'다음 단계 →';
     root.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.stage===stage));
-    $g('Meta').textContent=data.c.crosswalk+' · '+UQ.names[mode]+' · '+$g('Noise').selectedOptions[0].textContent+' · 예측 시점 '+PN(origin(),1)+' s'+(stage>=3?' · H='+h+'초':'');
+    $g('Meta').textContent=data.c.crosswalk+' · '+UQ.names[mode]+' · '+$g('Noise').selectedOptions[0].textContent+' · 저장 원점 Entry +'+PN(origin()-start(),2)+'초'+(stage>=3?' · H='+h+'초':'');
     $g('StageTitle').textContent=GUIDE_STAGES[stage-1]?.[0]||'';$g('Text').textContent=truth?'':GUIDE_STAGES[stage-1]?.[1]||'';
     $g('Prob').innerHTML=stage===4&&!st.leadIn?'<h3>시간별 횡단 완료확률</h3>'+uqBars(st.result,h):'';
     $g('Outcome').innerHTML=truth?uqOutcome(data,h):'';
@@ -206,32 +213,63 @@ function mountGuided(root,initial) {
     if(st.leadIn){
       entries=[['실제 기록',UQ.colors.clean],['Entry','#336386'],['Exit','#b87508']];
       $g('Meta').textContent=data.c.crosswalk+' · '+UQ.names[mode]+' · Entry에서 비교 시점까지';
-      $g('Hint').textContent='Entry에서 실제 기록을 따라 이동합니다. 저장된 입력이나 예측에 도달하면 비교가 시작됩니다.';
       $g('Text').textContent='이 사례의 비교 예측은 Entry 통과 후 '+PN(origin()-start(),2)+'초에 저장되었습니다.';
     }
+    if(!st.single&&world){
+      entries=[['실제 기록',UQ.colors.clean],...modes.map(m=>[UQ.names[m],UQ.colors[m]]),['Exit','#b87508']];
+      if((stage===0||stage>=3)&&!st.leadIn)entries.push(['예측 · HDR',UQ.colors.future]);
+      if(truth)entries.push(['실제 미래',UQ.colors.gt]);
+    }
     $g('Legend').innerHTML=uqLegend(entries);
-    $g('Full').disabled=stage===1||stage===2;
+    const inputTime=PN(origin()-start(),2);
+    $g('Hint').textContent='파란 사람 = Entry 출발 실제 보행자　·　조건 이름 옆 그림 = Entry +'+inputTime+'초의 저장 입력 10점';
+    const extent=modes.flatMap(m=>result(m).input.observed_xy);
+    const axis=crossingAxes(data),plot=uqProjection(extent,280,170,axis);
+    const zoom=uqProjection(extent,340,140,axis);
+    let paths='';
+    const detailModes=modes.filter(m=>m!==mode).concat(mode);
+    for(const m of detailModes){
+      const xy=result(m).input.observed_xy;
+      paths+=uqLine(zoom,xy,UQ.colors[m],m===mode?3.5:1.8,m==='noisy'?'stroke-dasharray="5 3"':'')+dot(zoom.xy(xy.at(-1)),m===mode?5:3,UQ.colors[m]);
+    }
+    const selectedEnd=st.result.input.observed_xy.at(-1),referenceEnd=data.clean.input.observed_xy.at(-1);
+    const area=st.result.area_m2?.['0.95']?.[st.result.future_times_s.indexOf(h)];
+    const separation=Math.hypot(selectedEnd[0]-referenceEnd[0],selectedEnd[1]-referenceEnd[1]);
+    $g('InputDetail').hidden=stage>=3&&!st.leadIn;
+    $g('InputDetail').innerHTML='<h3>저장 관측 확대 · Entry +'+inputTime+'초</h3>'+svgFrame('세 조건의 저장된 입력 위치',paths+uqScale(zoom.scale,.25,140),340,140)+
+      '<small>'+UQ.names[mode]+' 끝점과 기준 위치의 차이　<b>'+PN(separation,2)+' m</b>'+(Number.isFinite(area)?' · '+h+'초 HDR95 '+PN(area,2)+' m²':'')+'</small>';
+    for(const button of root.querySelectorAll('[data-condition]')){
+      const m=button.dataset.condition,r=result(m),xy=r.input.observed_xy;
+      const line=uqLine(plot,xy,UQ.colors[m],4,'data-input="'+m+'"')+dot(plot.xy(xy.at(-1)),5,UQ.colors[m]);
+      button.querySelector('.g-history-mini').innerHTML=svgFrame(UQ.names[m]+' 저장 입력',line,280,170);
+      button.title=UQ.names[m]+' 상세 정보 · Entry +'+inputTime+'초 저장 입력';
+    }
+    root.dataset.single=st.single;
+    $g('Single').textContent=st.single?'세 조건 나란히':'선택 조건 확대';
+    $g('Single').setAttribute('aria-pressed',st.single);
     for(const [id,view] of [['Cross','crossing'],['Top','top'],['Full','full']])$g(id).setAttribute('aria-pressed',st.view===view);
-    $g('Inset').hidden=!world||stage<2||st.leadIn;
+    $g('Inset').hidden=!world||!st.single||stage<2||st.leadIn;
     if(!$g('Inset').hidden)$g('Inset').innerHTML=uqReplayInset(st);
     $g('DistanceLabel').textContent=stage<=1||st.leadIn||stage===2?'현재 Exit 거리':'기준 관측 · Exit 거리';
     $g('SpeedLabel').textContent=stage<=1||st.leadIn||stage===2?'현재 종방향 속도':'기준 관측 · 종방향 속도';
-    const nextKey=[data.r.uid,stage,mode,st.scenario,h,truth,st.compare,st.leadIn].join('|');
+    const nextKey=[data.r.uid,stage,mode,st.scenario,h,truth,st.compare,st.leadIn,st.single].join('|');
     if(stage===0){journeyKey=null;overlayKey=null;}
-    if(stage!==0&&world&&overlayKey!==nextKey){world.overlay(st);overlayKey=nextKey;}
+    if(stage!==0&&world&&overlayKey!==nextKey){world.overlay(st,modes.map(m=>({...st,mode:m,result:result(m)})));overlayKey=nextKey;}
+    if(!world&&stage!==0){
+      if(stage===1||st.leadIn)drawJourneyMap();
+      else fallbackPanels(m=>stage===2?uqReplayInset({...st,mode:m,result:result(m)}):uqMap(data,result(m),m,h,truth,true));
+    }
     frame(true);
   }
   function stageTo(n){
     const wasJourney=st.stage===0;
-    if(n===0&&!wasJourney)st.h=4;
-    if(wasJourney&&n!==0)st.h=3;
     st.running=false;st.stage=n;st.truth=false;st.time=start();
-    if(n===1)st.mode='clean';
+
     if(n===0||wasJourney||(n<3&&st.view==='full')){st.view='crossing';world?.view(st.data,'crossing',st);}
     render();
   }
   function reset(stage=0){
-    st.h=stage===0?4:3;st.compare=false;st.view='crossing';st.scenario='iid_1';st.mode='clean';stageTo(stage);
+    st.compare=false;st.view='crossing';stageTo(stage);
   }
   root.querySelectorAll('button[data-stage]').forEach(b=>b.onclick=()=>stageTo(+b.dataset.stage));
   $g('Journey').onclick=()=>stageTo(0);
@@ -251,6 +289,7 @@ function mountGuided(root,initial) {
   });
   $g('Compare').onchange=e=>{st.compare=e.target.checked;render();};
   function setView(view){st.view=view;world?.view(st.data,view,st);render();}
+  $g('Single').onclick=()=>{st.single=!st.single;world?.view(st.data,st.view,st);render();};
   $g('Noise').onchange=e=>{st.scenario=e.target.value;if(st.view==='full')world?.view(st.data,'full',st);render();};
   $g('H').onchange=e=>{st.h=+e.target.value;st.time=Math.min(end(),st.time);if(st.view==='full')world?.view(st.data,'full',st);render();};
   $g('Reveal').onclick=()=>{st.truth=!st.truth;st.running=false;st.time=origin();render();};

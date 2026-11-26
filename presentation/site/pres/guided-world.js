@@ -14,12 +14,32 @@ function guidedWorld(canvas, s, tick) {
   let boundaryExit, historyKey='', lastIndex=-1;
   let trail=null;
   const scene=sc;
-  let inputRing=null;
-  const forecastPerson=person.clone('forecast pedestrian');
-  const forecastMaterial=material(C3.future,.86);
-  forecastMaterial.emissiveColor=color(C3.future).scale(.4);
-  for(const part of forecastPerson.getChildMeshes()){part.material=forecastMaterial;part.isPickable=false;}
-  forecastPerson.setEnabled(false);
+  const modes=Object.keys(UQ.names);
+  const panels=modes.map((mode,i)=>{
+    const cam=i===0?camera:new BABYLON.ArcRotateCamera(mode+' camera',camera.alpha,camera.beta,camera.radius,camera.target.clone(),scene);
+    const mask=1<<i, actor=person.clone('forecast pedestrian '+mode);
+    const mat=material(C3.future,.86);
+    mat.emissiveColor=color(C3.future).scale(.4);
+    for(const part of actor.getChildMeshes()){part.material=mat;part.layerMask=mask;part.isPickable=false;}
+    actor.setEnabled(false);
+    return {mode,cam,mask,actor,ring:null,result:null};
+  });
+  scene.cameraToUseForPointers=camera;
+  scene.onBeforeRenderObservable.add(()=>{
+    for(const {cam} of panels.slice(1)){
+      cam.alpha=camera.alpha;cam.beta=camera.beta;cam.radius=camera.radius;
+      cam.upperRadiusLimit=camera.upperRadiusLimit;cam.target.copyFrom(camera.target);
+    }
+  });
+  function panelLayout(st){
+    camera.layerMask=st.single?panels.find(p=>p.mode===st.mode).mask:panels[0].mask;
+    if(st.single){
+      camera.viewport=new BABYLON.Viewport(0,0,1,1);scene.activeCameras=[camera];
+    }else{
+      panels.forEach(({cam,mask},i)=>{cam.layerMask=mask;cam.viewport=new BABYLON.Viewport(i/3,0,1/3,1);});
+      scene.activeCameras=panels.map(p=>p.cam);
+    }
+  }
   function stroke(name,xy,hex,radius,height,alpha=1,bag=layers) {
     if(xy.length<2)return;
     const m=BABYLON.MeshBuilder.CreateTube(name,{path:xy.map(([x,y])=>new BABYLON.Vector3(x,height,y)),radius,tessellation:6,cap:BABYLON.Mesh.CAP_ALL},scene);
@@ -69,7 +89,7 @@ function guidedWorld(canvas, s, tick) {
     camera.alpha=Math.atan2(dir*g.axis[1],dir*g.axis[0])+Math.PI/2;
     camera.beta=kind==='crossing'?.91:.018;
     const span=Math.max(10,g.nominal_length_m+5);
-    const aspect=canvas.clientWidth/Math.max(1,canvas.clientHeight);
+    const aspect=canvas.clientWidth/Math.max(1,canvas.clientHeight)/(st?.single?1:3);
     camera.radius=Math.max(15,span/(2*Math.tan(camera.fov/2)*Math.min(2.15,aspect)),span*.76);
     if(st?.stage===0){
       const edges=['end_A','end_B'].flatMap(e=>V2R.boundary(g,e));
@@ -88,7 +108,7 @@ function guidedWorld(canvas, s, tick) {
       const distance=(Math.max((half[0]+1)/aspect,half[1]+2))/Math.tan(camera.fov/2)+half[1]+2;
       camera.upperRadiusLimit=Math.max(130,distance*1.1);camera.radius=Math.max(15,distance);
     }
-    if(kind==='full'&&st?.stage>=3){
+    if(kind==='full'&&st&&st.stage!==0){
       const {all}=uqComparisonExtent(st);
       const mid=[0,1].map(k=>(Math.min(...all.map(p=>p[k]))+Math.max(...all.map(p=>p[k])))/2);
       const radius=Math.max(...all.map(p=>Math.hypot(p[0]-mid[0],p[1]-mid[1])));
@@ -98,11 +118,33 @@ function guidedWorld(canvas, s, tick) {
     }
     camera.inertialAlphaOffset=camera.inertialBetaOffset=camera.inertialRadiusOffset=0;
   }
-  function overlay(st){
+  function overlay(st,contexts){
+    clear(layers);historyKey='';lastIndex=-1;
+    panelLayout(st);
+    boundaryExit.material.emissiveColor=color(amber).scale(st.stage===4?1:.5);
+    for(const [i,panel] of panels.entries()){
+      const ctx=contexts[i],first=layers.length,active=panel.mode===st.mode;
+      panel.result=ctx.result;panel.ring=null;
+      panel.actor.name=active?'forecast pedestrian':'forecast pedestrian '+panel.mode;
+      if(st.single&&!active){panel.actor.setEnabled(false);continue;}
+      buildLayers(ctx,panel);
+      for(let j=first;j<layers.length;j++){
+        const mesh=layers[j];mesh.layerMask=panel.mask;
+        mesh.metadata={condition:panel.mode,layer:mesh.name};
+        if(!active)mesh.name=panel.mode+' '+mesh.name;
+      }
+    }
+  }
+  function buildLayers(st,panel){
     const {data,stage,mode,scenario,h,truth,result}=st;
-    clear(layers);inputRing=null;historyKey='';lastIndex=-1;
-    boundaryExit.material.emissiveColor=color(amber).scale(stage===4?1:.5);
-    if(stage===1||st.leadIn)return;
+    if(stage===1||st.leadIn){
+      // Fixed case context at the labelled cache origin, independent of the walking actor.
+      const history=result.input.observed_xy;
+      stroke('stored observation',history,C3[mode],.085,.17);
+      const ring=BABYLON.MeshBuilder.CreateTorus('stored endpoint',{diameter:.55,thickness:.08,tessellation:24},scene);
+      ring.position.set(history.at(-1)[0],.16,history.at(-1)[1]);ring.material=material(C3[mode]);layers.push(ring);
+      return;
+    }
     const xy=result.input.observed_xy;
     const noisy=data.r.results[scenario+'__noisy'], corrected=data.r.results[scenario+'__filtered_mean'];
     const filter=corrected.filter, simultaneous=stage===2&&st.compare;
@@ -126,7 +168,7 @@ function guidedWorld(canvas, s, tick) {
     const last=xy.at(-1);
     const ring=BABYLON.MeshBuilder.CreateTorus('observed endpoint',{diameter:.56,thickness:.085,tessellation:32},scene);
     ring.position.set(last[0],.24,last[1]);ring.material=material(C3[mode]);ring.material.emissiveColor=color(C3[mode]).scale(.45);
-    layers.push(ring);inputRing=ring;
+    layers.push(ring);panel.ring=ring;
     if(stage<3)return;
     const end=result.future_times_s.indexOf(h), regions=result.regions[end];
     ['0.95','0.68'].forEach(level=>fillContours(regions[level],level));
@@ -135,14 +177,20 @@ function guidedWorld(canvas, s, tick) {
     if(truth)stroke('actual future',[data.clean.input.observed_xy.at(-1),...data.r.future_GT_xy.slice(0,end+1)],C3.gt,.053,.185);
   }
   function cursor(st,sample){
-    if(!sample){forecastPerson.setEnabled(false);return;}
-    forecastPerson.setEnabled(st.stage>=3&&sample.index>0);
-    if(st.stage===2&&inputRing)inputRing.position.set(sample.point[0],.24,sample.point[1]);
-    if(st.stage<3||sample.index===0)return;
-    const [x,z]=sample.point;
-    const previous=sample.index===1?st.result.input.observed_xy.at(-1):st.representative[sample.index-2];
-    forecastPerson.position.set(x,0,z);
-    forecastPerson.rotation.y=Math.atan2(x-previous[0],z-previous[1]);
+    for(const panel of panels){
+      const r=panel.result,actor=panel.actor;
+      const visible=(!st.single||st.mode===panel.mode)&&sample&&r;
+      actor.setEnabled(Boolean(visible&&st.stage>=3&&sample.index>0));
+      if(!visible)continue;
+      if(st.stage===2&&panel.ring){
+        const xy=r.input.observed_xy[sample.index];panel.ring.position.set(xy[0],.24,xy[1]);
+      }
+      if(!actor.isEnabled())continue;
+      const scores=r.hypothesis_confidence_scores,path=r.hypotheses_xy[scores.indexOf(Math.max(...scores))];
+      const [x,z]=path[sample.index-1];
+      const prev=sample.index===1?r.input.observed_xy.at(-1):path[sample.index-2];
+      actor.position.set(x,0,z);actor.rotation.y=Math.atan2(x-prev[0],z-prev[1]);
+    }
   }
   function pose(st,idx,visible){
     const {data,stage,time,running}=st;

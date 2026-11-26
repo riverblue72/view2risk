@@ -98,6 +98,11 @@ try {
     await checkEntry();
     for(const n of [1,2,3,4]){
       await step(n);await checkEntry();
+      for(const mode of ['clean','noisy','filtered_mean']){
+        await condition(mode);await checkEntry();
+        assert(await ev(`sc.activeCameras.length===3 && !gNoise.disabled && !gH.disabled &&
+          [...document.querySelectorAll('.g-segments button')].every((b,i)=>!b.disabled&&b.querySelector('[data-input="'+b.dataset.condition+'"]')&&sc.meshes.some(m=>m.metadata?.condition===b.dataset.condition&&m.layerMask===sc.activeCameras[i].layerMask))`));
+      }
       if(n===2){
         await condition('noisy');await checkEntry();
         await click('gJump');await click('gReset');await checkEntry();
@@ -151,7 +156,7 @@ try {
   assert(await ev('JSON.stringify([person.position.x,person.position.z])===JSON.stringify(caseData.actual_observations.xy[caseData.actual_observations.elapsed_s.findLastIndex(t=>t<=+gTime.value+1e-6)])'));
   const atOrigin=await pose();const cam=()=>ev('[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()]');
   const locked=await cam();
-  assert(await ev('[...document.querySelectorAll("[data-condition]")].every(b=>b.disabled)'));
+  assert(await ev('[...document.querySelectorAll("[data-condition]")].every(b=>!b.disabled)'));
   await click('gNext');await click('gJump');await click('gCompare');await condition('noisy');await until('sc.isReady()');await capture('stage-2');
   assert(await ev('!!sc.getMeshByName("measurement ellipse") && !sc.getMeshByName("representative")'));assert.deepEqual(await pose(),atOrigin);
   await click('gNext');await click('gJump');await condition('filtered_mean');await until('sc.isReady()');await capture('stage-3');
@@ -233,6 +238,13 @@ try {
         const source=r.hypotheses_xy.filter((_,j)=>j!==best);
         if(candidates.length!==source.length||candidates.some((m,j)=>!vertexMatches(m,[end,...source[j].slice(0,i+1)])))throw Error('candidate meshes');
         if(mode==='filtered_mean'&&(!sc.getMeshByName('reference history')||!sc.getMeshByName('noisy context')))throw Error('missing comparison histories');
+        for(const [panelIndex,panelMode] of Object.keys(UQ.names).entries()){
+          const packet=s.r.results[panelMode==='clean'?'clean':noise+'__'+panelMode];
+          const scores=packet.hypothesis_confidence_scores,top=scores.indexOf(Math.max(...scores));
+          const mesh=sc.meshes.find(m=>m.metadata?.condition===panelMode&&m.metadata.layer==='representative');
+          if(!mesh||mesh.layerMask!==sc.activeCameras[panelIndex].layerMask||
+              !vertexMatches(mesh,[packet.input.observed_xy.at(-1),...packet.hypotheses_xy[top].slice(0,i+1)]))throw Error('cross-panel forecast mismatch');
+        }
         if(coords()!==reference||camera0!==[camera.alpha,camera.beta,camera.radius,...camera.target.asArray()].join(','))throw Error('pose/camera changed');
         if(!vertexMatches(sc.getMeshByName('actual future'),[s.clean.input.observed_xy.at(-1),...s.f.future_GT_xy.slice(0,i+1)]))throw Error('3D GT vertices');
         if(!vertexMatches(sc.getMeshByName('representative'),[r.input.observed_xy.at(-1),...r.hypotheses_xy[best].slice(0,i+1)]))throw Error('representative vertices');
@@ -331,7 +343,7 @@ try {
   assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
   await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
-  await seekJourney(8);assert(await ev('!!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));
+  await seekJourney(8);assert(await ev('gFallback.querySelectorAll(".fallback-panel").length===3 && !!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));
   await step(3);await click('gJump');assert(await ev('!!gFallback.querySelector(".forecast")&&!gFallback.querySelector("[data-path=truth]")'));
   await step(4);await click('gJump');await click('gReveal');assert(await ev('!!gFallback.querySelector("[data-path=truth]")'));
   await seek(1);

@@ -200,3 +200,26 @@
 }
 
 .framework-figure .science-svg{display:block;max-height:clamp(182px,30vh,320px);width:100%}
+
+.uq .g-views{position:relative}
+.uq .g-viewport .g-segments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0;gap:0;border:0;border-radius:0;background:white}
+.uq .g-viewport .g-segments button{min-width:0;display:flex;justify-content:center;align-items:center;gap:8px;padding:2px 4px;border-radius:0;border-right:1px solid #c9d5d7;border-top:3px solid var(--condition);font-size:15px}
+.uq .g-viewport .g-segments button[aria-pressed=true]{background:var(--condition);color:white}
+.uq .g-history-mini{display:inline-flex;width:62px;height:29px;background:white;border-radius:3px}
+.uq .g-history-mini svg{width:100%;height:100%;border:0}
+.uq .guided[data-single=false][data-renderer=babylon] .g-views:after{content:"";position:absolute;inset:0 33.333%;border-inline:1px solid #93a6a6;pointer-events:none}
+.uq .g-map-tools,.uq #gLegend{z-index:1}
+.uq .g-map-tools{top:auto;bottom:7px}
+.uq #gLegend{bottom:38px}
+.uq.on-guided-slide .g-viewport canvas,.uq.on-guided-slide #gFallback{height:clamp(265px,42vh,510px)}
+@media (min-width:851px) and (max-height:800px){.uq.on-guided-slide .g-viewport canvas,.uq.on-guided-slide #gFallback{height:clamp(238px,36vh,289px)}}
+@media(max-width:650px){.uq .g-viewport .g-segments button{display:grid;font-size:13px;gap:1px}.uq .g-views .g-map-tools{gap:3px}}
+
+.uq #gInputDetail svg{display:block;width:100%;height:clamp(63px,10vh,112px);border:0}
+.uq #gInputDetail small{font-size:13px}
+.uq .g-history-mini{width:80px;height:31px}
+
+.uq #gFallback:not([hidden]){display:flex;align-items:center;padding:0}
+.uq #gFallback .fallback-panel{flex:1;min-width:0}
+.uq .fallback-panel>svg{width:100%;height:auto}
+.uq .fallback-panel .uq-legend{display:none}
