@@ -2,7 +2,7 @@
 // Both pages use the same case join, chart functions and precision.
 const UQ = {
   colors: {clean:'#225983',noisy:'#bc591e',filtered_mean:'#007566',future:'#594ca1',gt:'#ac285b'},
-  names: {clean:'Clean',noisy:'Noisy',filtered_mean:'Corrected'},
+  names: {clean:'오차 없음',noisy:'카메라 오차',filtered_mean:'보정 후'},
   horizons: [1,2,3,4],
   async load() {
     const [, evidence] = await Promise.all([V2R.init({aggregate:false}), V2R.json('pres/evidence.json')]);

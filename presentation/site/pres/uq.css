@@ -269,3 +269,31 @@
 .uq .semester-steps::before{content:'한 학기 과정';font-weight:750;color:var(--accent);margin-right:1em}
 .uq .semester-steps li:not(:last-child)::after{content:'→';color:#72858a;margin:0 .7em}
 .uq .signal-slide .formula{font-weight:650}
+.uq .kr-steps{display:flex;flex-wrap:wrap;list-style:none;counter-reset:k;gap:.5em 0;padding:0 0 14px;margin:0 0 22px;border-bottom:1px solid var(--rule);font-size:.95em}
+.uq .kr-steps li{counter-increment:k}
+.uq .kr-steps li::before{content:counter(k) '. ';color:var(--accent);font-weight:750}
+.uq .kr-steps li:not(:last-child)::after{content:'→';color:#72858a;margin:0 .7em}
+.uq .ops-table th,.uq .ops-table td{text-align:left!important;vertical-align:top}
+.uq .kpi-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 26px}
+.uq .kpi-col{display:grid;gap:14px}
+.uq .kpi{display:grid;gap:4px;padding:16px 20px;border:1px solid var(--rule);border-radius:10px}
+.uq .kpi span{font-size:.92em;color:#5d6f75}
+.uq .kpi strong{font-size:2.1em;line-height:1.15;color:var(--accent);font-weight:750}
+.uq .kpi em{font-style:normal;font-size:.9em;color:#5d6f75}
+.uq .takeaway{font-weight:700;font-size:1.08em;margin:16px 0 8px}
+.uq .cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:0 0 14px}
+.uq .cards3>article{padding:18px 20px;border:1px solid var(--rule);border-radius:10px}
+.uq .cards3 h2{margin-top:0}
+.uq .cards3 .scope-ladder li{grid-template-columns:5.5em 1fr;font-size:.9em}
+.uq .cards3 .scope-ladder em{display:none}
+@media (max-width:900px){.uq .kpi-row,.uq .cards3{grid-template-columns:1fr}}
+.uq .method-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);align-items:start}
+.uq .method-layout .sci-figure svg{width:100%;height:auto}
+.uq .m-steps{display:grid;gap:12px}
+.uq .m-step{display:grid;grid-template-columns:2em 1fr;gap:10px;padding:12px 16px;border:1px solid var(--rule);border-radius:10px}
+.uq .m-step>b{display:grid;place-items:center;width:1.8em;height:1.8em;border-radius:50%;background:var(--accent);color:#fff}
+.uq .m-step h3{margin:0 0 4px;font-size:1.02em}
+.uq .m-step p{margin:0;font-size:.92em;line-height:1.5}
+.uq .kpi-row.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.uq .kpi-row.four .kpi strong{font-size:1.7em}
+@media (max-width:900px){.uq .method-layout,.uq .kpi-row.four{grid-template-columns:1fr}}

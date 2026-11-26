@@ -32,7 +32,7 @@ function mountDemonstration(root, data) {
 }
 
 function mountTracking(root,data,track,openForecast){
-  const modes=Object.keys(UQ.names), descriptions={clean:'기준 위치',noisy:'합성 관측',filtered_mean:'칼만 보정'};
+  const modes=Object.keys(UQ.names), descriptions={clean:'기준 위치',noisy:'추정 오차 입힘',filtered_mean:'칼만 필터'};
   const buttons=modes.map(mode=>'<button data-track-mode="'+mode+'" style="--condition:'+UQ.colors[mode]+'">'+UQ.names[mode]+' · '+descriptions[mode]+'</button>').join('');
   const times=track.elapsed_s,end=times.at(-1), rec={xy:track.clean,elapsed_s:times};
   const st={data,record:rec,stage:5,single:true,time:0,running:false};
@@ -45,7 +45,7 @@ function mountTracking(root,data,track,openForecast){
     '<aside class="g-info"><div class="g-meta">한 보행 기록 · 합성 독립 오차 1×</div><h2>현재 관측 위치의 오차</h2>'+
     '<p>사람은 파란 기준 경로를 걷습니다. 주황 고리는 오차를 더한 관측, 청록 고리는 그때까지의 관측으로 보정한 위치입니다.</p>'+
     '<h3>기준 위치에서 본 차이</h3><svg id="trackDetail" viewBox="0 0 300 116" role="img" aria-label="지도 X/Y축에서 기준 위치를 중심으로 본 관측 위치 차이"></svg>'+
-    '<div class="g-kpis"><div><small>합성 관측 오차</small><strong id="trackNoisy"></strong></div><div><small>보정 후 오차</small><strong id="trackCorrected"></strong></div></div>'+
+    '<div class="g-kpis"><div><small>카메라 오차</small><strong id="trackNoisy"></strong></div><div><small>보정 후 오차</small><strong id="trackCorrected"></strong></div></div>'+
     '<small id="trackInstant">이 시각의 기준 위치까지 직선거리입니다. 세 궤적은 Entry에서 같은 위치로 시작합니다.</small><p id="trackSummary" class="caption" hidden></p></aside></div>'+
     '<div class="g-controls"><div class="g-time"><button id="gPlay"></button><button id="gReset">Entry로</button><label for="gTime">Entry → Exit</label><input id="gTime" type="range" min="0" step="any"><output for="gTime" id="gClock"></output></div></div>';
   const get=id=>root.querySelector('#'+id);

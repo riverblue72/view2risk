@@ -70,7 +70,7 @@ function figFramework(){
   let b='<defs><marker id="flow-tip" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" fill="'+linked+'"/></marker></defs>';
   b+=ink(10,23,'경로 기반',SC.future)+ink(384,23,'시간 직접 추정','#355966')+
     box(10,37,331,'보행 위치 관측',SC.clean)+box(378,37,222,'거리 · 속도 · 가속도',dark)+
-    arrow(60,75,60,150)+arrow(238,75,238,88)+box(123,90,218,'선택적 Kalman 보정',SC.filtered_mean)+
+    arrow(60,75,60,150)+arrow(238,75,238,88)+box(123,90,218,'Kalman 보정 (비교 실험)',SC.filtered_mean)+
     arrow(238,128,238,150)+box(10,152,331,'사전학습 DD-MDN',SC.future)+
     arrow(175,190,175,205)+box(10,207,331,'확률적 미래 경로',SC.future)+
     arrow(90,245,90,266)+arrow(257,245,257,266)+box(10,268,159,'시점별 위치 영역',SC.future)+
@@ -102,7 +102,7 @@ function figHdr(){
 }
 function figCoverage(rows){
   const x=a=>66+(Math.log10(a)-Math.log10(4))/(3-Math.log10(4))*480,y=c=>209-(c-.68)/.32*160;
-  let b=ink(15,24,'실제 포함률 (%)')+segment(66,48,66,209,'#657980')+segment(66,209,552,209,'#657980');
+  let b=ink(15,24,'95% 범위의 실제 적중률 (%)')+segment(66,48,66,209,'#657980')+segment(66,209,552,209,'#657980');
   for(const v of [.7,.8,.9,.95,1]){
     b+=segment(66,y(v),552,y(v),v===.95?'#6f568c':'#dce3e5',v===.95?2:1,v===.95?'6 4':'')+ink(57,y(v)+5,Math.round(v*100),'#526772','end',15);
   }
@@ -192,11 +192,11 @@ function figGroupedBars({title,groups,series,maximum,ticks,axis,decimals}){
 
 function figCompletionBars(s){
   const p=s.clean.exit.probabilities,exit=s.e.GT.exit_s-s.r.origin_s;
-  const left=68,width=267;
+  const left=86,width=249;
   let body=ink(left,20,'기한 안에 완료할 확률','#405761','start',16)+ink(461,20,'실제 결과',SC.gt,'middle',16);
   for(const [i,h] of UQ.horizons.entries()){
     const y=41+30*i;
-    body+=ink(52,y+10,'H'+h,'#344954','end',16)+segment(left,y+5,left+width,y+5,'#e7e3ef',9)+
+    body+=ink(78,y+10,h+'초 안에','#344954','end',16)+segment(left,y+5,left+width,y+5,'#e7e3ef',9)+
       segment(left,y+5,left+width*p[h],y+5,SC.future,9)+ink(394,y+10,UQ.pct(p[h]),SC.future,'end',16)+
       ink(461,y+10,exit<=h?'완료':'미완료',SC.gt,'middle',16);
   }
