@@ -4,7 +4,9 @@
 .uq .uq-terms dd{margin:1px 0 12px}
 .uq .uq-data-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding-top:14px;border-top:1px solid var(--rule);margin-top:15px}
 .uq .uq-data-row b,.uq .uq-data-row span{display:block}
+.uq .uq-existing-method text{text-decoration:underline;text-decoration-color:#77868b;text-underline-offset:3px}
 .uq .uq-system .science-svg{max-height:35vh}
+.uq .uq-system figcaption{font-size:clamp(14px,1.03vw,17px);line-height:1.5}
 .uq .uq-r-method{display:grid;grid-template-columns:max-content 1fr;gap:20px;align-items:baseline;border-top:1px solid var(--rule);padding-top:12px;margin-top:14px}
 .uq .uq-r-method p,.uq .uq-passage article>p:not(.caption){font-size:clamp(15px,1.16vw,19px);line-height:1.47}
 .uq .uq-r-method a{font-size:.86em}

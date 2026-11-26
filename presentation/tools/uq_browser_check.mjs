@@ -104,12 +104,12 @@ try {
     if(geom.overflow||geom.bottom>geom.footer+1)console.log('slide layout',geom);
     assert(!geom.overflow && geom.bottom<=geom.footer+1,JSON.stringify(geom));
     const uqExpected={
-      1:['Uncertainty Quantification','실제 보행 기록'],
+      1:['Uncertainty Quantification','미래 위치와 횡단 완료시간의 불확실성','실제 보행 기록'],
       2:['관측 불확실성','공간 예측 불확실성','횡단 완료 불확실성','SPD','IMPTC','inD'],
-      3:['2,465','15.7 / 17.8 cm','23.8 cm','공분산 R','독립 학습','선택 적용'],
-      4:['0.283','3.925','0.742','0.418','4.569','0.871','81.1%','80.9%'],
+      3:['2,465','15.7 / 17.8 cm','23.8 cm','공분산 R','독립 학습','선택 적용','Entry·Exit 경계 정의','잔여시간 학습 목표'],
+      4:['23.8 cm','0.283','3.925','0.742','0.418','4.569','0.871','81.1%','80.9%'],
       5:['78.51%','95%','10.27 m²','748.20','81.1%'],
-      6:['2.063초','2.53%','66.25%','0.03472','0.33527','0.08594','74.4%']
+      6:['미래 경로의 결합분포','최초 Exit 통과','2.063초','2.53%','66.25%','0.03472','0.33527','0.08594','74.4%']
     };
     const expected=(uqEdition&&uqExpected[n])||{3:['23.8 cm','주석 불일치','사전학습'],
       4:['향후 4초간 평균 위치 예측오차(ADE)','81.1%','0.74'],
@@ -119,10 +119,10 @@ try {
         '1,113개','2,322개','393개','2.19 → 0.059 m','0.10827','0.04634','0.02714','0.04410','0.00618','0.01021','0.02503','0.02396','71%','94.3%','236시점','120건'],
       8:['XGBoost 예측값은 이 계산에 사용하지 않았다','27.0초'],
       11:['XGBoost AFT','향후 4초간 평균 위치 예측오차(ADE)']}[n]||[];
-    const visible=await ev('PS("deck").textContent');
+    const visible=await ev('PS("pTitle").textContent+PS("pSubtitle").textContent+PS("pScene").textContent');
     for(const value of expected)assert(visible.includes(value),'Scene '+n+' missing '+value);
     if(n===7){
-      if(uqEdition)for(const value of ['0.05646','0.01635','전체 기준선 비교'])assert(visible.includes(value));
+      if(uqEdition)for(const value of ['0.05646','0.01635','H1은 1초 이내 횡단 완료확률','전체 기준선 비교'])assert(visible.includes(value));
       assert.equal(await ev('document.querySelector(".aft-pipeline polyline").points.length'),81);
       assert.equal(await ev('PS("pProgress").children.length'),11);
     }

@@ -6,7 +6,7 @@ View2Risk는 보행자 관측의 오차가 미래 위치 예측과 기한별 횡
 
 ## 별도 UQ 발표본
 
-[UQ 발표](https://riverblue72.github.io/view2risk/presentation/presentation-uq.html#scene-1)에는 별도 주소와 발표자 노트가 있다. 기존 발표 주소는 위의 11장 발표 링크다.
+[UQ 발표](https://riverblue72.github.io/view2risk/presentation/presentation-uq.html#scene-1)에는 별도 주소와 발표자 노트가 있다. 기존 발표 주소는 위의 11장 발표 링크다. UQ 발표의 1–7장은 관측오차 모형화, 민감도 분석, 공간 분포 검증, 경로 기반 완료확률, 잔여시간 분포 직접 학습 순서로 이어진다. 3장의 회색 밑줄은 기존 기법을 표시한다. 7장의 평균은 H1–H4 Brier의 산술평균이며, H1은 1초 이내 완료 여부를 평가하는 기한이다.
 
 | 장 | 연구 흐름과 근거 |
 |---|---|
