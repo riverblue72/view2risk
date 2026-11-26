@@ -223,3 +223,10 @@
 .uq #gFallback .fallback-panel{flex:1;min-width:0}
 .uq .fallback-panel>svg{width:100%;height:auto}
 .uq .fallback-panel .uq-legend{display:none}
+
+.uq .track-conditions{display:flex;flex-wrap:wrap;border-bottom:1px solid #ccd9da;background:white}
+.uq .track-conditions button{flex:1;border-radius:0;border:0;border-top:3px solid var(--condition,#194c49);white-space:nowrap}
+.uq .track-conditions button[aria-pressed=true]{background:var(--condition,#194c49)}
+.uq .full-tracking .g-head strong{font-size:18px}
+.uq .full-tracking #trackDetail{width:100%;height:clamp(78px,13vh,130px);display:block}
+.uq #trackNoisy{color:#a64b17}.uq #trackCorrected{color:#006e5f}

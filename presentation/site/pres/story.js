@@ -8,7 +8,7 @@ const slides=[
  ['Spatial uncertainty','95% 예측영역은 실제 위치를 얼마나 자주 포함할까?','한 시각에 예측한 위치 분포의 확률 질량과, 여러 사례에서 측정한 실제 포함률을 구분합니다.'],
  ['Crossing completion','앞으로 H초 안에 횡단을 마칠 가능성은 얼마일까?','경로의 첫 Exit 통과를 시간별 확률로 바꾸고, 각 기한의 실제 완료 여부와 비교합니다.'],
  ['Exit-aware training','출구 직전의 기록을 학습하면 시간 예측이 달라질까?','별도 실험 · XGBoost AFT는 현재 거리와 속도 등의 특징으로 남은 횡단 시간을 직접 예측합니다.'],
- ['Interactive demonstration','같은 보행자의 관측을 바꾸면 무엇이 달라질까?','전체 횡단을 재생하며 위치 분포와 완료확률이 달라지는 과정을 보고, 한 예측 시점을 확대해 비교합니다.'],
+ ['Interactive demonstration','같은 보행자의 관측을 바꾸면 무엇이 달라질까?','f2 보행자가 Entry에서 Exit까지 걷는 동안 기준 위치, 합성 관측, 칼만 보정을 같은 시계로 비교합니다.'],
  ['Contributions & limitations','어디까지 검증했고, 무엇이 남았을까?','View2Risk는 관측오차가 미래 움직임과 횡단 완료확률에 미치는 영향을 실제 기록으로 평가했습니다.']
 ];
 const notes=[
@@ -20,7 +20,7 @@ const notes=[
  'HDR의 질량은 모델이 배정한 확률입니다. 95% Coverage라면 평가 가능한 실제 위치 100개 중 약 95개를 포함합니다. 영역을 크게 만드는 것만으로 정확하고 유용한 분포가 되지는 않습니다.',
  '예측영역은 특정 시각의 위치를 묻습니다. 경로 전체의 통로나 충돌 위험은 별도 문제입니다. 실제 첫 통과를 보간하고 이후 최소 0.12초 관측을 확인했습니다. H에서 완료 여부가 불명확하면 해당 점수에서 제외했습니다. Brier는 예측확률과 0·1 결과 간 차이의 제곱을 평균합니다.',
  '학습 시점의 양과 구성이 함께 바뀌었습니다. 같은 M1 두 설정을 같은 Test에서 비교한 결과입니다. 기존 단순 기준선과 Conditional AFT의 전체 결과는 부록에 있습니다.',
- '같은 시점에서 Clean, Noisy, Corrected를 누르세요. 전체 영역과 횡단부를 비교하고, 4단계에서 정답을 공개하세요. 한 사례의 오차는 집계 점수와 구분해서 읽습니다.',
+ '전체 추적에서 세 위치의 차이를 보세요. 저장된 미래 예측을 열면 기존 실험으로 전환합니다. 전체 영역과 횡단부를 비교하고, 4단계에서 정답을 공개하세요. 한 사례의 오차는 집계 점수와 구분해서 읽습니다.',
  '정지·재출발, 실제 센서 오차 전이, 새로운 날짜에서의 보정 및 배포 환경 검증은 남아 있습니다.'
 ];
 const fig=(heading,graphic,caption)=>'<figure class="sci-figure"><h2>'+heading+'</h2>'+graphic+'<figcaption>'+caption+'</figcaption></figure>';
@@ -59,7 +59,7 @@ function content(i,s){
     PS('pEyebrow').textContent=section;PS('pTitle').textContent=title;PS('pSubtitle').textContent=sub;
     release?.();release=null;document.body.classList.toggle('on-guided-slide',index===8);
     PS('pScene').innerHTML=content(index,s);
-    if(index===8)release=mountGuided(PS('slideReplay'),s);
+    if(index===8)release=mountDemonstration(PS('slideReplay'),s);
     PS('pNotes').textContent=notes[index];PS('pProgressText').textContent=(index+1)+' / '+slides.length;
     PS('pPrev').disabled=index===0;PS('pNext').disabled=index===slides.length-1;
     PS('pProgress').innerHTML=slides.map(([section,title],i)=>'<a href="#scene-'+(i+1)+'" aria-label="'+(i+1)+'. '+title+'" title="'+section+'" '+(index===i?'aria-current="step"':'')+'>'+(i+1)+'</a>').join('');

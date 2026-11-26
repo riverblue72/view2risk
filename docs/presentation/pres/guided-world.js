@@ -40,9 +40,9 @@ function guidedWorld(canvas, s, tick) {
       scene.activeCameras=panels.map(p=>p.cam);
     }
   }
-  function stroke(name,xy,hex,radius,height,alpha=1,bag=layers) {
+  function stroke(name,xy,hex,radius,height,alpha=1,bag=layers,cap=BABYLON.Mesh.CAP_ALL) {
     if(xy.length<2)return;
-    const m=BABYLON.MeshBuilder.CreateTube(name,{path:xy.map(([x,y])=>new BABYLON.Vector3(x,height,y)),radius,tessellation:6,cap:BABYLON.Mesh.CAP_ALL},scene);
+    const m=BABYLON.MeshBuilder.CreateTube(name,{path:xy.map(([x,y])=>new BABYLON.Vector3(x,height,y)),radius,tessellation:6,cap},scene);
     m.material=material(hex,alpha);
     m.material.emissiveColor=color(hex).scale(.52);
     m.isPickable=false;bag.push(m);return m;
@@ -216,8 +216,30 @@ function guidedWorld(canvas, s, tick) {
       if(first<idx){const bag=[];trail=stroke('recorded past',rec.xy.slice(first,idx+1),C3.clean,.047,.115,1,bag);}
     }
   }
+  // Uncapped tubes have one strip of triangles per pair of timestamps.
+  // Expose only strips already observed, including when seeking backwards.
+  function trackingLayers(track){
+    const traces=modes.map((mode,i)=>{
+      const mesh=stroke('tracking trail '+mode,track[mode],C3[mode],i===1?.035:.052,
+        .11+i*.041,1,layers,BABYLON.Mesh.NO_CAP);
+      const perStep=mesh.getTotalIndices()/(track.elapsed_s.length-1);
+      const ring=BABYLON.MeshBuilder.CreateTorus('tracking marker '+mode,
+        {diameter:[.61,.47,.32][i],thickness:.065,tessellation:36},scene);
+      ring.material=material(C3[mode]);layers.push(ring);
+      return {mesh,perStep,ring,mode};
+    });
+    return (index,selection)=>{
+      for(const {mesh,perStep,ring,mode} of traces){
+        const visible=selection==='all'||selection===mode;
+        mesh.setEnabled(visible&&index>0);ring.setEnabled(visible);
+        mesh.subMeshes[0].indexCount=index*perStep;
+        const [x,z]=track[mode][index];
+        ring.position.set(x,.27,z);
+      }
+    };
+  }
   bounds(s);view(s);
-  return {overlay,pose,cursor,view,change(data){bounds(data);view(data);legPhase=0;},dispose(){
+  return {overlay,pose,cursor,view,trackingLayers,change(data){bounds(data);view(data);legPhase=0;},dispose(){
     resize.disconnect();engine.stopRenderLoop();scene.dispose();engine.dispose();boundaryMeshes=[];objects=[];
   }};
 }

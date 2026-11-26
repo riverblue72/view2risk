@@ -78,7 +78,7 @@ function bodyError(root,error) {
 if(PS('standaloneReplay')) {
   PS('pHeader').innerHTML=pNav('compare');
   UQ.load().then(s=>{
-    mountGuided(PS('standaloneReplay'),s);
+    mountDemonstration(PS('standaloneReplay'),s);
     const extra=PS('extra2D');
     extra.ontoggle=()=>{if(extra.open&&!PS('extraReplay').children.length)mountUqReplay(PS('extraReplay'),s);};
   }).catch(error=>bodyError(PS('standaloneReplay'),error));
