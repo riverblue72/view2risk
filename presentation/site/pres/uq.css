@@ -297,3 +297,21 @@
 .uq .kpi-row.four{grid-template-columns:repeat(4,minmax(0,1fr))}
 .uq .kpi-row.four .kpi strong{font-size:1.7em}
 @media (max-width:900px){.uq .method-layout,.uq .kpi-row.four{grid-template-columns:1fr}}
+
+.uq .aft-pipeline{display:grid;grid-template-columns:1fr 1.17fr 1.27fr .86fr;gap:34px;margin:0;padding:12px 0 4px;border-block:1px solid var(--rule);list-style:none}
+.uq .aft-pipeline li{min-width:0;position:relative}
+.uq .aft-pipeline li:not(:last-child)::after{content:'→';position:absolute;right:-25px;top:40%;color:#637983}
+.uq .aft-pipeline h3{margin:0 0 5px;font-size:1em;color:#245a58}
+.uq .aft-pipeline p,.uq .aft-pipeline dl{font-size:clamp(14px,1.08vw,18px);margin:0;line-height:1.52}
+.uq .aft-pipeline dl{display:grid;grid-template-columns:auto 1fr;gap:1px 9px}
+.uq .aft-pipeline dd{text-align:right;margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.uq .aft-pipeline svg{height:clamp(96px,12vh,130px)}
+.uq .aft-evidence{margin-top:17px}
+.uq .aft-evidence .p-table :is(td,th){padding:8px 5px;font-size:clamp(14px,1.12vw,19px)}
+.uq .aft-result{margin:12px 0 6px;color:#195c58}
+.uq #deck .aft-study .sci-figure svg{max-height:clamp(130px,19vh,205px)}
+@media(max-width:850px){.uq .aft-pipeline{grid-template-columns:1fr 1fr;gap:16px 30px}.uq .aft-pipeline li:nth-child(2)::after{content:none}}
+@media(min-width:851px) and (max-height:800px){
+ .uq .method-layout .m-steps{gap:8px}
+ .uq .method-layout .m-step{padding:8px 12px}
+}

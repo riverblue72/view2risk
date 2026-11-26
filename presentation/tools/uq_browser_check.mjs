@@ -73,26 +73,32 @@ try {
       for(const type of ['mousePressed','mouseReleased'])await call('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1});
       await until('!!document.fullscreenElement');
     }
-    for(let n=1;n<=10;n++){
+    for(let n=1;n<=11;n++){
     await ev('location.hash="#scene-'+n+'"');await until('document.querySelector("#pProgress a[aria-current]").textContent==="'+n+'"');
-    if(n===9){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
+    if(n===10){await ready3();await set('gTime',7);await ev('gTime.dispatchEvent(new Event("input"))');}
     const geom=await ev(`(()=>{const scene=PS('pScene');const f=document.querySelector('.deck-footer').getBoundingClientRect();
       return {slide:${n},w:innerWidth,bottom:scene.getBoundingClientRect().bottom,footer:f.top,overflow:document.documentElement.scrollWidth>innerWidth};})()`);
     if(geom.overflow||geom.bottom>geom.footer+1)console.log('slide layout',geom);
     assert(!geom.overflow && geom.bottom<=geom.footer+1,JSON.stringify(geom));
-    const expected={3:['2,465','15.7 cm','17.8 cm','23.8 cm'],
-      5:['0.283','3.925','0.742','0.418','4.569','0.871','81.1%','80.9%'],
-      6:['96.05%','74.12%','78.51%','7.37 m²','748.20 m²','10.27 m²'],
-      7:['0.00%','2.53%','66.25%','66.97%','2.063','0.03472','0.33527','0.08594','74.4%'],
-      8:['0.10827','0.04634','0.02714','0.04410','0.00618','0.01021','0.02503','0.02396'],
-      10:['0.05646','0.01635','74.12%','78.51%']}[n]||[];
+    const expected={3:['23.8 cm','주석 불일치','사전학습'],
+      4:['향후 4초간 평균 위치 예측오차(ADE)','81.1%','0.74'],
+      5:['78.51%','95%','원인은 별도로 검증'],
+      6:['2.53%','66.25%','0.03472','0.33527','0.08594','74.4%'],
+      7:['3.42 m','1.57 m/s','−0.012 m/s²','2.063초','약 0%','17.03%','99.96%','약 100%',
+        '1,113개','2,322개','393개','2.19 → 0.059 m','0.10827','0.04634','0.02714','0.04410','0.00618','0.01021','0.02503','0.02396','71%','94.3%','236시점','120건'],
+      8:['XGBoost 예측값은 이 계산에 사용하지 않았다','27.0초'],
+      11:['XGBoost AFT','향후 4초간 평균 위치 예측오차(ADE)']}[n]||[];
     const visible=await ev('PS("deck").textContent');
     for(const value of expected)assert(visible.includes(value),'Scene '+n+' missing '+value);
+    if(n===7){
+      assert.equal(await ev('document.querySelector(".aft-pipeline polyline").points.length'),81);
+      assert.equal(await ev('PS("pProgress").children.length'),11);
+    }
     await capture((fullscreen?'fullscreen-':width===1440?'':width+'-')+'scene-'+n);
     }
     if(fullscreen){await click('pFullscreen');await until('!document.fullscreenElement');}
   }
-  await ev('location.hash="#scene-9"');await ready3();
+  await ev('location.hash="#scene-10"');await ready3();
   assert(await ev('gClock.textContent==="0.00 s / 10.08 s"'));
   const verifyTracking=await ev(`(async()=>{
     const t=await V2R.json('demo/f2-full-track.json'),modes=Object.keys(UQ.names);
@@ -307,7 +313,7 @@ try {
   }
   assert.equal(combos,180);await set('gCase','o0008');await until('gCase.value==="o0008"&&!document.querySelector(".guided").inert');
   await step(1);await click('gTop');assert(await ev('camera.beta<.05'));await click('gCamera');assert.deepEqual(await cam(),locked);
-  await click('pPrev');await until('location.hash==="#scene-8" && !PS("gCanvas")');
+  await click('pPrev');await until('location.hash==="#scene-9" && !PS("gCanvas")');
   await ev('history.back()');await ready3();await click('showForecast');await ready3();await click('pNotesButton');assert(await ev('!pNotes.hidden'));await click('pNotesButton');
   await step(3);await click('gJump');await condition('noisy');await set('gH',4);await click('gFull');
   assert(await ev(`(()=>{
@@ -321,7 +327,7 @@ try {
     return visible;
   })()`));
   await until('sc.isReady()');await capture('overview-noisy');
-  checks.push('10 slides, four guided stages, all three requested viewports, fullscreen, navigation, camera and playback');
+  checks.push('11 slides, four guided stages, all three requested viewports, fullscreen, navigation, camera and playback');
   checks.push('180 WebGL case/condition/noise/horizon combinations matched cached probabilities, representative, HDR and GT vertices');
   await goto('demo.html');await ready3();assert(await ev('!!PS("showForecast")'));await click('showForecast');await ready3();await ev('PS("extra2D").open=true');await until('document.querySelector("#uqCase")');
   const matrix=await ev(`(async()=>{
@@ -388,7 +394,7 @@ try {
   await until('window.demoReady&&typeof sc!=="undefined" && sc?.getMeshByName("actualMap") && !!caseData && sc.isReady()');
   assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
-  await goto('presentation.html#scene-9');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
+  await goto('presentation.html#scene-10');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await seekJourney(5);assert(await ev('!!gFallback.querySelector("polyline")&&+document.querySelector(".full-tracking").dataset.index>0'));
   await click('showForecast');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await seekJourney(8);assert(await ev('gFallback.querySelectorAll(".fallback-panel").length===3 && !!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));

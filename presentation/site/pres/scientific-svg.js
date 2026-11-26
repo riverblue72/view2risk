@@ -136,15 +136,15 @@ function figTraining(){
   const versions=UQ.evidence.audit.support;
   const maximum=Math.max(...versions.map(row=>row.n_train_origins));
   const labels=['1 m 미만','1~2 m 미만','2 m 이상'],palette=['#94610d','#527884','#c8d5d6'];
-  let b=ink(24,23,'Exit까지 남은 거리별 학습 시점 수');
+  let b='';
   for(const [i,r] of versions.entries()){
-    const y=66+95*i;
+    const y=19+78*i;
     b+=ink(24,y,r.version==='original'?'기존 M1':'Exit-aware M1')+ink(602,y,r.n_train_origins.toLocaleString('en-US')+'개','#344954','end');
     let x=24;const counts=[r.n_train_lt1,r.n_train_lt2-r.n_train_lt1,r.n_train_origins-r.n_train_lt2];
     counts.forEach((n,j)=>{const width=n/maximum*578;b+='<rect x="'+x+'" y="'+(y+8)+'" width="'+width+'" height="22" fill="'+palette[j]+'"/>';x+=width;});
     b+=ink(24,y+51,labels.map((name,j)=>name+' '+counts[j].toLocaleString('en-US')+'개').join('  ·  '),'#435a63','start',16);
   }
-  return svgFrame('학습 시점 분포. 같은 개수 축척의 거리 구간별 누적 막대',b,628,226);
+  return svgFrame('학습 시점 분포. 같은 개수 축척의 거리 구간별 누적 막대',b,628,159);
 }
 function figQuestions(){
   let body='<rect x="88" y="66" width="392" height="132" fill="#eef3f1"/>';
@@ -201,4 +201,19 @@ function figCompletionBars(s){
       ink(461,y+10,exit<=h?'완료':'미완료',SC.gt,'middle',16);
   }
   return svgFrame('IMPTC f2의 네 기한별 완료확률과 실제 완료 여부',body,510,158);
+}
+
+// Each vertex is a released CDF sample (time in seconds, cumulative probability).
+function figAftCdf(s,model,remaining){
+  const points=V2R.curve(s,model);
+  const x=t=>45+220*t/4,y=p=>107-74*p;
+  let body='';
+  for(const p of [0,.5,1]){
+    body+=segment(45,y(p),265,y(p),'#dae2e2')+ink(38,y(p)+4,100*p+'%','#526772','end',15);
+  }
+  for(const h of [0,...UQ.horizons])body+=ink(x(h),126,h+'초','#526772','middle',15);
+  body+='<polyline fill="none" stroke="'+SC.future+'" stroke-width="3" points="'+points.map(([t,p])=>x(t)+','+y(p)).join(' ')+'"/>';
+  body+=segment(x(remaining),29,x(remaining),107,SC.gt,2,'4 3')+
+    ink(x(remaining),18,'실제 통과 +'+PN(remaining,3)+'초',SC.gt,'middle',17);
+  return svgFrame('f2의 저장된 잔여시간 누적분포와 실제 Exit 통과 시각',body,286,134);
 }

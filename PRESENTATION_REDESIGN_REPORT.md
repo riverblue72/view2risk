@@ -1,8 +1,16 @@
 # View2Risk 과학 그림과 기록 기반 3D 시연
 
-[10장 발표](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-1) · [9장 내장 3D](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-9) · [독립 시연](https://riverblue72.github.io/view2risk/presentation/demo.html) · [전체 평가 기록](https://riverblue72.github.io/view2risk/presentation/results.html)
+[11장 발표](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-1) · [10장 내장 3D](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-10) · [독립 시연](https://riverblue72.github.io/view2risk/presentation/demo.html) · [전체 평가 기록](https://riverblue72.github.io/view2risk/presentation/results.html)
 
 View2Risk는 보행자 관측의 오차가 미래 위치 예측과 기한별 횡단 완료확률에 어떻게 전파되는지 연구한다. 사전학습 DD-MDN에서 얻은 미래 운동 분포에 대해 View2Risk가 구현한 입력 보정 실험, 출구 통과확률 변환, 실제 기록 대조를 보여준다.
+
+## 현재 배포 구성 · 11장
+
+국내 보행신호 적용 장을 포함한 팀 발표를 기준으로 6장에는 DD-MDN의 경로 기반 완료확률과 관측 보정 결과를 두었다. [7장 직접 시간 예측](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-7)은 f2 사례, 출구까지 남은 거리별 학습 시점, 매칭 Test의 네 기한별 Brier를 한 장에 담는다. 8장은 국내 속도·시나리오로 계산한 별도 신호시간, 9장은 개선 제안, 10장은 3D 시연, 11장은 결론이다.
+
+- 사례 곡선은 `data/public/exit-aware.json`의 `o0008 / EA_M1__calibrated`에서 읽은 81개 저장 시각과 누적확률이다. 입력도 같은 행의 거리·종방향 속도·가속도를 쓴다. 실제 잔여시간 2.063초는 같은 사건의 실제 Exit 시각에서 예측 시작 시각을 빼서 구한다.
+- 학습 분포는 `pres/evidence.json → audit.support`, 평가값은 `audit.matched`의 IMPTC dd_matched/test 사건별 가중 Brier와 `key_table.mean_brier`에서 읽는다. 기존 M1과 Exit-aware M1을 같은 236시점·120건에서 비교한다.
+- 본문과 발표자 노트에서 ADE의 4초 평균, SPD 주석 불일치 RMSE, 공간 포함률 회복의 한계 및 가능한 원인을 구분했다. 아래 10장 구성과 기존 시연 검토는 이전 버전의 개편 이력이다.
 
 ## 기본 시연 · f2 한 건의 Entry → Exit 위치 추적
 
