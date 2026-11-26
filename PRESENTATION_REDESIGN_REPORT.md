@@ -20,7 +20,7 @@ View2Risk는 보행자 관측의 오차가 미래 위치 예측과 기한별 횡
 
 별도 진입점은 `presentation-uq.html`, 전용 슬라이드와 스타일은 `pres/story-uq.js`, `pres/story-uq.css`다. 세 파일을 `presentation/site/`와 `docs/presentation/`에 동일하게 두었다. `V2R_DECK=uq`로 `presentation/tools/uq_browser_check.mjs`를 실행하면 새 발표의 수치, 해상도별 배치, 8–11장 일치 여부와 기존 시뮬레이터의 동작을 검사한다.
 
-Chrome에서 새 발표 11장을 1920×1080, 1440×900, 1366×768 및 전체 화면으로 검사했다. f2의 Entry–Exit 254개 위치, 180개 WebGL 조건 조합의 저장 확률·경로·HDR·실제 위치, WebGL 실패 시의 2D 재생을 확인했다.
+배포된 GitHub Pages에서 기존 발표와 새 발표의 8–11장 본문, 발표자 노트, 시연의 초기 화면과 스크립트 주소가 일치했다. Chrome에서 새 발표 11장을 1920×1080, 1440×900, 1366×768 및 전체 화면으로 검사했다. f2의 Entry–Exit 254개 위치, 180개 WebGL 조건 조합의 저장 확률·경로·HDR·실제 위치, WebGL 실패 시의 2D 재생을 확인했다.
 
 ## 현재 배포 구성 · 11장
 

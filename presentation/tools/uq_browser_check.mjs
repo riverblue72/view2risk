@@ -62,7 +62,7 @@ try {
   if(uqEdition){
     async function preservedScenes(page){
       await goto(page+'#scene-8');
-      await until('location.pathname.endsWith("/'+page+'") && PS("pProgressText")?.textContent==="8 / 11"');
+      await until('location.pathname.endsWith("/'+page+'") && document.getElementById("pProgressText")?.textContent==="8 / 11"');
       const snapshots=[];
       for(const n of [8,9,10,11]){
         await ev('location.hash="#scene-'+n+'"');
