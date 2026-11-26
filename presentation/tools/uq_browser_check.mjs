@@ -4,6 +4,8 @@ import {writeFile} from 'node:fs/promises';
 
 const base=process.env.V2R_PUBLIC_URL||'http://127.0.0.1:19864/presentation';
 const cdp=process.env.V2R_CDP||'http://127.0.0.1:19865';
+const uqEdition=process.env.V2R_DECK==='uq';
+const deck=uqEdition?'presentation-uq.html':'presentation.html';
 const tab=await (await fetch(cdp+'/json/new?about:blank',{method:'PUT'})).json();
 const ws=new WebSocket(tab.webSocketDebuggerUrl);
 await new Promise(resolve=>ws.onopen=resolve);
@@ -38,7 +40,7 @@ const viewport=(width,height)=>call('Emulation.setDeviceMetricsOverride',{width,
 const checks=[];
 try {
   await call('Page.enable');await call('Runtime.enable');await call('Network.enable');await call('Network.setCacheDisabled',{cacheDisabled:true});
-  await viewport(1440,900);await goto('presentation.html#scene-1');
+  await viewport(1440,900);await goto(deck+'#scene-1');
   await until('document.querySelector("#pProgress a")');
   const dest=process.env.V2R_SHOTS;
   async function capture(name){
@@ -57,6 +59,27 @@ try {
     await until('document.querySelector(".guided").dataset.mode==="'+mode+'"');
   }
   const ready3=()=>until('document.querySelector(".guided")?.dataset.renderer==="babylon" && !!sc.getMeshByName("actualMap") && sc.isReady()');
+  if(uqEdition){
+    async function preservedScenes(page){
+      await goto(page+'#scene-8');
+      await until('location.pathname.endsWith("/'+page+'") && PS("pProgressText")?.textContent==="8 / 11"');
+      const snapshots=[];
+      for(const n of [8,9,10,11]){
+        await ev('location.hash="#scene-'+n+'"');
+        await until('PS("pProgressText").textContent==="'+n+' / 11"');
+        if(n===10)await ready3();
+        snapshots.push(await ev(`({
+          heading:PS('pTitle').textContent,subtitle:PS('pSubtitle').textContent,notes:PS('pNotes').textContent,
+          body:${n}===10?PS('pScene').innerText:PS('pScene').innerHTML,
+          scripts:[...document.scripts].map(s=>s.src).filter(src=>!src.includes('/pres/story'))
+        })`));
+      }
+      return snapshots;
+    }
+    const oldScenes=await preservedScenes('presentation.html');
+    assert.deepEqual(await preservedScenes(deck),oldScenes);
+    checks.push('both editions match on scenes 8–11, presenter notes, initial 3D controls and shared simulation scripts');
+  }
   const layout=()=>ev(`(()=>{
     const rect=id=>PS(id).getBoundingClientRect();
     const next=rect('gNext'), footer=document.querySelector('.deck-footer')?.getBoundingClientRect();
@@ -80,7 +103,15 @@ try {
       return {slide:${n},w:innerWidth,bottom:scene.getBoundingClientRect().bottom,footer:f.top,overflow:document.documentElement.scrollWidth>innerWidth};})()`);
     if(geom.overflow||geom.bottom>geom.footer+1)console.log('slide layout',geom);
     assert(!geom.overflow && geom.bottom<=geom.footer+1,JSON.stringify(geom));
-    const expected={3:['23.8 cm','주석 불일치','사전학습'],
+    const uqExpected={
+      1:['Uncertainty Quantification','실제 보행 기록'],
+      2:['관측 불확실성','공간 예측 불확실성','횡단 완료 불확실성','SPD','IMPTC','inD'],
+      3:['2,465','15.7 / 17.8 cm','23.8 cm','공분산 R','독립 학습','선택 적용'],
+      4:['0.283','3.925','0.742','0.418','4.569','0.871','81.1%','80.9%'],
+      5:['78.51%','95%','10.27 m²','748.20','81.1%'],
+      6:['2.063초','2.53%','66.25%','0.03472','0.33527','0.08594','74.4%']
+    };
+    const expected=(uqEdition&&uqExpected[n])||{3:['23.8 cm','주석 불일치','사전학습'],
       4:['향후 4초간 평균 위치 예측오차(ADE)','81.1%','0.74'],
       5:['78.51%','95%','원인은 별도로 검증'],
       6:['2.53%','66.25%','0.03472','0.33527','0.08594','74.4%'],
@@ -91,6 +122,7 @@ try {
     const visible=await ev('PS("deck").textContent');
     for(const value of expected)assert(visible.includes(value),'Scene '+n+' missing '+value);
     if(n===7){
+      if(uqEdition)for(const value of ['0.05646','0.01635','전체 기준선 비교'])assert(visible.includes(value));
       assert.equal(await ev('document.querySelector(".aft-pipeline polyline").points.length'),81);
       assert.equal(await ev('PS("pProgress").children.length'),11);
     }
@@ -394,7 +426,7 @@ try {
   await until('window.demoReady&&typeof sc!=="undefined" && sc?.getMeshByName("actualMap") && !!caseData && sc.isReady()');
   assert(await ev('!!person && !!engine.getRenderingCanvas()'));checks.push('original Babylon explorer and map');
   const injected=await call('Page.addScriptToEvaluateOnNewDocument',{source:`const get=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){return /webgl/i.test(type)?null:get.call(this,type,...args)};`});
-  await goto('presentation.html#scene-10');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
+  await goto(deck+'#scene-10');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await seekJourney(5);assert(await ev('!!gFallback.querySelector("polyline")&&+document.querySelector(".full-tracking").dataset.index>0'));
   await click('showForecast');await until('document.querySelector(".guided")?.dataset.renderer==="2d"');
   await seekJourney(8);assert(await ev('gFallback.querySelectorAll(".fallback-panel").length===3 && !!gFallback.querySelector("[data-trail]") && gProb.children.length>0'));

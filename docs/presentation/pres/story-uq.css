@@ -1,0 +1,14 @@
+/* Introductory scenes only. The application and simulator use the original styles. */
+.uq .uq-terms{margin:0}
+.uq .uq-terms dt,.uq .uq-data-row b{font-weight:750;color:#195c58}
+.uq .uq-terms dd{margin:1px 0 12px}
+.uq .uq-data-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding-top:14px;border-top:1px solid var(--rule);margin-top:15px}
+.uq .uq-data-row b,.uq .uq-data-row span{display:block}
+.uq .uq-system .science-svg{max-height:35vh}
+.uq .uq-r-method{display:grid;grid-template-columns:max-content 1fr;gap:20px;align-items:baseline;border-top:1px solid var(--rule);padding-top:12px;margin-top:14px}
+.uq .uq-r-method p,.uq .uq-passage article>p:not(.caption){font-size:clamp(15px,1.16vw,19px);line-height:1.47}
+.uq .uq-r-method a{font-size:.86em}
+.uq .uq-transition{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--rule);font-size:clamp(16px,1.23vw,20px);font-weight:650;color:#245a58}
+.uq .uq-passage .science-svg{max-height:23vh}
+.uq .uq-passage h3{margin:12px 0 3px}
+@media(max-width:850px){.uq .uq-r-method,.uq .uq-data-row{grid-template-columns:1fr;gap:6px}.uq .uq-system{overflow-x:auto}.uq .uq-system .science-svg{min-width:820px}}

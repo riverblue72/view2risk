@@ -4,6 +4,24 @@
 
 View2Risk는 보행자 관측의 오차가 미래 위치 예측과 기한별 횡단 완료확률에 어떻게 전파되는지 연구한다. 사전학습 DD-MDN에서 얻은 미래 운동 분포에 대해 View2Risk가 구현한 입력 보정 실험, 출구 통과확률 변환, 실제 기록 대조를 보여준다.
 
+## 별도 UQ 발표본
+
+[UQ 발표](https://riverblue72.github.io/view2risk/presentation/presentation-uq.html#scene-1)에는 별도 주소와 발표자 노트가 있다. 기존 발표 주소는 위의 11장 발표 링크다.
+
+| 장 | 연구 흐름과 근거 |
+|---|---|
+| 1–2 | 하나의 보행에서 관측 위치, 미래 경로, 최초 Exit 통과시간이 각각 무엇을 의미하는지 설명한다. SPD는 관측오차 대리값, IMPTC는 주 평가, inD는 보조 검증에 사용했다. |
+| 3 | SPD Train의 2,465개 위치 주석 쌍으로 편향과 공분산 R을 추정한 절차를 표시한다. 사전학습 DD-MDN의 경로 분기와 별도로 학습한 XGBoost AFT의 잔여시간 분기를 한 도식에 배치했다. |
+| 4–5 | 동일한 관측오차 조건에서 IMPTC와 inD의 ADE를 비교한 뒤, IMPTC의 4초 위치 포함률과 영역 면적을 대조한다. 보정 후 ADE의 감소와 95% 영역의 실제 포함률 미달을 구분한다. |
+| 6–7 | 최초 Exit 통과를 기한별 사건으로 바꿔 Brier로 평가한다. f2에서 경로 표본 집계와 직접 시간 모형의 저장 CDF를 같은 실제 완료 시각과 대조한다. Exit-aware 개선은 기존 XGBoost M1과 비교한다. |
+| 8–11 | 기존 한국 적용, 개선 제안, Babylon.js 내장 시연, 결론을 유지한다. |
+
+입력 오차 근거는 `data/public/demo-evidence.json`의 `r_proxy.train_fit`이다. 궤적·공간·완료 강건성 집계의 원표는 `r_robustness/r_robustness_metrics.csv`다. f2 경로 기반 확률은 `data/public/r/o0008.json`, 직접 시간 확률은 `data/public/exit-aware.json`의 `EA_M1__calibrated`에서 읽는다. XGBoost 성능은 `exit_aware/exit_aware_matched_metrics.csv`의 매칭 Test 결과를 사용한다. 표본 하나의 일치 여부로 확률의 보정 수준을 판정할 수 없고, 보정 뒤 공간 포함률이 낮은 원인은 이번 비교로 식별할 수 없다.
+
+별도 진입점은 `presentation-uq.html`, 전용 슬라이드와 스타일은 `pres/story-uq.js`, `pres/story-uq.css`다. 세 파일을 `presentation/site/`와 `docs/presentation/`에 동일하게 두었다. `V2R_DECK=uq`로 `presentation/tools/uq_browser_check.mjs`를 실행하면 새 발표의 수치, 해상도별 배치, 8–11장 일치 여부와 기존 시뮬레이터의 동작을 검사한다.
+
+Chrome에서 새 발표 11장을 1920×1080, 1440×900, 1366×768 및 전체 화면으로 검사했다. f2의 Entry–Exit 254개 위치, 180개 WebGL 조건 조합의 저장 확률·경로·HDR·실제 위치, WebGL 실패 시의 2D 재생을 확인했다.
+
 ## 현재 배포 구성 · 11장
 
 국내 보행신호 적용 장을 포함한 팀 발표를 기준으로 6장에는 DD-MDN의 경로 기반 완료확률과 관측 보정 결과를 두었다. [7장 직접 시간 예측](https://riverblue72.github.io/view2risk/presentation/presentation.html#scene-7)은 f2 사례, 출구까지 남은 거리별 학습 시점, 매칭 Test의 네 기한별 Brier를 한 장에 담는다. 8장은 국내 속도·시나리오로 계산한 별도 신호시간, 9장은 개선 제안, 10장은 3D 시연, 11장은 결론이다.
